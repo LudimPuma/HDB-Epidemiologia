@@ -14,4 +14,8 @@ class Bacteria extends Model
     {
         return $this->hasMany(Antibiograma::class);
     }
+    public function medicamentos()
+    {
+        return $this->belongsToMany(Medicamento::class, 'BACTERIAS_MEDICAMENTOS', 'COD_BACTE', 'COD_MEDI');
+    }
 }

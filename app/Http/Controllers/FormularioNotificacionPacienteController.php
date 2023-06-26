@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Antibiograma;
 use App\NivelAntibiograma;
 use App\DatoPaciente;
@@ -11,11 +12,14 @@ use App\TipoInfeccion;
 use App\ProcedimientoInmasivo;
 use App\Agente;
 use App\TipoMuestra;
-
+use App\Bacteria;
+use App\Medicamento;
 class FormularioNotificacionPacienteController extends Controller
 {
-    public function mostrarFormulario()
+    public function mostrarFormulario(Request $request)
     {
+        $id = $request->query('patientId');
+        $nombre = $request->query('nombreCompleto');
         // Consulta los datos necesarios de los modelos relacionados
         $antibiogramas = Antibiograma::all();
         $datosPacientes = DatoPaciente::all();
@@ -24,11 +28,12 @@ class FormularioNotificacionPacienteController extends Controller
         $procedimientosInmasivos = ProcedimientoInmasivo::all();
         $agentes = Agente::all();
         $tiposMuestra = TipoMuestra::all();
-        $antibiogramas = Antibiograma::with('bacteria')->get();
+        $bacterias = Bacteria::all();
+        //$antibiogramas = Antibiograma::with('bacteria')->get();
         $nivelesAntibiograma = NivelAntibiograma::with('medicamento')->get();
 
         // Pasa los datos a la vista del formulario
-        return view('one.formulario1', compact('antibiogramas', 'datosPacientes', 'servicios', 'tiposInfeccion', 'procedimientosInmasivos', 'agentes', 'tiposMuestra', 'antibiogramas', 'nivelesAntibiograma'));
+        return view('one.formulario1', compact('id','nombre','antibiogramas', 'datosPacientes', 'bacterias','servicios', 'tiposInfeccion', 'procedimientosInmasivos', 'agentes', 'tiposMuestra', 'antibiogramas', 'nivelesAntibiograma'));
     }
 
     public function guardarDatos(Request $request)
@@ -104,4 +109,18 @@ class FormularioNotificacionPacienteController extends Controller
     return redirect()->route('formulario2')->with('success', 'Los datos han sido guardados exitosamente.');
     }
 
+    public function obtenerMedicamentos(Request $request)
+    {
+        $bacteriaId = $request->input('bacteriaId');
+
+        // Obtener los medicamentos asociados a la bacteria
+        $medicamentos = DB::table('BACTERIAS_MEDICAMENTOS')
+            ->join('MEDICAMENTOS', 'BACTERIAS_MEDICAMENTOS.COD_MEDI', '=', 'MEDICAMENTOS.COD_MEDICAMENTO')
+            ->where('BACTERIAS_MEDICAMENTOS.COD_BACTE', $bacteriaId)
+            ->select('MEDICAMENTOS.*')
+            ->get();
+
+        // Devolver los medicamentos en formato JSON
+        return response()->json(['medicamentos' => $medicamentos]);
+    }
 }

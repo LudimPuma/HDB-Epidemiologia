@@ -8,6 +8,22 @@
                 <div class="card-style mb-30">
                     <h6 class="mb-25">Datos Generales</h6>
                     <div class="row">
+                        <div class="col-lg-3">
+                            <!-- Nro Historial -->
+                            <div class="form-group input-style-1">
+                                <label for="nro_historial">N° Historial:</label>
+                                <input type="text" class="form-control" id="nro_historial" name="nro_historial" value="{{ $id }}" disabled>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <!-- Datos paciente -->
+                            <div class="form-group input-style-1">
+                                <label for="dato_paciente">Nombre completo:</label>
+                                <input type="text" class="form-control" id="dato_paciente" name="dato_paciente" value="{{ $nombre }}" disabled>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
                         <div class="col-lg-4">
                             <!-- Campo para fecha_llenado -->
                             <div class="form-group input-style-1">
@@ -127,9 +143,10 @@
                             <!-- Desplegable para seleccionar bacterias -->
                             <div class="form-group">
                                 <label for="bacteria">Bacteria:</label>
-                                <select class="form-control" id="bacteria" name="bacteria">
-                                    @foreach ($antibiogramas as $antibiograma)
-                                        <option value="{{ $antibiograma->id }}">{{ $antibiograma->bacteria->nombre }}</option>
+                                <select id="bacteria" name="bacteria" onchange="cargarMedicamentos()">
+                                    <option value="">Seleccione una bacteria</option>
+                                    @foreach ($bacterias as $bacteria)
+                                        <option value="{{ $bacteria->id }}">{{ $bacteria->nombre }}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -138,10 +155,8 @@
                             <!-- Desplegable para seleccionar medicamentos -->
                             <div class="form-group">
                                 <label for="medicamento">Medicamento:</label>
-                                <select class="form-control" id="medicamento" name="medicamento">
-                                    @foreach ($nivelesAntibiograma as $nivel)
-                                        <option value="{{ $nivel->id }}">{{ $nivel->medicamento->nombre }}</option>
-                                    @endforeach
+                                <select id="medicamento" name="medicamento">
+                                    <option value="">Seleccione una bacteria primero</option>
                                 </select>
                             </div>
                         </div>
@@ -207,7 +222,37 @@
     </div>
 </section>
 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+function cargarMedicamentos() {
+  var bacteriaId = document.getElementById('bacteria').value;
+  var medicamentoSelect = document.getElementById('medicamento');
 
+  // Limpiar opciones anteriores
+  medicamentoSelect.innerHTML = '<option value="">Cargando medicamentos...</option>';
+
+  // Realizar solicitud AJAX para obtener los medicamentos
+  fetch('/obtener-medicamentos?bacteriaId=' + bacteriaId)
+    .then(function(response) {
+      return response.json();
+    })
+    .then(function(data) {
+      // Limpiar opciones anteriores y agregar las nuevas opciones de medicamentos
+      medicamentoSelect.innerHTML = '<option value="">Seleccione un medicamento</option>';
+      data.medicamentos.forEach(function(medicamento) {
+        var option = document.createElement('option');
+        option.value = medicamento.id;
+        option.textContent = medicamento.nombre;
+        medicamentoSelect.appendChild(option);
+      });
+    })
+    .catch(function(error) {
+      console.error('Error al obtener los medicamentos:', error);
+    });
+}
+
+
+</script>
 
 @endsection
 

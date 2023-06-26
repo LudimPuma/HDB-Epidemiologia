@@ -188,7 +188,8 @@
               <a href="{{route('historial')}}"> IAAS </a>
             </li>
             <li>
-              <a href="{{route('formulario_Enf_Not_Inmediata')}}"> Enfermedades de Notificacion Inmediata </a>
+              <a href="{{route('view_form_2')}}"> Enfermedades de Notificacion Inmediata </a>
+
             </li>
             <li>
                 <a href="mdi-icons.html"> Formulario Vacuanas Covid-19 </a>

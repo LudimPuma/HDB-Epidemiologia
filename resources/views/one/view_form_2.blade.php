@@ -4,12 +4,19 @@
 <div class="row">
     <div class="col-lg-4">
         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#h_paciente">
-            Formulario IAAS
+            Agregar Formulario
         </button>
     </div>
 </div>
 
-<!-- Modal -->
+<div class="row">
+    <div class="col-lg-4">
+        <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#modalBusqueda">
+            Imprimir Formulario
+        </button>
+    </div>
+</div>
+<!-- Modal GENERAR FORMULARIO-->
 <div class="modal fade" id="h_paciente" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -70,6 +77,33 @@
     </div>
 </div>
 
+
+<!-- Modal IMPRIMIR FORMULARIO-->
+<!-- Modal de búsqueda -->
+<div class="modal fade" id="modalBusqueda" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Buscar formulario por historial clínico</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="{{ route('buscar-form_2') }}" method="GET">
+                    <div class="mb-3">
+                        <label for="hClinico" class="form-label">Número de historial clínico:</label>
+                        <input type="number" class="form-control" id="hClinico" name="hClinico" required>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Buscar</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
 function enableGenerateButton(enabled) {
@@ -80,7 +114,7 @@ function searchPatient() {
     var patientId = document.getElementById('n_historial').value;
     // Realizar una solicitud Ajax al servidor
     $.ajax({
-        url: '{{ route("buscar-paciente") }}', // Ruta que manejará la búsqueda del paciente
+        url: '{{ route("buscar-paciente_form_2") }}', // Ruta que manejará la búsqueda del paciente
         type: 'GET',
         data: { patientId: patientId },
         success: function(response) {
@@ -107,6 +141,7 @@ function searchPatient() {
                     patientDataElement.innerHTML = '';
                 }
                 alert('Paciente no encontrado');
+                clearFields();
                 enableGenerateButton(false); // Deshabilitar el botón "Generar formulario"
             }
         },
@@ -142,7 +177,7 @@ function searchPatient() {
         var patientId = document.getElementById('n_historial').value;
         var nombreCompleto = document.getElementById('nombre').value + ' ' + document.getElementById('ap_paterno').value + ' ' + document.getElementById('ap_materno').value;
 
-        var url = "{{ route('formularioIAAS') }}?patientId=" + encodeURIComponent(patientId) + "&nombreCompleto=" + encodeURIComponent(nombreCompleto);
+        var url = "{{ route('formulario_Enf_Not_Inmediata') }}?patientId=" + encodeURIComponent(patientId) + "&nombreCompleto=" + encodeURIComponent(nombreCompleto);
         window.location.href = url;
 }
 
