@@ -57,34 +57,24 @@ class FormularioEnfermedadesNotificacionInmediataController extends Controller
     public function guardarDatos(Request $request)
     {
 
-    // Validar los datos del formulario
-    $request->validate([
-        'n_historial' => 'required',
-        //'fecha' => 'required',
-        'patologia' => 'required',
-        'servicio_inicio_sintomas' => 'required',
-        'notificador' => 'required',
-        'acciones' => 'required',
-        'observaciones' => 'required',
-    ]);
 
     // Crear una nueva instancia del modelo FormularioEnfermedadesNotificacionInmediata
     $formulario = new FormularioEnfermedadesNotificacionInmediata();
 
     // Asignar los valores de los campos del formulario al modelo
-    $formulario->n_historial = $request->input('n_historial');
-    //$formulario->fecha = $request->input('fecha');
-    $formulario->patologia = $request->input('patologia');
-    $formulario->servicio_inicio_sintomas = $request->input('servicio_inicio_sintomas');
+    $formulario->h_clinico = $request->input('h_clinico');
+    $formulario->fecha = $request->input('fecha');
+    $formulario->cod_pato = $request->input('patologia');
+    $formulario->cod_servi = $request->input('servicio_inicio_sintomas');
     $formulario->notificador = $request->input('notificador');
     $formulario->acciones = $request->input('acciones');
     $formulario->observaciones = $request->input('observaciones');
-    dd($request->all());
+
     // Guardar el formulario en la base de datos
     $formulario->save();
 
     // Redireccionar a una página de éxito o mostrar un mensaje de confirmación
-    return redirect()->route('formulario_Enf_Not_Inmediata')->with('success', 'Los datos han sido guardados exitosamente.');
+    return redirect()->route('view_form_2')->with('success', 'Los datos han sido guardados exitosamente.');
     }
 
 

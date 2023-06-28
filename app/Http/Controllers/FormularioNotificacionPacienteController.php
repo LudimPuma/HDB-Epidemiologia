@@ -109,15 +109,15 @@ class FormularioNotificacionPacienteController extends Controller
     return redirect()->route('formulario2')->with('success', 'Los datos han sido guardados exitosamente.');
     }
 
-    public function obtenerMedicamentos(Request $request)
+    public function obtenerMedicamentos($id)
     {
-        $bacteriaId = $request->input('bacteriaId');
+        $bacteriaId = $id;
 
         // Obtener los medicamentos asociados a la bacteria
-        $medicamentos = DB::table('BACTERIAS_MEDICAMENTOS')
-            ->join('MEDICAMENTOS', 'BACTERIAS_MEDICAMENTOS.COD_MEDI', '=', 'MEDICAMENTOS.COD_MEDICAMENTO')
-            ->where('BACTERIAS_MEDICAMENTOS.COD_BACTE', $bacteriaId)
-            ->select('MEDICAMENTOS.*')
+        $medicamentos = DB::table('epidemiologia.bacterias_medicamentos')
+            ->join('epidemiologia.medicamentos', 'epidemiologia.bacterias_medicamentos.cod_medi', '=', 'epidemiologia.medicamentos.cod_medicamento')
+            ->where('epidemiologia.bacterias_medicamentos.cod_bacte', $bacteriaId)
+            ->select('epidemiologia.medicamentos.*')
             ->get();
 
         // Devolver los medicamentos en formato JSON

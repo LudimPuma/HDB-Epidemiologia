@@ -14,8 +14,8 @@
                             <div class="col-lg-3">
                                 <!-- Nro Historial -->
                                 <div class="form-group input-style-1">
-                                    <label for="nro_historial">N° Historial:</label>
-                                    <input type="text" class="form-control" id="nro_historial" name="nro_historial" value="{{ $id }}" disabled>
+                                    <label for="h_clinico">N° Historial:</label>
+                                    <input type="text" class="form-control" id="h_clinico" name="h_clinico" value="{{ $id }}" >
                                 </div>
                             </div>
                             <div class="col-lg-6">
@@ -26,7 +26,7 @@
                                 </div>
                             </div>
                         </div>
-                        {{-- <div class="row">
+                        <div class="row">
                             <div class="col-lg-4">
                                 <!-- fecha-->
                                 <div class="form-group input-style-1">
@@ -34,7 +34,7 @@
                                     <input type="date" name="fecha" id="fecha" class="form-control">
                                 </div>
                             </div>
-                        </div> --}}
+                        </div>
                     </div>
 
                     {{-- llenado del formulario --}}
@@ -48,7 +48,7 @@
                                     <div class="select-position">
                                         <select class="form-control" id="servicio_inicio_sintomas" name="servicio_inicio_sintomas" >
                                             @foreach ($servicios as $servicio)
-                                                <option value="{{ $servicio->id }}">{{ $servicio->nombre }}</option>
+                                                <option value="{{ $servicio->cod_servicio }}">{{ $servicio->nombre }}</option>
                                             @endforeach
                                         </select>
                                     </div>
@@ -61,7 +61,7 @@
                                     <div class="select-position">
                                         <select class="form-control" id="patologia" name="patologia" >
                                             @foreach ($patologias as $patologia)
-                                                <option value="{{ $patologia->id }}">{{ $patologia->nombre }}</option>
+                                                <option value="{{ $patologia->cod_patologia }}">{{ $patologia->nombre }}</option>
                                             @endforeach
                                         </select>
                                     </div>
@@ -102,16 +102,16 @@
 <script>
 
 
-$(document).ready(function() {
-        $('#boton_guardar').click(function(event) {
-            event.preventDefault();
+// $(document).ready(function() {
+//         $('#boton_guardar').click(function(event) {
+//             event.preventDefault();
 
-            // Imprimir los datos del formulario en la consola
-            console.log($('form').serialize());
+//             // Imprimir los datos del formulario en la consola
+//             console.log($('form').serialize());
 
-            // Aquí puedes agregar el código para enviar el formulario al servidor
-            // ...
-        });
-    });
+//             // Aquí puedes agregar el código para enviar el formulario al servidor
+//             // ...
+//         });
+//     });
 </script>
 @endsection

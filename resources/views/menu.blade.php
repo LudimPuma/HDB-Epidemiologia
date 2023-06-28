@@ -26,7 +26,7 @@
           </a>
           <ul id="ddmenu_1" class="collapse show dropdown-nav">
             <li>
-                <a href="{{route('principal')}}" class="active"> Inicio </a>
+                <a href="{{route('principal')}}"> Inicio </a>
             </li>
           </ul>
         </li>

@@ -146,7 +146,7 @@
                                 <select id="bacteria" name="bacteria" onchange="cargarMedicamentos()">
                                     <option value="">Seleccione una bacteria</option>
                                     @foreach ($bacterias as $bacteria)
-                                        <option value="{{ $bacteria->id }}">{{ $bacteria->nombre }}</option>
+                                        <option value="{{ $bacteria->cod_bacterias }}">{{ $bacteria->nombre }}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -231,24 +231,43 @@ function cargarMedicamentos() {
   // Limpiar opciones anteriores
   medicamentoSelect.innerHTML = '<option value="">Cargando medicamentos...</option>';
 
-  // Realizar solicitud AJAX para obtener los medicamentos
-  fetch('/obtener-medicamentos?bacteriaId=' + bacteriaId)
-    .then(function(response) {
-      return response.json();
-    })
-    .then(function(data) {
-      // Limpiar opciones anteriores y agregar las nuevas opciones de medicamentos
-      medicamentoSelect.innerHTML = '<option value="">Seleccione un medicamento</option>';
-      data.medicamentos.forEach(function(medicamento) {
-        var option = document.createElement('option');
-        option.value = medicamento.id;
-        option.textContent = medicamento.nombre;
-        medicamentoSelect.appendChild(option);
-      });
-    })
-    .catch(function(error) {
-      console.error('Error al obtener los medicamentos:', error);
-    });
+    $.ajax({
+        url:"{{url('obtener-medicamentos')}}/"+bacteriaId,
+        type:'GET',
+        data:bacteriaId,
+        success:function(data){
+            console.log(data.medicamentos);
+            medicamentoSelect.innerHTML = '<option value="">Seleccione un medicamento</option>';
+            data.medicamentos.forEach(function(medicamento) {
+            var option = document.createElement('option');
+            option.value = medicamento.cod_medicamento;
+            option.textContent = medicamento.nombre;
+            medicamentoSelect.appendChild(option);
+       });
+        }
+      });
+
+
+
+//   // Realizar solicitud AJAX para obtener los medicamentos
+//   fetch('/obtener-medicamentos?bacteriaId=' + bacteriaId)
+//     .then(function(response) {
+//       return response.json();
+//     })
+//     .then(function(data) {
+//         console.log(data);
+//       // Limpiar opciones anteriores y agregar las nuevas opciones de medicamentos
+//       medicamentoSelect.innerHTML = '<option value="">Seleccione un medicamento</option>';
+//       data.medicamentos.forEach(function(medicamento) {
+//         var option = document.createElement('option');
+//         option.value = medicamento.id;
+//         option.textContent = medicamento.nombre;
+//         medicamentoSelect.appendChild(option);
+//       });
+//     })
+//     .catch(function(error) {
+//       console.error('Error al obtener los medicamentos:', error);
+//     });
 }
 
 
