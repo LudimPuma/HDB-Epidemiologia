@@ -1,6 +1,35 @@
 @extends('layout')
 @section('content')
 <section class="tab-components">
+<style>
+#tablaMedicamentos table {
+  width: 100%;
+  margin-bottom: 1rem;
+  color: #212529;
+  border-collapse: collapse;
+}
+
+#tablaMedicamentos th,
+#tablaMedicamentos td {
+  padding: 0.75rem;
+  vertical-align: top;
+  border-top: 1px solid #dee2e6;
+}
+
+#tablaMedicamentos th {
+  font-weight: bold;
+  background-color: #f8f9fa;
+}
+
+@media (max-width: 767.98px) {
+  /* Estilos específicos para pantallas pequeñas */
+  #tablaMedicamentos table {
+    display: block;
+    overflow-x: auto;
+  }
+}
+
+</style>
     <div class="container-fluid">
         <div class="form-elements-wrapper">
             <form method="POST" action="{{ route('guardar_datos_form_IAAS') }}">
@@ -151,6 +180,8 @@
                                 </select>
                             </div>
                         </div>
+                        <div id="tablaMedicamentos"></div>
+
                         <div class="col-lg-4">
                             <!-- Desplegable para seleccionar medicamentos -->
                             <div class="form-group">
@@ -246,6 +277,56 @@ function cargarMedicamentos() {
        });
         }
       });
+
+
+// function cargarMedicamentos() {
+//   var bacteriaId = document.getElementById('bacteria').value;
+
+//   $.ajax({
+//     url: "{{url('obtener-medicamentos')}}/" + bacteriaId,
+//     type: 'GET',
+//     data: bacteriaId,
+//     success: function(data) {
+//       var medicamentos = data.medicamentos;
+//       var tablaMedicamentos = document.getElementById('tablaMedicamentos');
+//       tablaMedicamentos.innerHTML = ''; // Limpiar contenido anterior
+
+//       // Crear la tabla
+//       var table = document.createElement('table');
+//       table.classList.add('table'); // Agrega la clase 'table' de Bootstrap para el estilo
+
+//       // Crea la fila de encabezado con los nombres de los medicamentos
+//       var thead = document.createElement('thead');
+//       var encabezadoRow = document.createElement('tr');
+//       medicamentos.forEach(function(medicamento) {
+//         var th = document.createElement('th');
+//         th.textContent = medicamento.nombre;
+//         encabezadoRow.appendChild(th);
+//       });
+//       thead.appendChild(encabezadoRow);
+//       table.appendChild(thead);
+
+//       // Crea las filas para resistente, intermedio y sensible
+//       var tbody = document.createElement('tbody');
+//       ['Resistente', 'Intermedio', 'Sensible'].forEach(function(categoria) {
+//         var fila = document.createElement('tr');
+//         medicamentos.forEach(function(medicamento) {
+//           var td = document.createElement('td');
+//           // Aquí puedes agregar la lógica para obtener los valores correspondientes a cada medicamento y categoría
+//           td.textContent = obtenerValor(medicamento.cod_medicamento, categoria);
+//           fila.appendChild(td);
+//         });
+//         tbody.appendChild(fila);
+//       });
+//       table.appendChild(tbody);
+
+//       // Agrega la tabla al contenedor
+//       tablaMedicamentos.appendChild(table);
+//     }
+//   });
+// }
+
+
 
 
 

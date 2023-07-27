@@ -1,6 +1,5 @@
 @extends('layout')
 @section('content')
-<!-- Button trigger modal -->
 <div class="row">
     <div class="col-lg-4">
         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#h_paciente">
@@ -12,10 +11,19 @@
 <div class="row">
     <div class="col-lg-4">
         <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#modalBusqueda">
-            Imprimir Formulario
+             <a href="" target="_Blank">Imprimir Formulario</a>
         </button>
     </div>
 </div>
+
+<div class="row">
+    <div class="col-lg-4">
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalreporte">
+            Generar Reporte
+        </button>
+    </div>
+</div>
+
 <!-- Modal GENERAR FORMULARIO-->
 <div class="modal fade" id="h_paciente" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
@@ -79,7 +87,6 @@
 
 
 <!-- Modal IMPRIMIR FORMULARIO-->
-<!-- Modal de búsqueda -->
 <div class="modal fade" id="modalBusqueda" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -104,6 +111,36 @@
 </div>
 
 
+<!-- Modal de selección de fechas REPORTE-->
+<div class="modal fade" id="modalreporte" tabindex="-1" role="dialog" aria-labelledby="modalreporte" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalreporte">Seleccionar Fechas para el Reporte</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="{{ route('formulario.generar-reporte') }}" method="GET">
+                    <div class="form-group">
+                        <label for="fecha_inicio">Fecha de inicio:</label>
+                        <input type="date" id="fecha_inicio" name="fecha_inicio" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="fecha_fin">Fecha de fin:</label>
+                        <input type="date" id="fecha_fin" name="fecha_fin" class="form-control" required>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Generar Reporte</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
 function enableGenerateButton(enabled) {
@@ -112,7 +149,7 @@ function enableGenerateButton(enabled) {
 }
 function searchPatient() {
     var patientId = document.getElementById('n_historial').value;
-    // Realizar una solicitud Ajax al servidor
+    // Realiza una solicitud Ajax al servidor
     $.ajax({
         url: '{{ route("buscar-paciente_form_2") }}', // Ruta que manejará la búsqueda del paciente
         type: 'GET',
@@ -133,7 +170,7 @@ function searchPatient() {
                 if (patientDataElement) {
                     patientDataElement.innerHTML = '';
                 }
-                enableGenerateButton(true); // Habilitar el botón "Generar formulario"
+                enableGenerateButton(true); // Habilita el botón "Generar formulario"
             } else {
                 // El paciente no fue encontrado, mostrar una alerta
                 var patientDataElement = document.getElementById('patientData');
@@ -142,13 +179,13 @@ function searchPatient() {
                 }
                 alert('Paciente no encontrado');
                 clearFields();
-                enableGenerateButton(false); // Deshabilitar el botón "Generar formulario"
+                enableGenerateButton(false); // Deshabilita el botón "Generar formulario"
             }
         },
         error: function() {
             // Ocurrió un error durante la solicitud
             alert('Error en la búsqueda del paciente');
-            enableGenerateButton(false); // Deshabilitar el botón "Generar formulario"
+            enableGenerateButton(false); // Deshabilita el botón "Generar formulario"
         }
     });
 

@@ -1,7 +1,19 @@
 @extends('layout')
 @section('content')
-    <h1>Medicamento vista</h1>
+    <h1>Bacteria vista</h1>
     <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-6">
+              <div class="input-group">
+                <input type="text" name="query" class="form-control" placeholder="Buscar por nombre">
+                <button type="submit" class="btn btn-primary">Buscar</button>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <button class="btn btn-primary btn-insertar">Crear Agente</button>
+            </div>
+        </div>
+
         <div class="row">
           <div class="col">
             <table class="table table-hover align-middle">
@@ -26,7 +38,7 @@
               </tbody>
             </table>
             <div class="text-center">
-              <button class="btn btn-primary btn-insertar">Crear Agente</button>
+
             </div>
           </div>
         </div>
@@ -135,5 +147,39 @@
             $('#modalInsertar').modal('show');
           });
         });
+
+
+        $(document).ready(function() {
+        $('input[name="query"]').on('keyup', function() {
+            var query = $(this).val();
+
+            $.ajax({
+            url: '{{ route("bacteria.search") }}',
+            method: 'GET',
+            data: { query: query },
+            success: function(response) {
+                actualizarTabla(response);
+            }
+            });
+        });
+        });
+
+
+        function actualizarTabla(data) {
+        var tbody = $('#tabla-bacterias');
+        tbody.empty();
+
+        $.each(data, function(index, bacteria) {
+            var row = $('<tr>');
+            row.append('<td class="text-center">' + bacteria.cod_bacterias + '</td>');
+            row.append('<td>' + bacteria.nombre + '</td>');
+            row.append('<td class="text-center">Acciones</td>');
+            tbody.append(row);
+        });
+        }
+
+
+
+
       </script>
 @endsection

@@ -42,10 +42,13 @@ class AgenteController extends Controller
             'nombre' => 'required|max:100',
         ]);
 
-        Agente::create($request->all());
+        $agente = Agente::create($request->all());
 
-        return redirect()->route('agente.index')->with('success', 'Agente creado exitosamente');
+        // Devolver una respuesta JSON con el nuevo registro creado
+        return response()->json(['agente' => $agente], 201);
     }
+
+
 
     /**
      * Display the specified resource.
@@ -102,4 +105,5 @@ class AgenteController extends Controller
 
         return redirect()->route('agente.index')->with('success', 'Agente eliminado exitosamente');
     }
+
 }

@@ -99,4 +99,14 @@ class BacteriaController extends Controller
         $bacteria->delete();
         return redirect()->route('bacteria.index')->with('success', 'Medicamento eliminado exitosamente');
     }
+
+    public function search(Request $request)
+    {
+      $query = $request->input('query');
+
+      $bacterias = Bacteria::where('nombre', 'like', '%'.$query.'%')->get();
+
+      return response()->json($bacterias);
+    }
+
 }

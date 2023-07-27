@@ -16,6 +16,35 @@ use App\Bacteria;
 use App\Medicamento;
 class FormularioNotificacionPacienteController extends Controller
 {
+
+    public function showViewForm()
+    {
+        return view('one.view_form_1');
+    }
+    public function searchHistorial(Request $request)
+    {
+        $patientId = $request->input('patientId');
+
+        // Buscar al paciente en la base de datos por su ID
+        $patient = DatoPaciente::where('n_h_clinico', $patientId)->first();
+
+        if ($patient) {
+            // El paciente fue encontrado, devolver los datos del paciente
+            return response()->json([
+                'found' => true,
+                'patientData' => $patient
+            ]);
+        } else {
+            // El paciente no fue encontrado
+            return response()->json([
+                'found' => false,
+                'patientData' => null
+            ]);
+        }
+    }
+
+
+
     public function mostrarFormulario(Request $request)
     {
         $id = $request->query('patientId');

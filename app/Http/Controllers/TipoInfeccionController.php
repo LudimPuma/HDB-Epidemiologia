@@ -100,4 +100,12 @@ class TipoInfeccionController extends Controller
 
         return redirect()->route('tipoInfeccion.index')->with('success', 'Tipo Infeccion eliminado exitosamente');
     }
+    public function search(Request $request)
+    {
+      $query = $request->input('query');
+
+      $bacterias = TipoInfeccion::where('nombre', 'like', '%'.$query.'%')->get();
+
+      return response()->json($bacterias);
+    }
 }

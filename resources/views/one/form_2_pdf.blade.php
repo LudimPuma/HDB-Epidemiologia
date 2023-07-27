@@ -4,18 +4,18 @@
     <meta charset="UTF-8">
     <title>Formulario Enfermedades Notificaion Inmediata</title>
     <style>
-        /* Estilos CSS para el PDF */
         body {
             font-family: Arial, sans-serif;
             background-color: #f2f2f2;
-            padding: 20px;
+            padding: 10px;
         }
 
         .form-container {
             background-color: #fff;
             border: 1px solid #ccc;
-            padding: 20px;
+            padding: 15px;
             margin-bottom: 20px;
+            margin-top:10px
         }
 
         .logo {
@@ -43,8 +43,9 @@
         }
 
         th, td {
-            padding: 10px;
+            padding: 5px;
             border: 1px solid #ccc;
+            font-size: 15px;
         }
 
         th {
@@ -52,6 +53,15 @@
             background-color: #f2f2f2;
         }
 
+        .signature-container {
+            text-align: center;
+            margin-top: 70px;
+            border-top: 2px solid #000;
+            height: 20px;
+            width: 50%;
+            margin-left: auto;
+            margin-right: auto;
+        }
         .footer {
         position: fixed;
         bottom: -20px;
@@ -68,58 +78,68 @@
 
     <h1>Hospital Daniel Bracamonte</h1>
     <h3>Departamento de Epidemiología Hospitalaria</h3>
-    <h4>Formulario de Enfermedades de Notificación Inmediata</h4>
+    <h4>Ficha de Enfermedades de Notificación Inmediata</h4>
     <div class="form-container">
+        <h5>DATOS PACIENTE</h5>
         <table>
             <tr>
                 <th>Nro. Formulario</th>
                 <td>{{ $formulario->id_f_notificacion_inmediata }}</td>
-            </tr>
-            <tr>
                 <th>Fecha</th>
                 <td>{{ $formulario->fecha }}</td>
             </tr>
             <tr>
-                <th>Nombre(s) del paciente</th>
-                <td>{{ $paciente->nombre_paciente }}</td>
-            </tr>
-            <tr>
-                <th>Apellido paterno</th>
-                <td>{{ $paciente->ap_paterno }}</td>
-            </tr>
-            <tr>
-                <th>Apellido materno</th>
-                <td>{{ $paciente->ap_materno }}</td>
+                <th>Paciente</th>
+                <td colspan="3">{{ $paciente->nombre_paciente }} {{ $paciente->ap_paterno }} {{ $paciente->ap_materno }}</td>
+
             </tr>
             <tr>
                 <th>Edad</th>
                 <td>{{ $paciente->edad }}</td>
-            </tr>
-            <tr>
                 <th>Sexo</th>
                 <td>{{ $paciente->sexo }}</td>
             </tr>
+        </table>
+    </div>
+    <div class="form-container">
+        <h5>LLENADO DEL FORMULARIO</h5>
+        <table>
             <tr>
                 <th>Servicio</th>
                 <td>{{ $servicio->nombre }}</td>
-            </tr>
-            <tr>
                 <th>Patología</th>
                 <td>{{ $patologia->nombre }}</td>
             </tr>
             <tr>
                 <th>Notificador</th>
                 <td>{{ $formulario->notificador }}</td>
+                <th>Firma Notificador</th>
+                <td></td>
             </tr>
             <tr>
                 <th>Acciones</th>
-                <td>{{ $formulario->acciones }}</td>
+                <td colspan="3">{{ $formulario->acciones }}</td>
             </tr>
             <tr>
                 <th>Observaciones</th>
-                <td>{{ $formulario->observaciones }}</td>
+                <td colspan="3">{{ $formulario->observaciones }}</td>
             </tr>
         </table>
+
+    </div>
+    <div class="form-container">
+        <h5>DATOS ENCARGADO LLENADO DE FICHA</h5>
+        <table>
+            <tr>
+                <th>Nombre:</th>
+                <td>Dr. {{ Auth::user()->persona->nombres }}</td>
+                <th>Cargo</th>
+                <td>{{ Auth::user()->profesion  }}</td>
+            </tr>
+        </table>
+    </div>
+    <div class="signature-container">
+        <h5>Dr. {{ Auth::user()->persona->nombres }}</h5>
     </div>
     <div class="footer">
         FECHA DE IMPRESIÓN: {{ $fechaHoraActual }}

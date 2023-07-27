@@ -1,7 +1,18 @@
 @extends('layout')
 @section('content')
-    <h1>Tipo Infeccion vista</h1>
+    <h1>Tipo Infeccion </h1>
     <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-6">
+              <div class="input-group">
+                <input type="text" name="query" class="form-control" placeholder="Buscar por nombre">
+                <button type="submit" class="btn btn-primary">Buscar</button>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <button class="btn btn-primary btn-insertar">Crear Tipo de infección</button>
+            </div>
+        </div>
         <div class="row">
           <div class="col">
             <table class="table table-hover align-middle">
@@ -25,9 +36,7 @@
                 @endforeach
               </tbody>
             </table>
-            <div class="text-center">
-              <button class="btn btn-primary btn-insertar">Crear Tipo de Infeccion</button>
-            </div>
+
           </div>
         </div>
     </div>
@@ -137,6 +146,34 @@
       $('#modalInsertar').modal('show');
     });
   });
+  $(document).ready(function() {
+        $('input[name="query"]').on('keyup', function() {
+            var query = $(this).val();
+
+            $.ajax({
+            url: '{{ route("tipo.search") }}',
+            method: 'GET',
+            data: { query: query },
+            success: function(response) {
+                actualizarTabla(response);
+            }
+            });
+        });
+        });
+
+
+        function actualizarTabla(data) {
+        var tbody = $('#tabla-bacterias');
+        tbody.empty();
+
+        $.each(data, function(index, tInfeccion) {
+            var row = $('<tr>');
+            row.append('<td class="text-center">' + tInfeccion.cod_tipo_infeccion + '</td>');
+            row.append('<td>' + tInfeccion.nombre + '</td>');
+            row.append('<td class="text-center">Acciones</td>');
+            tbody.append(row);
+        });
+        }
 </script>
 
 @endsection
