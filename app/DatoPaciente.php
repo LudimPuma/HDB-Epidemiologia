@@ -20,4 +20,12 @@ class DatoPaciente extends Model
         return $this->hasMany(FormularioEnfermedadesNotificacionInmediata::class);
     }
 
+    public function antibiogramas()
+    {
+        return $this->hasMany(Antibiograma::class,'n_h_clinico');
+    }
+    public function seleccionesTipoInfeccion()
+    {
+        return $this->hasMany(SeleccionTipoInfeccion::class,'n_h_clinico');
+    }
 }

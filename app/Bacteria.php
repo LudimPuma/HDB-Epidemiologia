@@ -12,10 +12,11 @@ class Bacteria extends Model
     public $timestamps = false;
     public function antibiogramas()
     {
-        return $this->hasMany(Antibiograma::class);
+        return $this->hasMany(Antibiograma::class, 'cod_bacterias');
     }
     public function medicamentos()
     {
         return $this->belongsToMany(Medicamento::class, 'BACTERIAS_MEDICAMENTOS', 'COD_BACTE', 'COD_MEDI');
     }
+
 }

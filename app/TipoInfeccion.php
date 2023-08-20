@@ -11,8 +11,12 @@ class TipoInfeccion extends Model
     protected $fillable=['nombre'];
     public $timestamps = false;
 
-    public function formulariosNotificacionesPacientes()
+    // public function formulariosNotificacionesPacientes()
+    // {
+    //     return $this->hasMany(FormularioNotificacionPaciente::class);
+    // }
+    public function seleccionesTipoInfeccion()
     {
-        return $this->hasMany(FormularioNotificacionPaciente::class);
+        return $this->hasMany(SeleccionTipoInfeccion::class, 'cod_tipo_infeccion');
     }
 }

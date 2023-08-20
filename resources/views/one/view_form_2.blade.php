@@ -11,7 +11,7 @@
 <div class="row">
     <div class="col-lg-4">
         <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#modalBusqueda">
-             <a href="" target="_Blank">Imprimir Formulario</a>
+             Imprimir Formulario
         </button>
     </div>
 </div>
@@ -111,23 +111,21 @@
 </div>
 
 
-<!-- Modal de selección de fechas REPORTE-->
+
+<!-- Modal reporte -->
 <div class="modal fade" id="modalreporte" tabindex="-1" role="dialog" aria-labelledby="modalreporte" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="modalreporte">Seleccionar Fechas para el Reporte</h5>
+                <h5 class="modal-title" id="modalreporte">Seleccionar Mes para el Reporte</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form action="{{ route('formulario.generar-reporte') }}" method="GET">
+                <form action="{{ route('formulario.generar') }}" method="POST" target="_blank">
+                    @csrf
                     <div class="form-group">
-                        <label for="fecha_inicio">Fecha de inicio:</label>
-                        <input type="date" id="fecha_inicio" name="fecha_inicio" class="form-control" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="fecha_fin">Fecha de fin:</label>
-                        <input type="date" id="fecha_fin" name="fecha_fin" class="form-control" required>
+                        <label for="fecha">Año:</label>
+                        <input type="month" id="fecha" name="fecha" value="{{date("Y-m")}}" class="form-control" required>
                     </div>
                     <div class="modal-footer">
                         <button type="submit" class="btn btn-primary">Generar Reporte</button>
@@ -139,8 +137,6 @@
     </div>
 </div>
 
-
-
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
 function enableGenerateButton(enabled) {
@@ -151,7 +147,7 @@ function searchPatient() {
     var patientId = document.getElementById('n_historial').value;
     // Realiza una solicitud Ajax al servidor
     $.ajax({
-        url: '{{ route("buscar-paciente_form_2") }}', // Ruta que manejará la búsqueda del paciente
+        url: '{{ route("buscar-paciente_form_2") }}',
         type: 'GET',
         data: { patientId: patientId },
         success: function(response) {
@@ -189,7 +185,7 @@ function searchPatient() {
         }
     });
 
-    // Restablecer los campos del modal a su estado inicial
+    // limpiar los campos del modal a su estado inicial
     function clearFields() {
         document.getElementById('n_historial').value = '';
         document.getElementById('nombre').value = '';
@@ -217,6 +213,17 @@ function searchPatient() {
         var url = "{{ route('formulario_Enf_Not_Inmediata') }}?patientId=" + encodeURIComponent(patientId) + "&nombreCompleto=" + encodeURIComponent(nombreCompleto);
         window.location.href = url;
 }
+
+    // Función para obtener el año actual
+    function getAnioActual() {
+        var now = new Date();
+        return now.getFullYear();
+    }
+    // asigna el año actual al campo del input
+    $('#modalreporte').on('show.bs.modal', function (event) {
+        var anioActual = getAnioActual();
+        $('#anio').val(anioActual);
+    });
 
 </script>
 

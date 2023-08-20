@@ -40,7 +40,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/buscar-formulario_1', 'FormularioNotificacionPacienteController@buscarFormularioPorHClinico')->name('buscar-form_1');
     Route::post('/guardar-datos-formulario_IAAS', 'FormularioNotificacionPacienteController@guardarDatos')->name('guardar_datos_form_IAAS');
 
-    Route::get('obtener-medicamentos/{id}', [FormularioNotificacionPacienteController::class, 'obtenerMedicamentos']);
+    Route::post('obtener-medicamentos/{id}', [FormularioNotificacionPacienteController::class, 'obtenerMedicamentos']);
 
 
     //FORMULARIO ENFERMEDADES DE NOTIFICACION INMEDIATA
@@ -53,7 +53,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/formulario_Enf_Not_Inmediata', 'FormularioEnfermedadesNotificacionInmediataController@mostrarFormulario')->name('formulario_Enf_Not_Inmediata');
     Route::post('/guardar-datos-formulario_Enf_Not_Inmediata', 'FormularioEnfermedadesNotificacionInmediataController@guardarDatos')->name('guardar_datos_form_Enf_Not_Inmediata');
 
-    Route::get('/formulario/generar-reporte', 'FormularioEnfermedadesNotificacionInmediataController@generarReporte')->name('formulario.generar-reporte');
+    Route::post('/formulario/generar-reporte', 'FormularioEnfermedadesNotificacionInmediataController@generar')->name('formulario.generar');
 
     Route::get('/principal', 'FormularioEnfermedadesNotificacionInmediataController@mostrarGrafica')->name('principal');
 

@@ -10,9 +10,9 @@ class Medicamento extends Model
     protected $primaryKey = 'cod_medicamento';
     protected $fillable=['nombre'];
     public $timestamps = false;
-    public function nivelesAntibiogramas()
+    public function antibiogramas()
     {
-        return $this->hasMany(NivelAntibiograma::class);
+        return $this->hasMany(Antibiograma::class, 'cod_medicamento');
     }
 
 }

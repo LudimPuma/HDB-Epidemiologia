@@ -1,5 +1,6 @@
 @extends('layout')
 @section('content')
+
 <section class="tab-components">
 <style>
 #tablaMedicamentos table {
@@ -14,6 +15,7 @@
   padding: 0.75rem;
   vertical-align: top;
   border-top: 1px solid #dee2e6;
+
 }
 
 #tablaMedicamentos th {
@@ -29,19 +31,34 @@
   }
 }
 
+.my-custom-table tbody td,
+.my-custom-table tbody th {
+    padding-top: 5px; /* Ajusta el valor según tu preferencia */
+    padding-bottom: 5px; /* Ajusta el valor según tu preferencia */
+}
+.my-custom-table tbody tr {
+    padding-top: 5px; /* Ajusta el valor según tu preferencia */
+    padding-bottom: 5px; /* Ajusta el valor según tu preferencia */
+}
 </style>
+<head>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+</head>
+
     <div class="container-fluid">
+        <h2>Formulario IAAS</h2>
         <div class="form-elements-wrapper">
-            <form method="POST" action="{{ route('guardar_datos_form_IAAS') }}">
+            <form method="POST" action="{{ route('guardar_datos_form_IAAS') }}" target="_blank">
                 @csrf
+                {{-- DATOS GENERALES --}}
                 <div class="card-style mb-30">
                     <h6 class="mb-25">Datos Generales</h6>
                     <div class="row">
                         <div class="col-lg-3">
                             <!-- Nro Historial -->
                             <div class="form-group input-style-1">
-                                <label for="nro_historial">N° Historial:</label>
-                                <input type="text" class="form-control" id="nro_historial" name="nro_historial" value="{{ $id }}" disabled>
+                                <label for="h_clinico">N° Historial:</label>
+                                <input type="text" class="form-control" id="h_clinico" name="h_clinico" value="{{ $id }}">
                             </div>
                         </div>
                         <div class="col-lg-6">
@@ -73,8 +90,9 @@
                                 <label for="servicio_inicio_sintomas">Servicio de inicio de síntomas:</label>
                                 <div class="select-position">
                                     <select class="form-control" id="servicio_inicio_sintomas" name="servicio_inicio_sintomas">
+                                        <option value="">Seleccionar</option>
                                         @foreach ($servicios as $servicio)
-                                        <option value="{{ $servicio->id }}">{{ $servicio->nombre }}</option>
+                                        <option value="{{ $servicio->cod_servicio }}">{{ $servicio->nombre }}</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -88,8 +106,9 @@
                                 <label for="servicio_notificador">Servicio notificador:</label>
                                 <div class="select-position">
                                     <select class="form-control" id="servicio_notificador" name="servicio_notificador">
+                                        <option value="">Seleccionar</option>
                                         @foreach ($servicios as $servicio)
-                                        <option value="{{ $servicio->id }}">{{ $servicio->nombre }}</option>
+                                        <option value="{{ $servicio->cod_servicio }}">{{ $servicio->nombre }}</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -111,7 +130,7 @@
                         </div>
                     </div>
                 </div>
-
+                {{-- DATOS DE LABORATORIO --}}
                 <div class="card-style mb-30">
                     <h6 class="mb-25">Datos de Laboratorio</h6>
                     <div class="row">
@@ -120,35 +139,25 @@
                             <div class="form-group select-style-1">
                                 <label for="tipo_infeccion">Tipo de infección Hopsitalaria:</label>
                                 <div class="select-position">
-                                    <select class="form-control" id="tipo_infeccion" name="tipo_infeccion" >
+                                    <select class="form-control" id="tipo_infeccion" name="tipo_infeccion">
+                                        <option value="">Seleccionar</option>
                                         @foreach ($tiposInfeccion as $tipoInfeccion)
-                                            <option value="{{ $tipoInfeccion->id }}">{{ $tipoInfeccion->nombre }}</option>
+                                            <option value="{{ $tipoInfeccion->cod_tipo_infeccion }}">{{ $tipoInfeccion->nombre }}</option>
                                         @endforeach
                                     </select>
                                 </div>
                             </div>
                         </div>
+
                         <div class="col-lg-2">
                             <!-- Campo para uso_antimicrobanos -->
                             <div class="form-group select-style-1">
                                 <label for="uso_antimicrobanos">Uso de antimicrobianos:</label>
                                 <div class="select-position">
                                     <select class="form-control" id="uso_antimicrobanos" name="uso_antimicrobanos" >
+                                        <option value="">Seleccionar</option>
                                         <option value="si">Sí</option>
                                         <option value="no">No</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-3">
-                            <!-- Campo para agente_causal -->
-                            <div class="form-group select-style-1">
-                                <label for="agente_causal">Agente causal:</label>
-                                <div class="select-position">
-                                    <select class="form-control" id="agente_causal" name="agente_causal" >
-                                        @foreach ($agentes as $agente)
-                                            <option value="{{ $agente->id }}">{{ $agente->nombre }}</option>
-                                        @endforeach
                                     </select>
                                 </div>
                             </div>
@@ -159,29 +168,69 @@
                                 <label for="tipo_muestra_cultivo">Tipo de muestra para cultivo:</label>
                                 <div class="select-position">
                                     <select class="form-control" id="tipo_muestra_cultivo" name="tipo_muestra_cultivo" >
+                                        <option value="">Seleccionar</option>
                                         @foreach ($tiposMuestra as $tipoMuestra)
-                                            <option value="{{ $tipoMuestra->id }}">{{ $tipoMuestra->nombre }}</option>
+                                            <option value="{{ $tipoMuestra->cod_tipo_muestra }}">{{ $tipoMuestra->nombre }}</option>
                                         @endforeach
                                     </select>
                                 </div>
                             </div>
                         </div>
+                        <div class="col-lg-3">
+                            <!-- Campo para procedimiento_invasivo -->
+                            <div class="form-group select-style-1">
+                                <label for="procedimiento_invasivo">Procedimiento invasivo:</label>
+                                <div class="select-position">
+                                    <select class="form-control" id="procedimiento_invasivo" name="procedimiento_invasivo" >
+                                        <option value="">Seleccionar</option>
+                                        @foreach ($procedimientosInmasivos as $procedimientoInvasivo)
+                                            <option value="{{ $procedimientoInvasivo->cod_procedimiento_invasivo }}">{{ $procedimientoInvasivo->nombre }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        {{-- <div class="col-lg-3">
+                            <!-- Campo para agente_causal -->
+                            <div class="form-group select-style-1">
+                                <label for="agente_causal">Agente causal:</label>
+                                <div class="select-position">
+                                    <select class="form-control" id="agente_causal" name="agente_causal">
+                                        <option value="">Seleccionar</option>
+                                        @foreach ($agentes as $agente)
+                                            <option value="{{ $agente->id }}">{{ $agente->nombre }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                        </div> --}}
+
                     </div>
+                    {{-- TABLA DE TIPO INFECCION --}}
+                    <div id="tablaDatosSeleccionados"></div>
+                    {{-- INPUT INVISIBLE QUE ALMACENA LOS TIPOS DE INFECCION --}}
+                    <input type="hidden" id="infecciones_seleccionadas" name="infecciones_seleccionadas">
+
                     <div class="row">
                         <div class="col-lg-4">
                             <!-- Desplegable para seleccionar bacterias -->
-                            <div class="form-group">
+                            <div class="form-group select-style-1">
                                 <label for="bacteria">Bacteria:</label>
-                                <select id="bacteria" name="bacteria" onchange="cargarMedicamentos()">
-                                    <option value="">Seleccione una bacteria</option>
-                                    @foreach ($bacterias as $bacteria)
-                                        <option value="{{ $bacteria->cod_bacterias }}">{{ $bacteria->nombre }}</option>
-                                    @endforeach
-                                </select>
+                                <div class="select-position">
+                                    <select class="form-control" id="bacteria" name="bacteria" onchange="cargarMedicamentos()">
+                                        <option value="">Seleccione una bacteria</option>
+                                        @foreach ($bacterias as $bacteria)
+                                            <option value="{{ $bacteria->cod_bacterias }}">{{ $bacteria->nombre }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
                             </div>
                         </div>
-                        <div id="tablaMedicamentos"></div>
-
+                        {{-- INPUT OCULTO QUE ALMACENA LA INFORMACION DEL ANTIBIOGRAMA --}}
+                        <input type="hidden" id="informacion_bacterias_input" name="informacion_bacterias_input">
+                        <div>
+                            <p id="conteoMedicamentos">Cantidad de medicamentos para esta bacteria: 0</p>
+                        </div>
                         <div class="col-lg-4">
                             <!-- Desplegable para seleccionar medicamentos -->
                             <div class="form-group">
@@ -191,22 +240,11 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="col-lg-4">
-                            <!-- Campo para procedimiento_invasivo -->
-                            <div class="form-group select-style-1">
-                                <label for="procedimiento_invasivo">Procedimiento invasivo:</label>
-                                <div class="select-position">
-                                    <select class="form-control" id="procedimiento_invasivo" name="procedimiento_invasivo" >
-                                        @foreach ($procedimientosInmasivos as $procedimientoInvasivo)
-                                            <option value="{{ $procedimientoInvasivo->id }}">{{ $procedimientoInvasivo->nombre }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
+                        <div id="tablaDatosGuardados"></div>
+
                     </div>
                 </div>
-
+                {{-- DATOS EPIDEMIOLOGICOS --}}
                 <div class="card-style mb-30">
                     <h6 class="mb-25">Datos Epidemiologico</h6>
                     <div class="row">
@@ -223,6 +261,7 @@
                                 <label for="aislamiento">Aislamiento:</label>
                                 <div class="select-position">
                                     <select class="form-control" id="aislamiento" name="aislamiento" >
+                                        <option value="">Seleccionar</option>
                                         <option value="si">Sí</option>
                                         <option value="no">No</option>
                                     </select>
@@ -251,108 +290,403 @@
             </form>
         </div>
     </div>
-</section>
 
+
+<!-- Modal para mostrar el nombre de la bacteria y la tabla de medicamentos -->
+<div class="modal fade" id="bacteriaModal" tabindex="-1" role="dialog" aria-labelledby="bacteriaModalLabel" aria-hidden="true">
+    <div class="modal-dialog " role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="bacteriaModalLabel"></h5> <!-- Cambiado el título aquí -->
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="tablaMedicamentosModal"></div> <!-- Nuevo div para la tabla -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="btnGuardar" data-bs-dismiss="modal">Guardar</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/luxon/2.1.0/luxon.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+{{-- SCRIPT MODAL --}}
 <script>
-function cargarMedicamentos() {
-  var bacteriaId = document.getElementById('bacteria').value;
-  var medicamentoSelect = document.getElementById('medicamento');
+var bacteriaSeleccionada;
+// Cuando el documento está listo
+$(document).ready(function() {
+    // Obtener el select de las bacterias
+    var selectBacterias = $('#bacteria');
 
-  // Limpiar opciones anteriores
-  medicamentoSelect.innerHTML = '<option value="">Cargando medicamentos...</option>';
+    // Cuando se cambia la opción seleccionada en el select
+    selectBacterias.on('change', function() {
+        // Obtener el nombre de la bacteria seleccionada
+        bacteriaSeleccionada = selectBacterias.find('option:selected').text();
 
-    $.ajax({
-        url:"{{url('obtener-medicamentos')}}/"+bacteriaId,
-        type:'GET',
-        data:bacteriaId,
-        success:function(data){
-            console.log(data.medicamentos);
-            medicamentoSelect.innerHTML = '<option value="">Seleccione un medicamento</option>';
-            data.medicamentos.forEach(function(medicamento) {
-            var option = document.createElement('option');
-            option.value = medicamento.cod_medicamento;
-            option.textContent = medicamento.nombre;
-            medicamentoSelect.appendChild(option);
-       });
-        }
-      });
+        // Cambiar el título del modal
+        $('#bacteriaModalLabel').text('Antibiograma: ' + bacteriaSeleccionada);
 
+        // Abrir el modal
+        $('#bacteriaModal').modal('show');
+
+        // Cargar los medicamentos para la bacteria seleccionada
+        cargarMedicamentos();
+    });
+});
+</script>
+
+{{-- SCRIPT COMPLETO PARA ABRIR EL MODAL CON LOS MEDICAMENTOS DE CADA BACTERIA, CREAR LA TABLA DINAMICA Y ELIMINAR SI ES NECESARIO DE LA TABLA DINAMICA--}}
+<script>
+var medicamentosSeleccionadosGlobal = [];
+var medicamentosSeleccionados = {};
+var informacionBacterias = {};
+var medicamentosSeleccionadosPK = {};
 
 // function cargarMedicamentos() {
+//   var bacteriaSelect = document.getElementById('bacteria');
 //   var bacteriaId = document.getElementById('bacteria').value;
+//   var medicamentoSelect = document.getElementById('medicamento');
+//   var conteoMedicamentos = document.getElementById('conteoMedicamentos');
+//   //var tablaMedicamentos = document.getElementById('tablaMedicamentos');
+//   var nombreBacteriaModal = document.getElementById('nombreBacteriaModal'); // Elemento para mostrar el nombre de la bacteria
+//   // Limpiar opciones anteriores
 
-//   $.ajax({
-//     url: "{{url('obtener-medicamentos')}}/" + bacteriaId,
-//     type: 'GET',
-//     data: bacteriaId,
-//     success: function(data) {
-//       var medicamentos = data.medicamentos;
-//       var tablaMedicamentos = document.getElementById('tablaMedicamentos');
-//       tablaMedicamentos.innerHTML = ''; // Limpiar contenido anterior
+//   medicamentoSelect.innerHTML = '<option value="">Cargando medicamentos...</option>';
 
-//       // Crear la tabla
-//       var table = document.createElement('table');
-//       table.classList.add('table'); // Agrega la clase 'table' de Bootstrap para el estilo
+//     $.ajax({
+//         url:"{{url('obtener-medicamentos')}}/"+bacteriaId,
+//         type:'GET',
+//         data:bacteriaId,
+//         success:function(data){
+//             //console.log(data.medicamentos);
+//             medicamentoSelect.innerHTML = '<option value="">Seleccione un medicamento</option>';
+//             data.medicamentos.forEach(function(medicamento) {
+//             var option = document.createElement('option');
+//             option.value = medicamento.cod_medicamento;
+//             option.textContent = medicamento.nombre;
+//             medicamentoSelect.appendChild(option);
+//        });
+//         // Mostrar el conteo de medicamentos
+//         conteoMedicamentos.textContent = 'Cantidad de medicamentos para esta bacteria: ' + data.medicamentos.length;
+//         //nombreBacteriaModal.textContent = 'Nombre de la bacteria seleccionada: ' + data.nombreBacteria; // Mostrar el nombre de la bacteria
+//         // Almacenar los medicamentos en la variable global
+//         medicamentosSeleccionadosGlobal = data.medicamentos;
+//         // Limpiar el objeto de medicamentos seleccionados
+//         //medicamentosSeleccionados = {};
+//         // Generar la tabla con las columnas dinámicas
+//         //console.log(medicamentosSeleccionadosGlobal);
+//         var tablaHTML = generarTablaMedicamentos(data.medicamentos);
+//         $('#tablaMedicamentosModal').html(tablaHTML); // Asignar la tabla al div dentro del modal
+//          // Generar la tabla con las columnas dinámicas
+//         //tablaMedicamentos.innerHTML = generarTablaMedicamentos(data.medicamentos);
+//         bacteriaSelect.value = '';
+//         //---------------------------------------------------------------------------
+//         // var medicamentosPK = {};
+//         // data.medicamentos.forEach(function (medicamento) {
+//         //     medicamentosPK[medicamento.nombre] = medicamento.cod_medicamento;
+//         // });
 
-//       // Crea la fila de encabezado con los nombres de los medicamentos
-//       var thead = document.createElement('thead');
-//       var encabezadoRow = document.createElement('tr');
-//       medicamentos.forEach(function(medicamento) {
-//         var th = document.createElement('th');
-//         th.textContent = medicamento.nombre;
-//         encabezadoRow.appendChild(th);
-//       });
-//       thead.appendChild(encabezadoRow);
-//       table.appendChild(thead);
-
-//       // Crea las filas para resistente, intermedio y sensible
-//       var tbody = document.createElement('tbody');
-//       ['Resistente', 'Intermedio', 'Sensible'].forEach(function(categoria) {
-//         var fila = document.createElement('tr');
-//         medicamentos.forEach(function(medicamento) {
-//           var td = document.createElement('td');
-//           // Aquí puedes agregar la lógica para obtener los valores correspondientes a cada medicamento y categoría
-//           td.textContent = obtenerValor(medicamento.cod_medicamento, categoria);
-//           fila.appendChild(td);
-//         });
-//         tbody.appendChild(fila);
-//       });
-//       table.appendChild(tbody);
-
-//       // Agrega la tabla al contenedor
-//       tablaMedicamentos.appendChild(table);
-//     }
-//   });
+//         // informacionBacteriasPK[bacteriaSeleccionada] = medicamentosPK;
+//         // console.log(informacionBacteriasPK);
+//         //---------------------------------------------------------------------------
+//         }
+//       });
 // }
+var bacteriaMedicamentoRelacionado = {}; // Variable global para almacenar la relación entre bacteria y medicamentos
+//var bacteriasSeleccionadasPK = {};
 
 
+var medicamentosSeleccionadosGlobal = [];
+var bacteriasSeleccionadasGlobal = []; // aquí almacenarás las bacterias
+var bacteriaSeleccionadaPK;
+var nombresBacterias = {};
+var nombresMedicamentos = {};
+function cargarMedicamentos() {
+    var bacteriaSelect = document.getElementById('bacteria');
+    var bacteriaId = document.getElementById('bacteria').value;
+    var medicamentoSelect = document.getElementById('medicamento');
+    var conteoMedicamentos = document.getElementById('conteoMedicamentos');
+    var nombreBacteriaModal = document.getElementById('nombreBacteriaModal');
+    medicamentoSelect.innerHTML = '<option value="">Cargando medicamentos...</option>';
+    var csrfToken = $('meta[name="csrf-token"]').attr('content');
+    $.ajax({
+        url: "{{url('obtener-medicamentos')}}/" + bacteriaId,
+        type: 'POST',
+        data: {
+                bacteriaId,
+                _token: csrfToken // Agregar el token CSRF
+        },
+        success: function(data) {
+            medicamentoSelect.innerHTML = '<option value="">Seleccione un medicamento</option>';
+
+           // console.log(data.medicamentos);
+            data.medicamentos.forEach(function(medicamento) {
+                var option = document.createElement('option');
+                option.value = medicamento.cod_medicamento;
+                option.textContent = medicamento.nombre;
+                medicamentoSelect.appendChild(option);
+
+                });
+
+                // Almacenar la PK de la bacteria seleccionada
+                bacteriaSeleccionadaPK = bacteriaId;
+                // Crear objetos de mapeo para medicamentos y bacterias
+
+                data.medicamentos.forEach(function (medicamento) {
+                    nombresMedicamentos[medicamento.cod_medicamento] = medicamento.nombre;
+                });
 
 
+                data.bacterias.forEach(function (bacteria) {
+                    nombresBacterias[bacteria.cod_bacterias] = bacteria.nombre;
+                });
 
-//   // Realizar solicitud AJAX para obtener los medicamentos
-//   fetch('/obtener-medicamentos?bacteriaId=' + bacteriaId)
-//     .then(function(response) {
-//       return response.json();
-//     })
-//     .then(function(data) {
-//         console.log(data);
-//       // Limpiar opciones anteriores y agregar las nuevas opciones de medicamentos
-//       medicamentoSelect.innerHTML = '<option value="">Seleccione un medicamento</option>';
-//       data.medicamentos.forEach(function(medicamento) {
-//         var option = document.createElement('option');
-//         option.value = medicamento.id;
-//         option.textContent = medicamento.nombre;
-//         medicamentoSelect.appendChild(option);
-//       });
-//     })
-//     .catch(function(error) {
-//       console.error('Error al obtener los medicamentos:', error);
-//     });
+            // });
+
+            // Mostrar el conteo de medicamentos
+            conteoMedicamentos.textContent = 'Cantidad de medicamentos para esta bacteria: ' + data.medicamentos.length;
+            medicamentosSeleccionadosGlobal = data.medicamentos;
+            bacteriasSeleccionadasGlobal = data.bacterias;
+
+            var tablaHTML = generarTablaMedicamentos(data.medicamentos);
+            $('#tablaMedicamentosModal').html(tablaHTML); // Asignar la tabla al div dentro del modal
+            bacteriaSelect.value = '';
+
+        }
+      });
+}
+
+function generarTablaMedicamentos(medicamentos) {
+  var tablaHTML = '<table class="table table-bordered my-custom-table" style="text-align: center; border-collapse: collapse;">';
+  tablaHTML += '<thead class="table-primary"><tr><th>Medicamento</th><th>Nivel de Resistencia</th></tr></thead>';
+  tablaHTML += '<tbody>';
+
+  // Agregar filas para cada medicamento
+  medicamentos.forEach(function(medicamento, indexMedicamento) {
+    tablaHTML += '<tr>';
+    tablaHTML += '<td>' + medicamento.nombre + '</td>';
+    tablaHTML += '<td>';
+    tablaHTML += '<select class="nivel-select-small" id="nivel-' + medicamento.cod_medicamento + '">';
+    // tablaHTML += '<select class="nivel-select-small ">';
+    tablaHTML += '<option value="" >Seleccione un nivel</option>';
+    tablaHTML += '<option value="Resistente">Resistente</option>';
+    tablaHTML += '<option value="Intermedio">Intermedio</option>';
+    tablaHTML += '<option value="Sensible">Sensible</option>';
+    tablaHTML += '</select>';
+    tablaHTML += '</td>';
+    tablaHTML += '</tr>';
+  });
+
+  tablaHTML += '</tbody>';
+  tablaHTML += '</table>';
+
+  return tablaHTML;
 }
 
 
+
+
+$('#btnGuardar').click(function () {
+    var medicamentosSeleccionados = {};
+
+    var rows = document.getElementById('tablaMedicamentosModal').getElementsByTagName('tr');
+for (var i = 1; i < rows.length; i++) {
+        var medicamento = medicamentosSeleccionadosGlobal[i - 1];
+        var nivelSelect = rows[i].querySelector('.nivel-select-small');
+        var nivelSeleccionado = nivelSelect.value;
+
+        if (nivelSeleccionado !== "") {
+            // Guardar directamente la PK del medicamento en lugar del nombre
+            medicamentosSeleccionados[medicamento.cod_medicamento] = nivelSeleccionado;
+        }
+    }
+
+    // Almacena los medicamentos seleccionados para la bacteria actual
+    informacionBacterias[bacteriaSeleccionadaPK] = medicamentosSeleccionados;
+
+    // Actualiza bacteriaMedicamentoRelacionado solo con los medicamentos seleccionados
+    if (!bacteriaMedicamentoRelacionado[bacteriaSeleccionadaPK]) {
+        bacteriaMedicamentoRelacionado[bacteriaSeleccionadaPK] = {};
+    }
+
+    Object.keys(medicamentosSeleccionados).forEach(function (codMedicamento) {
+        var nivel = medicamentosSeleccionados[codMedicamento];
+
+        bacteriaMedicamentoRelacionado[bacteriaSeleccionadaPK][codMedicamento] = {
+            nivel: nivel
+        };
+    });
+
+    // Llamar a generarTablaBacterias después de actualizar la variable
+    var tablaHTML = generarTablaBacterias(informacionBacterias);
+    $('#tablaDatosGuardados').html(tablaHTML);
+    actualizarInputOculto();
+});
+
+// Función para generar la tabla de bacterias
+function generarTablaBacterias(informacionBacterias) {
+    var tablaHTML = '<table class="table table-bordered my-custom-table" style="text-align: center; border-collapse: collapse;">';
+    tablaHTML += '<thead class="table-primary"><tr><th>Bacterias</th><th>Medicamento</th><th>Nivel de Resistencia</th><th>Opciones</th></tr></thead>';
+    tablaHTML += '<tbody>';
+
+    Object.keys(informacionBacterias).forEach(function (bacteriaPK) {
+        var medicamentosSeleccionados = informacionBacterias[bacteriaPK];
+        var bacteriaRows = countBacteriaRows(medicamentosSeleccionados);
+
+        tablaHTML += '<tr>';
+        tablaHTML += '<td rowspan="' + bacteriaRows + '">' + convertirPKANombre(bacteriaPK, 'bacteria') + '</td>';
+
+        var primeraFila = true;
+
+        Object.keys(medicamentosSeleccionados).forEach(function (medicamentoPK) {
+            if (!primeraFila) {
+                tablaHTML += '<tr>';
+            }
+
+            tablaHTML += '<td>' + convertirPKANombre(medicamentoPK, 'medicamento') + '</td>';
+            tablaHTML += '<td>' + medicamentosSeleccionados[medicamentoPK] + '</td>';
+
+            if (primeraFila) {
+                tablaHTML += '<td rowspan="' + bacteriaRows + '"><button class="btn btn-danger btn-sm" onclick="eliminarBacteria(\'' + bacteriaPK + '\')"><i class="lni lni-trash-can"></i></button></td>';
+                primeraFila = false;
+            }
+
+            tablaHTML += '</tr>';
+        });
+    });
+
+    tablaHTML += '</tbody>';
+    tablaHTML += '</table>';
+    console.log(informacionBacterias);
+    return tablaHTML;
+}
+function countBacteriaRows(medicamentosSeleccionados) {
+    return Object.keys(medicamentosSeleccionados).length;
+}
+
+$('#tablaDatosGuardados').on('click', '.lni-trash-can', function () {
+    var bacteriaAEliminar = $(this).data('bacteria');
+    eliminarBacteria(bacteriaAEliminar);
+});
+
+function eliminarBacteria(bacteria) {
+    delete informacionBacterias[bacteria];
+    // console.log(informacionBacterias);
+    var tablaHTML = generarTablaBacterias(informacionBacterias);
+    $('#tablaDatosGuardados').html(tablaHTML);
+    actualizarInputOculto();
+}
+
+// Función para convertir PK a nombres
+function convertirPKANombre(pk, tipo) {
+    var nombres = tipo === 'bacteria' ? nombresBacterias : nombresMedicamentos;
+    return nombres[pk] || 'Nombre no encontrado';
+}
+// Función para actualizar el input oculto con la información actualizada
+function actualizarInputOculto() {
+    var informacionAntibiogramaArray = [];
+
+    Object.keys(informacionBacterias).forEach(function (bacteriaPK) {
+        var medicamentosSeleccionados = informacionBacterias[bacteriaPK];
+
+        Object.keys(medicamentosSeleccionados).forEach(function (medicamentoPK) {
+            var nivel = medicamentosSeleccionados[medicamentoPK];
+            informacionAntibiogramaArray.push([bacteriaPK, medicamentoPK, nivel]);
+        });
+    });
+
+    // Construir la cadena de datos actualizada
+    var informacionAntibiogramaString = informacionAntibiogramaArray.map(function(registro) {
+        return registro.join(",");
+    }).join("\n");
+
+    // Actualizar el valor del input oculto
+    $('#informacion_bacterias_input').val(informacionAntibiogramaString);
+}
+
 </script>
 
+
+
+
+
+
+{{-- SCRIPT PARA LA FECHA ACTUAL EN EL INPUT --}}
+<script>
+  // Función para obtener la fecha actual en la zona horaria de Bolivia (GMT-4)
+  function getCurrentDateInBolivia() {
+    return luxon.DateTime.local().setZone('America/La_Paz').toISODate();
+  }
+
+  // Obtener el elemento input de fecha por su ID
+  const fechaInput = document.getElementById('fecha_llenado');
+
+  // Establecer la fecha actual en la zona horaria de Bolivia como valor predeterminado del campo de fecha
+  fechaInput.value = getCurrentDateInBolivia();
+
+</script>
+
+
+
+
+
+
+
+{{-- TABLA TIPO INFECCION --}}
+<script>
+$('#tipo_infeccion').on('change', function () {
+    var infeccionSeleccionada = $(this).val();
+    if (infeccionSeleccionada) {
+        agregarInfeccionTabla(infeccionSeleccionada);
+    }
+});
+
+var infeccionesSeleccionadas = [];
+var tiposInfeccionMap = {}; // Objeto para mapear códigos de infección a nombres
+
+@foreach ($tiposInfeccion as $tipoInfeccion)
+    tiposInfeccionMap["{{ $tipoInfeccion->cod_tipo_infeccion }}"] = "{{ $tipoInfeccion->nombre }}";
+@endforeach
+
+function agregarInfeccionTabla(infeccion) {
+    if (!infeccionesSeleccionadas.includes(infeccion)) {
+        infeccionesSeleccionadas.push(infeccion);
+        actualizarTabla();
+        // Actualizar el campo oculto con las infecciones seleccionadas
+        $('#infecciones_seleccionadas').val(JSON.stringify(infeccionesSeleccionadas));
+    }
+}
+
+function actualizarTabla() {
+    var tablaHTML = '<table class="table table-bordered my-custom-table" style="text-align: center; border-collapse: collapse;">';
+    tablaHTML += '<thead class="table-primary"><tr><th>Tipo de Infección</th><th>Opciones</th></tr></thead>';
+    tablaHTML += '<tbody>';
+
+    infeccionesSeleccionadas.forEach(function (infeccion) {
+        var nombreInfeccion = tiposInfeccionMap[infeccion];
+        tablaHTML += '<tr>';
+        tablaHTML += '<td>' + nombreInfeccion + '</td>';
+        tablaHTML += '<td><button class="btn btn-danger btn-sm" onclick="eliminarInfeccion(\'' + infeccion + '\')"><i class="lni lni-trash-can"></i></button></td>';
+        tablaHTML += '</tr>';
+    });
+
+    tablaHTML += '</tbody>';
+    tablaHTML += '</table>';
+
+    $('#tablaDatosSeleccionados').html(tablaHTML);
+    console.log(infeccionesSeleccionadas);
+}
+
+function eliminarInfeccion(infeccion) {
+    var index = infeccionesSeleccionadas.indexOf(infeccion);
+    if (index !== -1) {
+        infeccionesSeleccionadas.splice(index, 1);
+        actualizarTabla();
+    }
+
+}
+</script>
 @endsection
 

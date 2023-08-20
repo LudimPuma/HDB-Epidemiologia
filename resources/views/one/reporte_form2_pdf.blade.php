@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <title>Reporte PDF</title>
     <style>
-        /* Estilos CSS para el PDF */
         body {
             font-family: Arial, sans-serif;
         }
@@ -22,24 +21,33 @@
     </style>
 </head>
 <body>
-    <h1>Reporte PDF</h1>
+    <h1>Reporte Enfermedades de Notificación Inmediata</h1>
+    <p>Mes: {{ $nombreMesSeleccionado }} de {{ $anioSeleccionado }}</p>
     <table>
         <thead>
             <tr>
-                <th>ID</th>
-                <th>Nombre</th>
-
+                <th>Patología</th>
+                <th>Total de casos</th>
             </tr>
         </thead>
         <tbody>
-            {{-- @foreach ($reporte as $item)
+            @foreach ($conteoCombinado as $conteo)
+            <tr>
+                <td>{{ $conteo['patologia'] }}</td>
+                <td>{{ $conteo['total_casos'] }}</td>
+            </tr>
+            @endforeach
+            {{-- @foreach ($conteoPorPatologia as $patologia)
                 <tr>
-                    <td>{{ $item->id_f_notificacion_inmediata }}</td>
-                    <td>{{ $item->nombre }}</td>
-
+                    <td>{{ $patologia->patologia }}</td>
+                    <td>{{ $patologia->total_casos }}</td>
                 </tr>
             @endforeach --}}
         </tbody>
     </table>
+
+
+
+
 </body>
 </html>

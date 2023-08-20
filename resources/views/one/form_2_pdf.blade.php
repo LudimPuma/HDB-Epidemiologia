@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Formulario Enfermedades Notificaion Inmediata</title>
+    <title>Formulario Enfermedades Notificacion Inmediata</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -67,14 +67,15 @@
         bottom: -20px;
         left: 0;
         right: 0;
-        text-align: center;
+        text-align: right;
         font-size: 10px;
         }
     </style>
 </head>
 <body>
-    <img src="{{ asset('img/logo_HDB.png') }}" alt="logo_icono" class="logo">
-
+    <img src="img/logo.png" alt="logo_icono" class="logo">
+    <img src="img/logo1.png" class="img-fluid profile-image-pic img-thumbnail rounded-circle my-3"
+    width="50px" alt="profile">
 
     <h1>Hospital Daniel Bracamonte</h1>
     <h3>Departamento de Epidemiología Hospitalaria</h3>
