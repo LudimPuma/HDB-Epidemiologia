@@ -15,9 +15,13 @@ class FormularioEnfermedadesNotificacionInmediata extends Model
         return $this->belongsTo(DatoPaciente::class,'h_clinico');
     }
 
-    public function patologia()
+    // public function patologia()
+    // {
+    //     return $this->belongsTo(Patologia::class,'cod_pato');
+    // }
+    public function SeleccionPatologia()
     {
-        return $this->belongsTo(Patologia::class,'cod_pato');
+        return $this->hasMany(SeleccionPatologia::class,'id_f_notificacion_inmediata');
     }
     public function servicio()
     {

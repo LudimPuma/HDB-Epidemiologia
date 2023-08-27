@@ -28,4 +28,8 @@ class DatoPaciente extends Model
     {
         return $this->hasMany(SeleccionTipoInfeccion::class,'n_h_clinico');
     }
+    public function seleccionesPatologia()
+    {
+        return $this->hasMany(SeleccionPatologia::class,'n_h_clinico');
+    }
 }

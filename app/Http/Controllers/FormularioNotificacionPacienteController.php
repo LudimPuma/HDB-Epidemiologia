@@ -22,7 +22,7 @@ class FormularioNotificacionPacienteController extends Controller
 
     public function showViewForm()
     {
-        return view('one.view_form_1');
+        return view('Form_IAAS.view_form_1');
     }
     public function searchHistorial(Request $request)
     {
@@ -58,10 +58,11 @@ class FormularioNotificacionPacienteController extends Controller
         //$agentes = Agente::all();
         $tiposMuestra = TipoMuestra::all();
         $bacterias = Bacteria::all();
+        $fechaActual = Carbon::now('America/La_Paz')->format('Y-m-d');
         //$nivelesAntibiograma = NivelAntibiograma::with('medicamento')->get();
 
         // Pasa los datos a la vista del formulario
-        return view('one.formulario1', compact('id','nombre', 'datosPacientes', 'bacterias','servicios', 'tiposInfeccion', 'procedimientosInmasivos', 'tiposMuestra'));
+        return view('Form_IAAS.formulario_IAAS', compact('id','nombre', 'datosPacientes', 'bacterias','servicios', 'tiposInfeccion', 'procedimientosInmasivos', 'tiposMuestra','fechaActual'));
     }
     public function obtenerMedicamentos($id)
     {
@@ -74,7 +75,7 @@ class FormularioNotificacionPacienteController extends Controller
             ->select('epidemiologia.medicamentos.*')
             ->get();
 
-        $bacterias = DB::table('epidemiologia.bacterias') // Aquí debes adaptar a tu estructura de datos
+        $bacterias = DB::table('epidemiologia.bacterias')
             ->where('cod_bacterias', $bacteriaId)
             ->get();
 
@@ -103,7 +104,28 @@ class FormularioNotificacionPacienteController extends Controller
         'aislamiento' => 'required',
         'seguimiento' => 'required',
         'observacion' => 'required',
-    ]);
+        'informacion_bacterias_input' => 'required',
+        'infecciones_seleccionadas'=> 'required',
+    ],
+    [
+        'h_clinico.required'=> 'El Nro. Clinico no puede estar vacio',
+        'fecha_llenado.required'=> 'La fecha de llenado no puede estar vacio',
+        'fecha_ingreso.required'=> 'La fecha de ingreso del paciente no puede estar vacio',
+        'servicio_inicio_sintomas.required'=> 'El servicio de inicio de sintomas no puede estar vacio',
+        'servicio_notificador.required'=> 'El servicio notificador no puede estar vacio',
+        'diagnostico_ingreso.required' => 'El diagnostico de ingreso no puede estar vacio',
+        'diagnostico_sala.required' => 'El diagnostico de sala no puede estar vacio',
+        'uso_antimicrobanos.required'=> 'Este campo no puede estar vacio',
+        'tipo_muestra_cultivo.required'=> 'Tipo de muestra cultivo no puede estar vacio',
+        'procedimiento_invasivo.required'=> 'Procedimiento invasivo no puede estar vacio',
+        'medidas_tomar.required'=> 'Medidas a tomar no puede estar vacio',
+        'aislamiento.required'=> 'No puede estar vacio',
+        'seguimiento.required'=> 'El seguimiento no puede estar vacio',
+        'observacion.required'=> 'La observacion no puede estar vacio',
+        // 'informacion_bacterias_input.required'=> ' no puede estar vacio',
+        // 'infecciones_seleccionadas.required'=> ' no puede estar vacio',
+    ]
+    );
 
     // Crear una nueva instancia del modelo FormularioNotificacionPaciente
     $formulario = new FormularioNotificacionPaciente();
@@ -227,7 +249,7 @@ class FormularioNotificacionPacienteController extends Controller
         'fecha_llenado' => $request->input('fecha_llenado'),
         'fecha_ingreso' => $request->input('fecha_ingreso'),
         'servicio_inicio_sintomas' => Servicio::where('cod_servicio',$request->input('servicio_inicio_sintomas'))->first(),
-        'servicio_notificador' => $request->input('servicio_notificador'),
+        'servicio_notificador' => Servicio::where('cod_servicio',$request->input('servicio_notificador'))->first(),
         'diagnostico_ingreso' => $request->input('diagnostico_ingreso'),
         'diagnostico_sala' => $request->input('diagnostico_sala'),
         'nombresTiposInfeccion' => $nombresTiposInfeccion,
@@ -235,8 +257,6 @@ class FormularioNotificacionPacienteController extends Controller
         'tipo_muestra_cultivo' => TipoMuestra::where('cod_tipo_muestra',$request->input('tipo_muestra_cultivo'))->first(),
         'procedimiento_invasivo' => ProcedimientoInmasivo::where('cod_procedimiento_invasivo',$request->input('procedimiento_invasivo'))->first(),
         'datosAntibiograma' => $datosAntibiograma,
-        // 'nombresBacterias' => $nombresBacterias,
-        // 'nombresMedicamentos' => $nombresMedicamentos,
         'medidas_tomar' => $request->input('medidas_tomar'),
         'aislamiento' => $request->input('aislamiento'),
         'seguimiento' => $request->input('seguimiento'),
@@ -244,7 +264,7 @@ class FormularioNotificacionPacienteController extends Controller
         'fechaHoraActual'  => $fechaHoraActual,
     ];
     // Generar el contenido del PDF a partir de la vista del formulario
-    $pdf = PDF::loadView('one.pdf.form_IAAS', $data);
+    $pdf = PDF::loadView('Form_IAAS.PDF.form_IAAS', $data);
 
     // // Opcional: Establecer opciones de estilo para el PDF
     // $pdf->setOptions([
@@ -270,68 +290,114 @@ class FormularioNotificacionPacienteController extends Controller
     //return redirect()->route('principal')->with('success', 'Los datos han sido guardados exitosamente.');
     }
 
-
-
-    public function generarPDF($codigoFormulario, $nombresTiposInfeccion, $nombresBacterias, $nombresMedicamentos)
+    public function tabla()
     {
-    $formulario = FormularioNotificacionPaciente::find($codigoFormulario);
-    if (!$formulario) {
-        // El formulario no existe, puedes mostrar un mensaje de error o redirigir a otra página
-        return redirect()->back()->with('error', 'No se encontró el formulario solicitado.');
-    }
-    $h_clinico = $formulario->h_clinico;
-    $fecha_llenado = $formulario->fecha_llenado;
-    $fecha_ingreso = $formulario->fecha_ingreso;
-    $servicio_inicio_sintomas = $formulario->servicio_inicio_sintomas;
-    $servicio_notificador = $formulario->servicio_notificador;
-    $diagnostico_ingreso = $formulario->diagnostico_ingreso;
-    $diagnostico_sala = $formulario->diagnostico_sala;
-    $uso_antimicrobanos = $formulario->uso_antimicrobanos;
-    $tipo_muestra_cultivo = $formulario->tipo_muestra_cultivo;
-    $procedimiento_invasivo = $formulario->procedimiento_invasivo;
-    $medidas_tomar = $formulario->medidas_tomar;
-    $aislamiento = $formulario->aislamiento;
-    $seguimiento = $formulario->seguimiento;
-    $observacion = $formulario->observacion;
-
-    // Obtener la fecha y hora actual en horario de Bolivia
-    $fechaHoraActual = Carbon::now('America/La_Paz')->format('d/m/Y H:i:s');
-
-    $data = [
-        'h_clinico' => $h_clinico,
-        'fecha_llenado' => $fecha_llenado,
-        'fecha_ingreso' => $fecha_ingreso,
-        'servicio_inicio_sintomas' => $servicio_inicio_sintomas,
-        'servicio_notificador' => $servicio_notificador,
-        'diagnostico_ingreso' => $diagnostico_ingreso,
-        'diagnostico_sala' => $diagnostico_sala,
-        'nombresTiposInfeccion' => $nombresTiposInfeccion,
-        'uso_antimicrobanos' => $uso_antimicrobanos,
-        'tipo_muestra_cultivo' => $tipo_muestra_cultivo,
-        'procedimiento_invasivo' => $procedimiento_invasivo,
-        'nombresBacterias' => $nombresBacterias,
-        'nombresMedicamentos' => $nombresMedicamentos,
-        'medidas_tomar' => $medidas_tomar,
-        'aislamiento' => $aislamiento,
-        'seguimiento' => $seguimiento,
-        'observacion' => $observacion,
-        'fechaHoraActual'  => $fechaHoraActual,
-    ];
-
-        // Generar el contenido del PDF a partir de la vista del formulario
-        $pdf = PDF::loadView('one.pdf.form_IAAS', $data);
-
-        // Opcional: Establecer opciones de estilo para el PDF
-        $pdf->setOptions([
-            'dpi' => 150,
-            'defaultFont' => 'Arial',
-        ]);
-
-        // // Generar el nombre del archivo PDF (puedes personalizarlo)
-        // $pdfFileName = 'formulario_' . $codigoFormulario . '.pdf';
-
-        return $pdf->stream();
-
+        $formularios = FormularioNotificacionPaciente::with('datopaciente')
+        ->orderBy('cod_form_notificacion_p', 'desc')
+        ->get();
+        return view('Form_IAAS.VistaTabla', compact('formularios'));
     }
 
+
+    public function generarPDF($codigoFormulario)
+    {
+        $formulario = FormularioNotificacionPaciente::find($codigoFormulario);
+        if (!$formulario) {
+            // El formulario no existe, puedes mostrar un mensaje de error o redirigir a otra página
+            return redirect()->back()->with('error', 'No se encontró el formulario solicitado.');
+        }
+        $cod_formulario = $formulario->cod_form_notificacion_p;
+    // ---------------TIPO INFECCION---------------------------------
+        $codigosTiposInfeccion = SeleccionTipoInfeccion::where('cod_formulario', $cod_formulario)
+        ->pluck('cod_tipo_inf')
+        ->toArray();
+        // Consultar los nombres de los tipos de infección usando los códigos
+        $nombresTiposInfeccion = [];
+        foreach ($codigosTiposInfeccion as $codTipoInf) {
+            $tipoInfeccion = TipoInfeccion::find($codTipoInf);
+            if ($tipoInfeccion) {
+                $nombresTiposInfeccion[] = $tipoInfeccion->nombre;
+            }
+        }
+    // -----------------------------------------------------------------------
+
+    // *******************ANTIBIOGRAMA************************************}
+        $datosAntibiograma = [];
+        $antibiogramas = Antibiograma::with(['bacteria', 'medicamento'])
+            ->where('cod_formulario', $cod_formulario)
+            ->get();
+
+        $datosAntibiograma = [];
+        foreach ($antibiogramas as $antibiograma) {
+            $datosAntibiograma[] = [
+                'bacteria' => $antibiograma->bacteria->nombre,
+                'medicamento' => $antibiograma->medicamento->nombre,
+                'resistencia' => $antibiograma->nivel,
+            ];
+        }
+    // *****************************************************************
+        $h_clinico = $formulario->h_clinico;
+        $fecha_llenado = $formulario->fecha_llenado;
+        $fecha_ingreso = $formulario->fecha_ingreso;
+        $servicio_inicio_sintomas = $formulario->servicio_inicio_sintomas;
+        $servicio_notificador = $formulario->servicio_notificador;
+        $diagnostico_ingreso = $formulario->diagnostico_ingreso;
+        $diagnostico_sala = $formulario->diagnostico_sala;
+        $uso_antimicrobanos = $formulario->uso_antimicrobanos;
+        $tipo_muestra_cultivo = $formulario->tipo_muestra_cultivo;
+        $procedimiento_invasivo = $formulario->procedimiento_invasivo;
+        $medidas_tomar = $formulario->medidas_tomar;
+        $aislamiento = $formulario->aislamiento;
+        $seguimiento = $formulario->seguimiento;
+        $observacion = $formulario->observacion;
+
+        // Obtener la fecha y hora actual en horario de Bolivia
+        $fechaHoraActual = Carbon::now('America/La_Paz')->format('d/m/Y H:i:s');
+
+        $data = [
+            'h_clinico' => $h_clinico,
+            'nombreP' => DatoPaciente::where('n_h_clinico',$h_clinico)->first(),
+            'fecha_llenado' => $fecha_llenado,
+            'fecha_ingreso' => $fecha_ingreso,
+            'servicio_inicio_sintomas' => Servicio::where('cod_servicio',$servicio_inicio_sintomas)->first(),
+            'servicio_notificador' => Servicio::where('cod_servicio',$servicio_notificador)->first(),
+            'diagnostico_ingreso' => $diagnostico_ingreso,
+            'diagnostico_sala' => $diagnostico_sala,
+            'nombresTiposInfeccion' => $nombresTiposInfeccion,
+            'uso_antimicrobanos' => $uso_antimicrobanos,
+            'tipo_muestra_cultivo' => TipoMuestra::where('cod_tipo_muestra',$tipo_muestra_cultivo)->first(),
+            'procedimiento_invasivo' => ProcedimientoInmasivo::where('cod_procedimiento_invasivo',$procedimiento_invasivo)->first(),
+            'datosAntibiograma' => $datosAntibiograma,
+            'medidas_tomar' => $medidas_tomar,
+            'aislamiento' => $aislamiento,
+            'seguimiento' => $seguimiento,
+            'observacion' => $observacion,
+            'fechaHoraActual'  => $fechaHoraActual,
+        ];
+
+            // Generar el contenido del PDF a partir de la vista del formulario
+            $pdf = PDF::loadView('Form_IAAS.PDF.form_IAAS', $data);
+            return $pdf->stream();
+    }
+
+    public function eliminarFormulario($codigoFormulario)
+    {
+        // Buscar el formulario por el código
+        $formulario = FormularioNotificacionPaciente::find($codigoFormulario);
+
+        if (!$formulario) {
+            return redirect()->back()->with('error', 'No se encontró el formulario solicitado.');
+        }
+
+        // Eliminar registros relacionados en ANTIBIOGRAMA
+        Antibiograma::where('cod_formulario', $codigoFormulario)->delete();
+
+        // Eliminar registros relacionados en SELECCION_TIPO_INFECCION
+        SeleccionTipoInfeccion::where('cod_formulario', $codigoFormulario)->delete();
+
+        // Eliminar el formulario y sus registros relacionados en FORMULARIO_NOTIFICACION_PACIENTE
+        $formulario->delete();
+
+        return redirect()->back()->with('success', 'Formulario y registros relacionados eliminados exitosamente.');
+    }
 }

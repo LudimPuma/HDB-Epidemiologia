@@ -109,7 +109,11 @@
                 <th>Servicio</th>
                 <td>{{ $servicio->nombre }}</td>
                 <th>Patología</th>
-                <td>{{ $patologia->nombre }}</td>
+                <td>
+                    @foreach ($patologias as $patologia)
+                        {{ $patologia->nombre }}<br>
+                    @endforeach
+                </td>
             </tr>
             <tr>
                 <th>Notificador</th>

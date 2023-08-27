@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\View;
 use App\DatoPaciente;
 use App\Servicio;
 use App\Patologia;
+use App\SeleccionPatologia;
 use App\FormularioEnfermedadesNotificacionInmediata;
 use Dompdf\Dompdf;
 use Carbon\Carbon;
@@ -50,12 +51,14 @@ class FormularioEnfermedadesNotificacionInmediataController extends Controller
         $datosPacientes = DatoPaciente::all();
         $servicios = Servicio::all();
         $patologias = Patologia::all();
+        $fechaActual = Carbon::now('America/La_Paz')->format('Y-m-d');
         // Pasa los datos a la vista del formulario
-        return view('one.formulario2', compact('id','nombre', 'idFormulario', 'servicios', 'patologias'));
+        return view('one.formulario2', compact('id','nombre', 'idFormulario', 'servicios', 'patologias','fechaActual'));
     }
 
     public function guardarDatos(Request $request)
     {
+
         // Validar los datos del formulario (puedes agregar reglas de validación según tus necesidades)
         $request->validate([
             'h_clinico' => 'required',
@@ -66,14 +69,13 @@ class FormularioEnfermedadesNotificacionInmediataController extends Controller
             'acciones' => 'required',
             'observaciones' => 'required',
         ]);
-
         // Crear una nueva instancia del modelo FormularioEnfermedadesNotificacionInmediata
         $formulario = new FormularioEnfermedadesNotificacionInmediata();
 
         // Asignar los valores de los campos del formulario al modelo
         $formulario->h_clinico = $request->input('h_clinico');
         $formulario->fecha = $request->input('fecha');
-        $formulario->cod_pato = $request->input('patologia');
+        //$formulario->cod_pato = $request->input('patologia');
         $formulario->cod_servi = $request->input('servicio_inicio_sintomas');
         $formulario->notificador = $request->input('notificador');
         $formulario->acciones = $request->input('acciones');
@@ -85,12 +87,22 @@ class FormularioEnfermedadesNotificacionInmediataController extends Controller
         // Obtener el ID del formulario que se generó automáticamente
         $idFormulario = $formulario->id_f_notificacion_inmediata;
 
-        // Almacenar el ID del formulario en la sesión
-        session(['idFormulario' => $idFormulario]);
+        //TABLA SELECCION PATOLOGIA
+        $patologiasSeleccionadas = $request->input('patologias_seleccionadas');
 
-        // Redireccionar a la vista previa del PDF pasando el ID del formulario como parámetro
-        return redirect()->route('view_form_2');
-        //return redirect()->route('vista-previa-pdf', ['id' => $idFormulario]);
+
+        // Decodificar el JSON y procesar las patologias seleccionadas
+        $patologiasSeleccionadas = json_decode($patologiasSeleccionadas);
+
+        // Crear una instancia de seleccionPatologia para cada patologia seleccionada
+        foreach ($patologiasSeleccionadas as $codTipoPat) {
+            $seleccionPatologia = new SeleccionPatologia();
+            $seleccionPatologia->cod_form_n_i = $idFormulario;
+            $seleccionPatologia->h_cli = $request->input('h_clinico');
+            $seleccionPatologia->cod_pato = $codTipoPat;
+            $seleccionPatologia->save();
+        }
+        return redirect()->route('principal')->with('success', 'Los datos han sido guardados exitosamente.');
     }
 
 
@@ -119,10 +131,15 @@ class FormularioEnfermedadesNotificacionInmediataController extends Controller
             // El formulario no existe, puedes mostrar un mensaje de error o redirigir a otra página
             return redirect()->back()->with('error', 'No se encontró el formulario solicitado.');
         }
+
         // Obtener los datos relacionados del formulario
         $paciente = $formulario->datoPaciente;
-        $patologia = $formulario->patologia;
+        // $patologia = $formulario->patologia;
         $servicio = $formulario->servicio;
+        $patologias = SeleccionPatologia::select('p.nombre')
+            ->join('epidemiologia.patologia as p', 'p.cod_patologia', '=', 'seleccion_patologia.cod_pato')
+            ->where('seleccion_patologia.cod_form_n_i', $id)
+            ->get();
         // Crear una instancia de Dompdf
         $dompdf = new Dompdf();
         // Obtener la fecha y hora actual en horario de Bolivia
@@ -130,7 +147,7 @@ class FormularioEnfermedadesNotificacionInmediataController extends Controller
         $fechaActual = Carbon::now('America/La_Paz')->format('d/m/Y ');
 
         // Cargar el contenido HTML de la vista previa
-        $html = view('one.form_2_pdf', compact('formulario', 'paciente', 'patologia', 'servicio','fechaHoraActual','fechaActual'))->render();
+        $html = view('one.form_2_pdf', compact('formulario', 'paciente', 'servicio', 'patologias', 'fechaHoraActual', 'fechaActual'))->render();
         $dompdf->loadHtml($html);
         // Generar el PDF
         $dompdf->render();
@@ -154,13 +171,14 @@ class FormularioEnfermedadesNotificacionInmediataController extends Controller
         $todasLasPatologias = Patologia::select('nombre')->get();
 
         // Consulta para obtener el conteo por patología
-        $conteoPorPatologia = FormularioEnfermedadesNotificacionInmediata::select(
+        $conteoPorPatologia = SeleccionPatologia::select(
             'p.nombre as patologia',
             DB::raw('COUNT(*) as total_casos')
         )
-        ->rightJoin('epidemiologia.patologia as p', 'p.cod_patologia', '=', 'formulario_enfermedades_notificacion_inmediata.cod_pato')
-        ->whereMonth('fecha', $mesSeleccionado)
-        ->whereYear('fecha', $anioSeleccionado)
+        ->rightJoin('epidemiologia.patologia as p', 'p.cod_patologia', '=', 'seleccion_patologia.cod_pato')
+        ->rightJoin('epidemiologia.formulario_enfermedades_notificacion_inmediata as f', 'f.id_f_notificacion_inmediata', '=', 'seleccion_patologia.cod_form_n_i')
+        ->whereMonth('f.fecha', $mesSeleccionado)
+        ->whereYear('f.fecha', $anioSeleccionado)
         ->groupBy('p.nombre')
         ->get();
         // Combinar el conteo con todas las patologías para mostrar las que tienen 0 casos
@@ -212,10 +230,11 @@ class FormularioEnfermedadesNotificacionInmediataController extends Controller
         $year = Carbon::now()->year;
 
         // La cantidad de casos registrados por patología en cada mes del año actual
-        $datosGrafica = DB::table('epidemiologia.formulario_enfermedades_notificacion_inmediata')
-            ->join('epidemiologia.patologia', 'formulario_enfermedades_notificacion_inmediata.cod_pato', '=', 'patologia.cod_patologia')
-            ->select(DB::raw('extract(month from fecha) as mes, patologia.nombre as patologia, count(*) as total_casos'))
-            ->whereYear('fecha', $year)
+        $datosGrafica = DB::table('epidemiologia.seleccion_patologia')
+            ->join('epidemiologia.patologia', 'seleccion_patologia.cod_pato', '=', 'patologia.cod_patologia')
+            ->join('epidemiologia.formulario_enfermedades_notificacion_inmediata', 'seleccion_patologia.cod_form_n_i', '=', 'formulario_enfermedades_notificacion_inmediata.id_f_notificacion_inmediata')
+            ->select(DB::raw('extract(month from formulario_enfermedades_notificacion_inmediata.fecha) as mes, patologia.nombre as patologia, count(*) as total_casos'))
+            ->whereYear('formulario_enfermedades_notificacion_inmediata.fecha', $year)
             ->groupBy('mes', 'patologia')
             ->get();
 

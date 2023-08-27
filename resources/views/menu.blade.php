@@ -109,6 +109,9 @@
             <li>
                 <a href="{{ route('medicamento.index') }}"> Medicamentos</a>
             </li>
+            <li>
+                <a href="{{ route('TablaIAAS') }}"> Formulario IAAS</a>
+            </li>
           </ul>
         </li>
 

@@ -32,7 +32,7 @@
                                 <!-- fecha-->
                                 <div class="form-group input-style-1">
                                     <label for="fecha">Fecha</label>
-                                    <input type="date" name="fecha" id="fecha" class="form-control">
+                                    <input type="date" name="fecha" id="fecha" class="form-control" value="{{ $fechaActual }}">
                                 </div>
                             </div>
                         </div>
@@ -78,6 +78,12 @@
                                 </div>
                             </div>
                         </div>
+
+                        {{-- TABLA DE SELECCION PATOLOGIA --}}
+                        <div id="tablaDatosSeleccionados"></div>
+                        {{-- INPUT INVISIBLE QUE ALMACENA LOS TIPOS DE INFECCION --}}
+                        <input type="hidden" id="patologias_seleccionadas" name="patologias_seleccionadas">
+
                         <div class="row">
                             <div class="col-lg-6">
                                 <!-- Campo para acciones -->
@@ -95,75 +101,68 @@
                             </div>
                         </div>
                     </div>
-                    {{-- <button type="button" class="btn btn-primary" onclick="generarPDF()">Guardar</button> --}}
-                    <button type="button" class="btn btn-primary">Guardar</button>
+                    <button type="submit" class="btn btn-primary">Guardar</button>
                 </form>
             </div>
         </div>
     </div>
 </section>
-{{-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10.15.7/dist/sweetalert2.min.css">
-
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10.15.7/dist/sweetalert2.all.min.js"></script>
-<script src="{{ asset('js/mis-scripts.js') }}"></script> --}}
 
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
-
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/luxon/2.1.0/luxon.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+{{-- TABLA SELECCION PATOLOGIA --}}
 <script>
-  // Función para obtener la fecha actual en la zona horaria de Bolivia (GMT-4)
-  function getCurrentDateInBolivia() {
-    return luxon.DateTime.local().setZone('America/La_Paz').toISODate();
-  }
+    $('#patologia').on('change', function () {
+        var patologiaSeleccionada = $(this).val();
+        if (patologiaSeleccionada) {
+            agregarpatologiaTabla(patologiaSeleccionada);
+        }
+    });
 
-  // Obtener el elemento input de fecha por su ID
-  const fechaInput = document.getElementById('fecha');
+    var patologiasSeleccionadas = [];
+    var tiposPatologiaMap = {};
 
-  // Establecer la fecha actual en la zona horaria de Bolivia como valor predeterminado del campo de fecha
-  fechaInput.value = getCurrentDateInBolivia();
-</script>
+    @foreach ($patologias as $patologia)
+    tiposPatologiaMap["{{ $patologia->cod_patologia }}"] = "{{ $patologia->nombre }}";
+    @endforeach
 
+    function agregarpatologiaTabla(patologia) {
+        if (!patologiasSeleccionadas.includes(patologia)) {
+            patologiasSeleccionadas.push(patologia);
+            actualizarTabla();
 
-<script>
-    // Función para generar y abrir el PDF
-    function generarPDF() {
-        // Crear una instancia de jsPDF
-        const doc = new jsPDF.default();
+            $('#patologias_seleccionadas').val(JSON.stringify(patologiasSeleccionadas));
+        }
+    }
 
-        // Recopilar los valores de los campos del formulario
-        const numeroHistorial = document.getElementById('h_clinico').value;
-        const nombreCompleto = document.getElementById('dato_paciente').value;
-        const fecha = document.getElementById('fecha').value;
-        const servicio = document.getElementById('servicio_inicio_sintomas').value;
-        const patologia = document.getElementById('patologia').value;
-        const notificador = document.getElementById('notificador').value;
-        const acciones = document.getElementById('acciones').value;
-        const observaciones = document.getElementById('observaciones').value;
+    function actualizarTabla() {
+        var tablaHTML = '<table class="table table-bordered my-custom-table" style="text-align: center; border-collapse: collapse;">';
+        tablaHTML += '<thead class="table-primary"><tr><th>Patologia</th><th>Opciones</th></tr></thead>';
+        tablaHTML += '<tbody>';
 
-        // Agregar los datos al PDF
-        doc.text('Número de Historial: ' + numeroHistorial, 10, 10);
-        doc.text('Nombre Completo: ' + nombreCompleto, 10, 20);
-        doc.text('Fecha: ' + fecha, 10, 30);
-        doc.text('Servicio: ' + servicio, 10, 40);
-        doc.text('Patología: ' + patologia, 10, 50);
-        doc.text('Notificador: ' + notificador, 10, 60);
-        doc.text('Acciones: ' + acciones, 10, 70);
-        doc.text('Observaciones: ' + observaciones, 10, 80);
+            patologiasSeleccionadas.forEach(function (patologia) {
+            var nombrePatologia = tiposPatologiaMap[patologia];
+            tablaHTML += '<tr>';
+            tablaHTML += '<td>' + nombrePatologia + '</td>';
+            tablaHTML += '<td><button class="btn btn-danger btn-sm" onclick="eliminarInfeccion(\'' + patologia + '\')"><i class="lni lni-trash-can"></i></button></td>';
+            tablaHTML += '</tr>';
+        });
 
-        // Guardar el PDF en una variable Blob
-        const pdfBlob = doc.output('blob');
+        tablaHTML += '</tbody>';
+        tablaHTML += '</table>';
 
-        // Crear una URL para el Blob
-        const pdfUrl = URL.createObjectURL(pdfBlob);
+        $('#tablaDatosSeleccionados').html(tablaHTML);
+        console.log(patologiasSeleccionadas);
+    }
 
-        // Abrir una nueva ventana con el PDF
-        window.open(pdfUrl, '_blank');
+    function eliminarInfeccion(patologia) {
+        var index = patologiasSeleccionadas.indexOf(patologia);
+        if (index !== -1) {
+            patologiasSeleccionadas.splice(index, 1);
+            actualizarTabla();
+        }
+
     }
 </script>
 

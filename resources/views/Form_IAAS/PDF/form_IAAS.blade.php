@@ -1,89 +1,72 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Formulario PDF</title>
+    <title>Formulario IAAS</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
+            font-size: 20px; /* Tamaño de fuente general reducido */
         }
         h1 {
+        text-align: center;
+        margin: 5px 0; /* Espacio reducido arriba y abajo */
+        font-size: 18px;
+    }
+        h3 {
             text-align: center;
+            margin: 10px 0; /* Espacio reducido entre título y contenido */
+            font-size: 16px; /* Tamaño de fuente para h3 */
         }
-        h3{
+        h4 {
             text-align: center;
-        }
-        h4{
-            text-align: center;
+            margin: 10px 0; /* Espacio reducido entre título y contenido */
+            font-size: 14px; /* Tamaño de fuente para h4 */
         }
         .section {
-            margin: 20px 0;
+            margin: 10px 0; /* Espacio reducido entre secciones */
         }
         .section h2 {
-            font-size: 18px;
-            margin: 10px 0;
+            font-size: 14px; /* Tamaño de fuente para h2 */
+            margin: 5px 0; /* Espacio reducido entre título y contenido */
         }
         table {
             border-collapse: collapse;
             width: 100%;
+            font-size: 10px; /* Tamaño de fuente reducido para la tabla */
         }
         table, th, td {
             border: 1px solid black;
             border-right: 1px solid black;
         }
         th, td {
-            padding: 3px;
+            padding: 2px; /* Espaciado reducido en celdas */
             text-align: left;
         }
         .signature-container {
             text-align: center;
-            margin-top: 70px;
-            border-top: 2px solid #000;
+            margin-top: 50px;
+            border-top: 1px solid #000; /* Borde superior reducido */
             height: 20px;
             width: 50%;
             margin-left: auto;
             margin-right: auto;
         }
         .footer {
-        position: fixed;
-        bottom: -20px;
-        left: 0;
-        right: 0;
-        text-align: right;
-        font-size: 10px;
+            position: fixed;
+            bottom: -10px; /* Posición inferior*/
+            left: 0;
+            right: 0;
+            text-align: right;
+            font-size: 8px; /* Tamaño de fuente reducido para el pie de página */
         }
-
-
-        /* .antibiograma-table {
-        border-collapse: collapse;
-        width: 100%;
-        margin-top: 20px;
-        }
-
-        .antibiograma-table th, .antibiograma-table td {
-            border: 1px solid black;
-            padding: 8px;
-            text-align: left;
-        }
-
-        .antibiograma-table th {
-            background-color: #f2f2f2;
-        }
-
-        .antibiograma-table tbody tr:nth-child(even) {
-            background-color: #f2f2f2;
-        }
-
-        .antibiograma-table tbody tr:hover {
-            background-color: #e0e0e0;
-        } */
     </style>
 </head>
 <body>
-    {{-- <img src="img/logo.png" alt="logo_icono" class="logo"> --}}
-    {{-- <img src="img/logo1.png" class="img-fluid profile-image-pic img-thumbnail rounded-circle my-3"
-    width="50px" alt="profile"> --}}
+    {{-- <img src="/img/logo.png" >
+    {{-- <img src="img/logo1.png" class="img-fluid profile-image-pic img-thumbnail rounded-circle my-3" --}}
+    {{-- width="50px" alt="profile"> --}}
     <h1>Hospital Daniel Bracamonte</h1>
     <h3>Departamento de Epidemiología Hospitalaria</h3>
     <h4>Ficha IAAS</h4>
@@ -92,32 +75,30 @@
         <h2>Datos Generales</h2>
         <table>
             <tr>
-                <th>Número de Historial</th>
-                <td>{{ $h_clinico }}</td>
-            </tr>
-            <tr>
-                <th>Nombre Paciente</th>
-                <td>{{ $nombreP->nombre_paciente }} {{ $nombreP->ap_paterno }} {{ $nombreP->ap_materno }}</td>
+                <th>Nro de Historial:</th>
+                <td >{{ $h_clinico }}</td>
+                <th>Nombre Paciente:</th>
+                <td >{{ $nombreP->nombre_paciente }} {{ $nombreP->ap_paterno }} {{ $nombreP->ap_materno }}</td>
             </tr>
             <tr>
                 <th>Fecha de Llenado</th>
                 <td>{{ $fecha_llenado }}</td>
-            </tr>
-            <tr>
                 <th>Fecha de Ingreso</th>
                 <td>{{ $fecha_ingreso }}</td>
             </tr>
             <tr>
-                <th>Servicio de Inicio de sistomas</th>
+                <th>Servicio de Inicio de sistomas: </th>
                 <td>{{ $servicio_inicio_sintomas->nombre }}</td>
+                <th>Servicio Notificador: </th>
+                <td>{{ $servicio_notificador->nombre }}</td>
             </tr>
             <tr>
                 <th>Diagnóstico de ingreso</th>
-                <td>{{ $diagnostico_ingreso }}</td>
+                <td colspan="3">{{ $diagnostico_ingreso }}</td>
             </tr>
             <tr>
                 <th>Diagnóstico de sala</th>
-                <td>{{ $diagnostico_sala }}</td>
+                <td colspan="3">{{ $diagnostico_sala }}</td>
             </tr>
 
         </table>
@@ -133,35 +114,28 @@
                         {{ $nombreTipoInfeccion }},
                     @endforeach
                 </td>
-            </tr>
-            <tr>
                 <th>Uso de Antimicrobianos</th>
                 <td>{{ $uso_antimicrobanos }}</td>
             </tr>
             <tr>
                 <th>Tipo de Muestra para Cultivo</th>
                 <td>{{ $tipo_muestra_cultivo->nombre }}</td>
-            </tr>
-            <tr>
                 <th>Procedimiento Invasivo</th>
                 <td>{{ $procedimiento_invasivo->nombre }}</td>
             </tr>
         </table>
-        <h4>Antibiograma</h4>
         <table>
             <thead>
                 <tr>
-                    <th rowspan="2">Bacterias</th>
-                    <th rowspan="2">Medicamento</th>
-                    <th rowspan="2">Nivel de Resistencia</th>
+                    <th colspan="3" style="text-align: center">Antibiograma</th>
+                </tr>
+                <tr>
+                    <th rowspan="1" style="text-align: center">Bacterias</th>
+                    <th rowspan="1" style="text-align: center">Medicamento</th>
+                    <th rowspan="1" style="text-align: center">Nivel de Resistencia</th>
                 </tr>
             </thead>
             <tbody>
-                {{-- <tr class="invisible-row">
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr> --}}
                 @php
                     $previousBacteria = null;
                     $rowspan = 0;
@@ -177,14 +151,14 @@
                         @endphp
 
                         <tr>
-                            <td rowspan="{{ $rowspan }}">{{ $dato['bacteria'] }}</td>
-                            <td>{{ $dato['medicamento'] }}</td>
-                            <td>{{ $dato['resistencia'] }}</td>
+                            <td rowspan="{{ $rowspan }}" style="text-align: center">{{ $dato['bacteria'] }}</td>
+                            <td style="text-align: center">{{ $dato['medicamento'] }}</td>
+                            <td style="text-align: center">{{ $dato['resistencia'] }}</td>
                         </tr>
                     @else
                         <tr>
-                            <td>{{ $dato['medicamento'] }}</td>
-                            <td>{{ $dato['resistencia'] }}</td>
+                            <td style="text-align: center">{{ $dato['medicamento'] }}</td>
+                            <td style="text-align: center">{{ $dato['resistencia'] }}</td>
                         </tr>
                     @endif
                 @endforeach

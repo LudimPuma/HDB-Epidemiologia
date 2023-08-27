@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\FormularioNotificacionPacienteController;
-
+use App\Http\Controllers\FormularioEnfermedadesNotificacionInmediataController;
 Route::view('/', 'login')->name('login');
 Route::post('/iniciar-sesion', [LoginController::class, 'login'])->name('iniciar-sesion');
 Route::get('/logout', [LoginController::class, 'logout'])->name('logout');
@@ -41,6 +41,11 @@ Route::middleware('auth')->group(function () {
     Route::post('/guardar-datos-formulario_IAAS', 'FormularioNotificacionPacienteController@guardarDatos')->name('guardar_datos_form_IAAS');
 
     Route::post('obtener-medicamentos/{id}', [FormularioNotificacionPacienteController::class, 'obtenerMedicamentos']);
+
+    Route::get('/TablaIAAS', 'FormularioNotificacionPacienteController@tabla')->name('TablaIAAS');
+    Route::get('/generar-pdf/{codigoFormulario}', 'FormularioNotificacionPacienteController@generarPDF')->name('generar.pdf');
+    Route::delete('/eliminar-formulario/{codigoFormulario}', 'FormularioNotificacionPacienteController@eliminarFormulario')->name('eliminar.formulario');
+
 
 
     //FORMULARIO ENFERMEDADES DE NOTIFICACION INMEDIATA
