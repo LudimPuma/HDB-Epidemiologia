@@ -45,7 +45,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/TablaIAAS', 'FormularioNotificacionPacienteController@tabla')->name('TablaIAAS');
     Route::get('/generar-pdf/{codigoFormulario}', 'FormularioNotificacionPacienteController@generarPDF')->name('generar.pdf');
     Route::delete('/eliminar-formulario/{codigoFormulario}', 'FormularioNotificacionPacienteController@eliminarFormulario')->name('eliminar.formulario');
-
+    Route::post('/generar-reporte', 'FormularioNotificacionPacienteController@generarReporte')->name('generar.reporte');
 
 
     //FORMULARIO ENFERMEDADES DE NOTIFICACION INMEDIATA

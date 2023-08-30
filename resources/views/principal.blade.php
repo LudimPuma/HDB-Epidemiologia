@@ -18,7 +18,7 @@
   {{ $mensaje }} {{ Auth::user()->persona->nombres }}
 </h1>
 <div class="row">
-    {{-- GRAFICA --}}
+    {{-- GRAFICA PATOLOGIA--}}
     <div class="col-lg-7">
       <div class="card-style mb-30">
         <div class="title d-flex flex-wrap align-items-center justify-content-between">

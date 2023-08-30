@@ -7,7 +7,7 @@
         <div class="card-style mb-30">
           <h4 class="mb-10">IAAS</h4>
           <div class="table-wrapper table-responsive">
-            <table class="table table-hover">
+            <table class="table table-hover" id="dataTable" class="table">
                 <thead class="thead-dark">
                     <tr >
                         <th><h6>Nro. Formulario</h6></th>
@@ -63,37 +63,6 @@
     </div>
     <!-- end row -->
 </div>
-
-
-{{-- <div class="container">
-    <h1>Formulario IAAS</h1>
-    <table class="table table-hover">
-        <thead class="">
-            <tr>
-                <th scope="col">Nro. Formulario</th>
-                <th scope="col">H. Clínico</th>
-                <th scope="col">Nombre del Paciente</th>
-                <th scope="col">Fecha de Llenado</th>
-                <th scope="col">Opciones</th>
-            </tr>
-        </thead>--}}
-        {{-- <tbody>
-            @foreach ($formularios as $formulario)
-                <tr>
-                    <td>{{ $formulario->cod_form_notificacion_p }}</td>
-                    <td>{{ $formulario->h_clinico }}</td>
-                    <td>{{ $formulario->DatoPaciente->nombre }}</td>
-                    <td>{{ $formulario->fecha_llenado }}</td>
-                    <td>
-                        <a href="{{ route('formulario.show', $formulario->COD_FORM_NOTIFICACION_P) }}" class="btn btn-primary">Vista Previa</a>
-                        <a href="{{ route('formulario.edit', $formulario->COD_FORM_NOTIFICACION_P) }}" class="btn btn-warning">Editar</a>
-                        <!-- Agregar enlaces para dar baja y eliminar -->
-                    </td>
-                </tr>
-            @endforeach
-        </tbody> --}}
-    {{-- </table>
-</div> --}}
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10.15.5/dist/sweetalert2.min.css">
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10.15.5/dist/sweetalert2.min.js"></script>
 <script>
@@ -113,6 +82,27 @@
             }
         });
     }
+</script>
+
+<!-- Agrega los archivos de DataTables y jQuery -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.25/css/dataTables.bootstrap4.min.css">
+{{-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> --}}
+<script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.25/js/dataTables.bootstrap4.min.js"></script>
+
+<script>
+$(document).ready(function () {
+    $('#dataTable').DataTable({
+        "language": {
+            "url": "https://cdn.datatables.net/plug-ins/1.10.25/i18n/Spanish.json" // Opcional: Traducción al español
+        },
+        "paging": true, // Activar paginación
+        "searching": true, // Activar búsqueda
+        "lengthChange": true, // Cambiar cantidad de resultados por página
+        "pageLength": 10, // Cantidad de resultados por página
+    });
+});
+
 </script>
 @endsection
 

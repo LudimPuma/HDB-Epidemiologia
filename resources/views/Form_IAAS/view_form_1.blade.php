@@ -112,7 +112,7 @@
 
 
 <!-- Modal de selección de fechas REPORTE-->
-{{-- <div class="modal fade" id="modalreporte" tabindex="-1" role="dialog" aria-labelledby="modalreporte" aria-hidden="true">
+<div class="modal fade" id="modalreporte" tabindex="-1" role="dialog" aria-labelledby="modalreporte" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -120,14 +120,11 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form action="{{ route('formulario.generar-reporte') }}" method="GET">
+                <form action="{{ route('generar.reporte') }}" method="POST" target="_blank">
+                    @csrf
                     <div class="form-group">
-                        <label for="fecha_inicio">Fecha de inicio:</label>
-                        <input type="date" id="fecha_inicio" name="fecha_inicio" class="form-control" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="fecha_fin">Fecha de fin:</label>
-                        <input type="date" id="fecha_fin" name="fecha_fin" class="form-control" required>
+                        <label for="fecha">Año:</label>
+                        <input type="month" id="fecha" name="fecha" value="{{date("Y-m")}}" class="form-control" required>
                     </div>
                     <div class="modal-footer">
                         <button type="submit" class="btn btn-primary">Generar Reporte</button>
@@ -137,7 +134,7 @@
             </div>
         </div>
     </div>
-</div> --}}
+</div>
 
 
 

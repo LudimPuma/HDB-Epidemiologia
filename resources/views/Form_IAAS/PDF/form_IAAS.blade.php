@@ -13,7 +13,7 @@
         text-align: center;
         margin: 5px 0; /* Espacio reducido arriba y abajo */
         font-size: 18px;
-    }
+        }
         h3 {
             text-align: center;
             margin: 10px 0; /* Espacio reducido entre título y contenido */

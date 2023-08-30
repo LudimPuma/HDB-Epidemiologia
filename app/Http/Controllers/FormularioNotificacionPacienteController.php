@@ -233,38 +233,38 @@ class FormularioNotificacionPacienteController extends Controller
         $antibiograma->save();
     }
 
-    //pdf
-    // Consultar los nombres de los tipos de infección usando los códigos
-    $nombresTiposInfeccion = [];
-    foreach ($infeccionesSeleccionadas as $codTipoInf) {
-        $tipoInfeccion = TipoInfeccion::where('cod_tipo_infeccion', $codTipoInf)->first();
-        if ($tipoInfeccion) {
-            $nombresTiposInfeccion[] = $tipoInfeccion->nombre;
-        }
-    }
-    $fechaHoraActual = Carbon::now('America/La_Paz')->format('d/m/Y H:i:s');
-    $data = [
-        'h_clinico' => $request->input('h_clinico'),
-        'nombreP' => DatoPaciente::where('n_h_clinico',$request->input('h_clinico'))->first(),
-        'fecha_llenado' => $request->input('fecha_llenado'),
-        'fecha_ingreso' => $request->input('fecha_ingreso'),
-        'servicio_inicio_sintomas' => Servicio::where('cod_servicio',$request->input('servicio_inicio_sintomas'))->first(),
-        'servicio_notificador' => Servicio::where('cod_servicio',$request->input('servicio_notificador'))->first(),
-        'diagnostico_ingreso' => $request->input('diagnostico_ingreso'),
-        'diagnostico_sala' => $request->input('diagnostico_sala'),
-        'nombresTiposInfeccion' => $nombresTiposInfeccion,
-        'uso_antimicrobanos' => $request->input('uso_antimicrobanos'),
-        'tipo_muestra_cultivo' => TipoMuestra::where('cod_tipo_muestra',$request->input('tipo_muestra_cultivo'))->first(),
-        'procedimiento_invasivo' => ProcedimientoInmasivo::where('cod_procedimiento_invasivo',$request->input('procedimiento_invasivo'))->first(),
-        'datosAntibiograma' => $datosAntibiograma,
-        'medidas_tomar' => $request->input('medidas_tomar'),
-        'aislamiento' => $request->input('aislamiento'),
-        'seguimiento' => $request->input('seguimiento'),
-        'observacion' => $request->input('observacion'),
-        'fechaHoraActual'  => $fechaHoraActual,
-    ];
-    // Generar el contenido del PDF a partir de la vista del formulario
-    $pdf = PDF::loadView('Form_IAAS.PDF.form_IAAS', $data);
+    // //pdf
+    // // Consultar los nombres de los tipos de infección usando los códigos
+    // $nombresTiposInfeccion = [];
+    // foreach ($infeccionesSeleccionadas as $codTipoInf) {
+    //     $tipoInfeccion = TipoInfeccion::where('cod_tipo_infeccion', $codTipoInf)->first();
+    //     if ($tipoInfeccion) {
+    //         $nombresTiposInfeccion[] = $tipoInfeccion->nombre;
+    //     }
+    // }
+    // $fechaHoraActual = Carbon::now('America/La_Paz')->format('d/m/Y H:i:s');
+    // $data = [
+    //     'h_clinico' => $request->input('h_clinico'),
+    //     'nombreP' => DatoPaciente::where('n_h_clinico',$request->input('h_clinico'))->first(),
+    //     'fecha_llenado' => $request->input('fecha_llenado'),
+    //     'fecha_ingreso' => $request->input('fecha_ingreso'),
+    //     'servicio_inicio_sintomas' => Servicio::where('cod_servicio',$request->input('servicio_inicio_sintomas'))->first(),
+    //     'servicio_notificador' => Servicio::where('cod_servicio',$request->input('servicio_notificador'))->first(),
+    //     'diagnostico_ingreso' => $request->input('diagnostico_ingreso'),
+    //     'diagnostico_sala' => $request->input('diagnostico_sala'),
+    //     'nombresTiposInfeccion' => $nombresTiposInfeccion,
+    //     'uso_antimicrobanos' => $request->input('uso_antimicrobanos'),
+    //     'tipo_muestra_cultivo' => TipoMuestra::where('cod_tipo_muestra',$request->input('tipo_muestra_cultivo'))->first(),
+    //     'procedimiento_invasivo' => ProcedimientoInmasivo::where('cod_procedimiento_invasivo',$request->input('procedimiento_invasivo'))->first(),
+    //     'datosAntibiograma' => $datosAntibiograma,
+    //     'medidas_tomar' => $request->input('medidas_tomar'),
+    //     'aislamiento' => $request->input('aislamiento'),
+    //     'seguimiento' => $request->input('seguimiento'),
+    //     'observacion' => $request->input('observacion'),
+    //     'fechaHoraActual'  => $fechaHoraActual,
+    // ];
+    // // Generar el contenido del PDF a partir de la vista del formulario
+    // $pdf = PDF::loadView('Form_IAAS.PDF.form_IAAS', $data);
 
     // // Opcional: Establecer opciones de estilo para el PDF
     // $pdf->setOptions([
@@ -286,8 +286,8 @@ class FormularioNotificacionPacienteController extends Controller
     //     $nombresBacterias,
     //     $nombresMedicamentos
     // );
-    return $pdf->stream();
-    //return redirect()->route('principal')->with('success', 'Los datos han sido guardados exitosamente.');
+    //return $pdf->stream();
+    return redirect()->route('principal')->with('success', 'Los datos han sido guardados exitosamente.');
     }
 
     public function tabla()
@@ -400,4 +400,73 @@ class FormularioNotificacionPacienteController extends Controller
 
         return redirect()->back()->with('success', 'Formulario y registros relacionados eliminados exitosamente.');
     }
+
+    public function generarReporte(Request $request)
+    {
+        // Obtener el mes y año seleccionados del formulario
+        $fechaSeleccionada = $request->fecha;
+        $mesSeleccionado = Carbon::parse($fechaSeleccionada)->month;
+        $nombreMesSeleccionado = Carbon::parse($fechaSeleccionada)->locale('es')->monthName;
+        $anioSeleccionado = Carbon::parse($fechaSeleccionada)->year;
+
+        // Calcular la fecha inicial y final del mes seleccionado
+        $fechaInicial = Carbon::create($anioSeleccionado, $mesSeleccionado, 1)->startOfMonth();
+        $fechaFinal = Carbon::create($anioSeleccionado, $mesSeleccionado, 1)->endOfMonth();
+
+        // Consultar los registros para el mes seleccionado
+        $registros = DB::table('epidemiologia.formulario_notificacion_paciente as f')
+            ->join('epidemiologia.antibiograma as a', 'f.cod_form_notificacion_p', '=', 'a.cod_formulario')
+            ->join('epidemiologia.bacterias_medicamentos as bm', function ($join) {
+                $join->on('a.cod_bacte', '=', 'bm.cod_bacte');
+                $join->on('a.cod_medi', '=', 'bm.cod_medi');
+            })
+            ->join('epidemiologia.bacterias as b', 'bm.cod_bacte', '=', 'b.cod_bacterias')
+            ->join('epidemiologia.medicamentos as m', 'bm.cod_medi', '=', 'm.cod_medicamento')
+            ->whereBetween('f.fecha_llenado', [$fechaInicial, $fechaFinal])
+            ->select(
+                'f.cod_form_notificacion_p',
+                'b.nombre as bacteria',
+                'm.nombre as medicamento',
+                'a.nivel'
+            )->orderBy('bacteria','desc')
+            ->get();
+
+        $estadisticas = [];
+
+        foreach ($registros as $registro) {
+            $bacteria = $registro->bacteria;
+            $medicamento = $registro->medicamento;
+            $nivel = $registro->nivel;
+
+            if (!isset($estadisticas[$bacteria][$medicamento])) {
+                $estadisticas[$bacteria][$medicamento] = [
+                    'Resistente' => 0,
+                    'Intermedio' => 0,
+                    'Sensible' => 0,
+                ];
+            }
+
+            $estadisticas[$bacteria][$medicamento][$nivel]++;
+        }
+        $fechaHoraActual = Carbon::now('America/La_Paz')->format('d/m/Y H:i:s');
+
+        $data = compact('estadisticas', 'nombreMesSeleccionado', 'anioSeleccionado','fechaHoraActual');
+        $pdf = PDF::loadview('Form_IAAS.PDF.reporte', $data);
+
+
+        $pdf->getDomPDF()->set_option('isHtml5ParserEnabled', true);
+        $pdf->getDomPDF()->set_option('isPhpEnabled', true);
+
+        // Establecer tamaño y orientación de página
+        $pdf->getDomPDF()->set_paper('A4', 'portrait');
+
+
+        // nombre personalizado para descargar con un nombre predeterminado
+        $nombreArchivo = 'Reporte_IAAS_' . $nombreMesSeleccionado . '_' . $anioSeleccionado . '.pdf';
+        return response($pdf->output(), 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="' . $nombreArchivo . '"'
+        ]);
+    }
+
 }
