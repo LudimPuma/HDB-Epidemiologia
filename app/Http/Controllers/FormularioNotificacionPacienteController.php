@@ -6,13 +6,15 @@ use Dompdf\Dompdf;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use App\Antibiograma;
 use App\SeleccionTipoInfeccion;
 use App\DatoPaciente;
 use App\Servicio;
 use App\TipoInfeccion;
 use App\ProcedimientoInmasivo;
-//use App\Agente;
+use App\Hongo;
+use App\SeleccionHongos;
 use App\TipoMuestra;
 use App\Bacteria;
 use App\Medicamento;
@@ -49,20 +51,16 @@ class FormularioNotificacionPacienteController extends Controller
     {
         $id = $request->query('patientId');
         $nombre = $request->query('nombreCompleto');
-        // Consulta los datos necesarios de los modelos relacionados
-        //$antibiogramas = Antibiograma::all();
         $datosPacientes = DatoPaciente::all();
         $servicios = Servicio::all();
         $tiposInfeccion = TipoInfeccion::all();
+        $hongos = Hongo::all();
         $procedimientosInmasivos = ProcedimientoInmasivo::all();
-        //$agentes = Agente::all();
         $tiposMuestra = TipoMuestra::all();
         $bacterias = Bacteria::all();
         $fechaActual = Carbon::now('America/La_Paz')->format('Y-m-d');
-        //$nivelesAntibiograma = NivelAntibiograma::with('medicamento')->get();
-
         // Pasa los datos a la vista del formulario
-        return view('Form_IAAS.formulario_IAAS', compact('id','nombre', 'datosPacientes', 'bacterias','servicios', 'tiposInfeccion', 'procedimientosInmasivos', 'tiposMuestra','fechaActual'));
+        return view('Form_IAAS.formulario_IAAS', compact('id','nombre', 'datosPacientes', 'bacterias','servicios', 'tiposInfeccion', 'hongos','procedimientosInmasivos', 'tiposMuestra','fechaActual'));
     }
     public function obtenerMedicamentos($id)
     {
@@ -91,13 +89,12 @@ class FormularioNotificacionPacienteController extends Controller
         'h_clinico' => 'required',
         'fecha_llenado' => 'required',
         'fecha_ingreso' => 'required',
+        'dias_internacion' => 'required|integer|min:1',
         'servicio_inicio_sintomas' => 'required',
         'servicio_notificador' => 'required',
         'diagnostico_ingreso' => 'required',
         'diagnostico_sala' => 'required',
-        //'infecciones_seleccionadas' => 'required',
         'uso_antimicrobanos' => 'required',
-        //'agente_causal' => 'required',
         'tipo_muestra_cultivo' => 'required',
         'procedimiento_invasivo' => 'required',
         'medidas_tomar' => 'required',
@@ -111,6 +108,7 @@ class FormularioNotificacionPacienteController extends Controller
         'h_clinico.required'=> 'El Nro. Clinico no puede estar vacio',
         'fecha_llenado.required'=> 'La fecha de llenado no puede estar vacio',
         'fecha_ingreso.required'=> 'La fecha de ingreso del paciente no puede estar vacio',
+        'dias_internacion' => 'El campo es obligatorio',
         'servicio_inicio_sintomas.required'=> 'El servicio de inicio de sintomas no puede estar vacio',
         'servicio_notificador.required'=> 'El servicio notificador no puede estar vacio',
         'diagnostico_ingreso.required' => 'El diagnostico de ingreso no puede estar vacio',
@@ -122,8 +120,7 @@ class FormularioNotificacionPacienteController extends Controller
         'aislamiento.required'=> 'No puede estar vacio',
         'seguimiento.required'=> 'El seguimiento no puede estar vacio',
         'observacion.required'=> 'La observacion no puede estar vacio',
-        // 'informacion_bacterias_input.required'=> ' no puede estar vacio',
-        // 'infecciones_seleccionadas.required'=> ' no puede estar vacio',
+
     ]
     );
 
@@ -133,19 +130,20 @@ class FormularioNotificacionPacienteController extends Controller
     $formulario->h_clinico = $request->input('h_clinico');
     $formulario->fecha_llenado = $request->input('fecha_llenado');
     $formulario->fecha_ingreso = $request->input('fecha_ingreso');
+    $formulario->dias_internacion = $request->input('dias_internacion');
     $formulario->servicio_inicio_sintomas = $request->input('servicio_inicio_sintomas');
     $formulario->servicio_notificador = $request->input('servicio_notificador');
     $formulario->diagnostico_ingreso = $request->input('diagnostico_ingreso');
     $formulario->diagnostico_sala = $request->input('diagnostico_sala');
-    //$formulario->tipo_infeccion = $request->input('tipo_infeccion');
     $formulario->uso_antimicrobanos = $request->input('uso_antimicrobanos');
-    //$formulario->agente_causal = $request->input('agente_causal');
     $formulario->tipo_muestra_cultivo = $request->input('tipo_muestra_cultivo');
     $formulario->procedimiento_invasivo = $request->input('procedimiento_invasivo');
     $formulario->medidas_tomar = $request->input('medidas_tomar');
     $formulario->aislamiento = $request->input('aislamiento');
     $formulario->seguimiento = $request->input('seguimiento');
     $formulario->observacion = $request->input('observacion');
+    $formulario->estado = 'alta';
+    $formulario->pk_usuario = Auth::id();
 
     // Guardar el formulario en la base de datos
     $formulario->save();
@@ -167,6 +165,22 @@ class FormularioNotificacionPacienteController extends Controller
         $seleccionTipoInfeccion->h_cli = $request->input('h_clinico');
         $seleccionTipoInfeccion->cod_tipo_inf = $codTipoInf;
         $seleccionTipoInfeccion->save();
+    }
+
+    //TABLA TIPO HONGO
+    // Obtener las infecciones seleccionadas del campo oculto
+    $hongosSeleccionados = $request->input('hongos_seleccionados');
+
+    // Decodificar el JSON y procesar las infecciones seleccionadas
+    $hongosSeleccionados = json_decode($hongosSeleccionados);
+
+    // Crear una instancia de seleccionHongo para cada infección seleccionada
+    foreach ($hongosSeleccionados as $idH) {
+        $seleccionHongo = new SeleccionHongos();
+        $seleccionHongo->cod_formulario = $codigoFormulario;
+        $seleccionHongo->h_cli = $request->input('h_clinico');
+        $seleccionHongo->id_hongos = $idH;
+        $seleccionHongo->save();
     }
 
 
@@ -200,16 +214,6 @@ class FormularioNotificacionPacienteController extends Controller
         $nivel = $datos[2];
 
 //*---------------------------------prueba pdf------------------------------------------------
-        // // Consultar nombres de bacterias y medicamentos
-        // $bacteria = Bacteria::where('cod_bacterias', $codBacte)->first();
-        // if ($bacteria) {
-        //     $nombresBacterias[] = $bacteria->nombre;
-        // }
-
-        // $medicamento = Medicamento::where('cod_medicamento', $codMedi)->first();
-        // if ($medicamento) {
-        //     $nombresMedicamentos[] = $medicamento->nombre;
-        // }
         // Consultar nombres de bacterias y medicamentos
         $bacteria = Bacteria::where('cod_bacterias', $codBacte)->first();
         $medicamento = Medicamento::where('cod_medicamento', $codMedi)->first();
@@ -233,60 +237,6 @@ class FormularioNotificacionPacienteController extends Controller
         $antibiograma->save();
     }
 
-    // //pdf
-    // // Consultar los nombres de los tipos de infección usando los códigos
-    // $nombresTiposInfeccion = [];
-    // foreach ($infeccionesSeleccionadas as $codTipoInf) {
-    //     $tipoInfeccion = TipoInfeccion::where('cod_tipo_infeccion', $codTipoInf)->first();
-    //     if ($tipoInfeccion) {
-    //         $nombresTiposInfeccion[] = $tipoInfeccion->nombre;
-    //     }
-    // }
-    // $fechaHoraActual = Carbon::now('America/La_Paz')->format('d/m/Y H:i:s');
-    // $data = [
-    //     'h_clinico' => $request->input('h_clinico'),
-    //     'nombreP' => DatoPaciente::where('n_h_clinico',$request->input('h_clinico'))->first(),
-    //     'fecha_llenado' => $request->input('fecha_llenado'),
-    //     'fecha_ingreso' => $request->input('fecha_ingreso'),
-    //     'servicio_inicio_sintomas' => Servicio::where('cod_servicio',$request->input('servicio_inicio_sintomas'))->first(),
-    //     'servicio_notificador' => Servicio::where('cod_servicio',$request->input('servicio_notificador'))->first(),
-    //     'diagnostico_ingreso' => $request->input('diagnostico_ingreso'),
-    //     'diagnostico_sala' => $request->input('diagnostico_sala'),
-    //     'nombresTiposInfeccion' => $nombresTiposInfeccion,
-    //     'uso_antimicrobanos' => $request->input('uso_antimicrobanos'),
-    //     'tipo_muestra_cultivo' => TipoMuestra::where('cod_tipo_muestra',$request->input('tipo_muestra_cultivo'))->first(),
-    //     'procedimiento_invasivo' => ProcedimientoInmasivo::where('cod_procedimiento_invasivo',$request->input('procedimiento_invasivo'))->first(),
-    //     'datosAntibiograma' => $datosAntibiograma,
-    //     'medidas_tomar' => $request->input('medidas_tomar'),
-    //     'aislamiento' => $request->input('aislamiento'),
-    //     'seguimiento' => $request->input('seguimiento'),
-    //     'observacion' => $request->input('observacion'),
-    //     'fechaHoraActual'  => $fechaHoraActual,
-    // ];
-    // // Generar el contenido del PDF a partir de la vista del formulario
-    // $pdf = PDF::loadView('Form_IAAS.PDF.form_IAAS', $data);
-
-    // // Opcional: Establecer opciones de estilo para el PDF
-    // $pdf->setOptions([
-    //     'dpi' => 150,
-    //     'defaultFont' => 'Arial',
-    // ]);
-
-    // // Generar el nombre del archivo PDF (puedes personalizarlo)
-    // $pdfFileName = 'formulario_' . $request->input('h_clinico') . '.pdf';
-
-    // $pdfPath = $pdfFileName;
-    // $pdf->save($pdfPath);
-
-
-    // // Llamar a la función generarPDF y pasar las variables necesarias
-    // $pdfPath = $this->generarPDF(
-    //     $codigoFormulario,
-    //     $nombresTiposInfeccion,
-    //     $nombresBacterias,
-    //     $nombresMedicamentos
-    // );
-    //return $pdf->stream();
     return redirect()->route('principal')->with('success', 'Los datos han sido guardados exitosamente.');
     }
 
@@ -298,7 +248,6 @@ class FormularioNotificacionPacienteController extends Controller
         return view('Form_IAAS.VistaTabla', compact('formularios'));
     }
 
-
     public function generarPDF($codigoFormulario)
     {
         $formulario = FormularioNotificacionPaciente::find($codigoFormulario);
@@ -307,10 +256,10 @@ class FormularioNotificacionPacienteController extends Controller
             return redirect()->back()->with('error', 'No se encontró el formulario solicitado.');
         }
         $cod_formulario = $formulario->cod_form_notificacion_p;
-    // ---------------TIPO INFECCION---------------------------------
+        // ---------------TIPO INFECCION---------------------------------
         $codigosTiposInfeccion = SeleccionTipoInfeccion::where('cod_formulario', $cod_formulario)
-        ->pluck('cod_tipo_inf')
-        ->toArray();
+            ->pluck('cod_tipo_inf')
+            ->toArray();
         // Consultar los nombres de los tipos de infección usando los códigos
         $nombresTiposInfeccion = [];
         foreach ($codigosTiposInfeccion as $codTipoInf) {
@@ -319,9 +268,24 @@ class FormularioNotificacionPacienteController extends Controller
                 $nombresTiposInfeccion[] = $tipoInfeccion->nombre;
             }
         }
-    // -----------------------------------------------------------------------
+        // -----------------------------------------------------------------------
 
-    // *******************ANTIBIOGRAMA************************************}
+        // ---------------TIPO HONGO---------------------------------
+        $codigosTipoHongo = SeleccionHongos::where('cod_formulario', $cod_formulario)
+            ->pluck('id_hongos')
+            ->toArray();
+        // Consultar los nombres de los tipos de Hongos usando los códigos
+        $nombresTipoHongos = [];
+        foreach ($codigosTipoHongo as $idH) {
+            $hongos = Hongo::find($idH);
+            if ($hongos) {
+                $nombresTipoHongos[] = $hongos->nombre;
+            }
+        }
+        // -----------------------------------------------------------------------
+
+
+        // *******************ANTIBIOGRAMA************************************}
         $datosAntibiograma = [];
         $antibiogramas = Antibiograma::with(['bacteria', 'medicamento'])
             ->where('cod_formulario', $cod_formulario)
@@ -335,10 +299,11 @@ class FormularioNotificacionPacienteController extends Controller
                 'resistencia' => $antibiograma->nivel,
             ];
         }
-    // *****************************************************************
+        // *****************************************************************
         $h_clinico = $formulario->h_clinico;
         $fecha_llenado = $formulario->fecha_llenado;
         $fecha_ingreso = $formulario->fecha_ingreso;
+        $dias_internacion = $formulario->dias_internacion;
         $servicio_inicio_sintomas = $formulario->servicio_inicio_sintomas;
         $servicio_notificador = $formulario->servicio_notificador;
         $diagnostico_ingreso = $formulario->diagnostico_ingreso;
@@ -359,6 +324,7 @@ class FormularioNotificacionPacienteController extends Controller
             'nombreP' => DatoPaciente::where('n_h_clinico',$h_clinico)->first(),
             'fecha_llenado' => $fecha_llenado,
             'fecha_ingreso' => $fecha_ingreso,
+            'dias_internacion' => $dias_internacion,
             'servicio_inicio_sintomas' => Servicio::where('cod_servicio',$servicio_inicio_sintomas)->first(),
             'servicio_notificador' => Servicio::where('cod_servicio',$servicio_notificador)->first(),
             'diagnostico_ingreso' => $diagnostico_ingreso,
@@ -367,6 +333,7 @@ class FormularioNotificacionPacienteController extends Controller
             'uso_antimicrobanos' => $uso_antimicrobanos,
             'tipo_muestra_cultivo' => TipoMuestra::where('cod_tipo_muestra',$tipo_muestra_cultivo)->first(),
             'procedimiento_invasivo' => ProcedimientoInmasivo::where('cod_procedimiento_invasivo',$procedimiento_invasivo)->first(),
+            'nombresTipoHongos' => $nombresTipoHongos,
             'datosAntibiograma' => $datosAntibiograma,
             'medidas_tomar' => $medidas_tomar,
             'aislamiento' => $aislamiento,
@@ -380,7 +347,29 @@ class FormularioNotificacionPacienteController extends Controller
             return $pdf->stream();
     }
 
-    public function eliminarFormulario($codigoFormulario)
+    // public function eliminarFormulario($codigoFormulario)
+    // {
+
+    //     // Buscar el formulario por el código
+    //     $formulario = FormularioNotificacionPaciente::find($codigoFormulario);
+
+    //     if (!$formulario) {
+    //         return redirect()->back()->with('error', 'No se encontró el formulario solicitado.');
+    //     }
+
+    //     // Eliminar registros relacionados en ANTIBIOGRAMA
+    //     Antibiograma::where('cod_formulario', $codigoFormulario)->delete();
+    //     SeleccionHongos::where('cod_formulario', $codigoFormulario)->delete();
+    //     // Eliminar registros relacionados en SELECCION_TIPO_INFECCION
+    //     SeleccionTipoInfeccion::where('cod_formulario', $codigoFormulario)->delete();
+
+    //     // Eliminar el formulario y sus registros relacionados en FORMULARIO_NOTIFICACION_PACIENTE
+    //     $formulario->delete();
+
+    //     return redirect()->back()->with('success', 'Formulario y registros relacionados eliminados exitosamente.');
+    // }
+
+    public function estadoFormulario($codigoFormulario, Request $request)
     {
         // Buscar el formulario por el código
         $formulario = FormularioNotificacionPaciente::find($codigoFormulario);
@@ -389,18 +378,17 @@ class FormularioNotificacionPacienteController extends Controller
             return redirect()->back()->with('error', 'No se encontró el formulario solicitado.');
         }
 
-        // Eliminar registros relacionados en ANTIBIOGRAMA
-        Antibiograma::where('cod_formulario', $codigoFormulario)->delete();
+        // Actualizar el estado y motivos de baja
+        $formulario->estado = 'baja';
+        $formulario->motivos_baja = $request->input('motivos_baja'); // motivo de baja desde el formulario
 
-        // Eliminar registros relacionados en SELECCION_TIPO_INFECCION
-        SeleccionTipoInfeccion::where('cod_formulario', $codigoFormulario)->delete();
+        // Guardar los cambios en el formulario
+        $formulario->save();
 
-        // Eliminar el formulario y sus registros relacionados en FORMULARIO_NOTIFICACION_PACIENTE
-        $formulario->delete();
-
-        return redirect()->back()->with('success', 'Formulario y registros relacionados eliminados exitosamente.');
+        return redirect()->back()->with('success', 'Formulario actualizado a estado "baja" exitosamente.');
     }
 
+    //REPORTE MES
     public function generarReporte(Request $request)
     {
         // Obtener el mes y año seleccionados del formulario
@@ -423,6 +411,7 @@ class FormularioNotificacionPacienteController extends Controller
             ->join('epidemiologia.bacterias as b', 'bm.cod_bacte', '=', 'b.cod_bacterias')
             ->join('epidemiologia.medicamentos as m', 'bm.cod_medi', '=', 'm.cod_medicamento')
             ->whereBetween('f.fecha_llenado', [$fechaInicial, $fechaFinal])
+            ->where('f.estado', 'alta')
             ->select(
                 'f.cod_form_notificacion_p',
                 'b.nombre as bacteria',
@@ -448,9 +437,35 @@ class FormularioNotificacionPacienteController extends Controller
 
             $estadisticas[$bacteria][$medicamento][$nivel]++;
         }
+        foreach ($estadisticas as &$bacteria) {
+            foreach ($bacteria as &$medicamento) {
+                $total = array_sum($medicamento);
+                if ($total > 0) {
+                    $medicamento['Resistente'] = number_format(($medicamento['Resistente'] / $total) * 100, 1);
+                    $medicamento['Intermedio'] = number_format(($medicamento['Intermedio'] / $total) * 100, 1);
+                    $medicamento['Sensible'] = number_format(($medicamento['Sensible'] / $total) * 100, 1);
+                }
+            }
+        }
+
         $fechaHoraActual = Carbon::now('America/La_Paz')->format('d/m/Y H:i:s');
 
-        $data = compact('estadisticas', 'nombreMesSeleccionado', 'anioSeleccionado','fechaHoraActual');
+
+        $imagePath = public_path('img/logo_HDB.png');
+        $imageData = base64_encode(file_get_contents($imagePath));
+        $imageSrc = 'data:image/png;base64,' . $imageData;
+
+        $encabezado =public_path('img/encabezado.png');
+        $encabezadoData = base64_encode(file_get_contents($encabezado));
+        $encabezadoSrc = 'data:image/png;base64,' . $encabezadoData;
+
+        $paginacion = public_path('img/paginacion.png');
+        $paginacionData = base64_encode(file_get_contents($paginacion));
+        $paginacionSrc = 'data:image/png;base64,' . $paginacionData;
+
+
+
+        $data = compact('estadisticas', 'nombreMesSeleccionado', 'anioSeleccionado','fechaHoraActual', 'imageSrc', 'encabezadoSrc', 'paginacionSrc');
         $pdf = PDF::loadview('Form_IAAS.PDF.reporte', $data);
 
 
@@ -468,5 +483,435 @@ class FormularioNotificacionPacienteController extends Controller
             'Content-Disposition' => 'inline; filename="' . $nombreArchivo . '"'
         ]);
     }
+    //REPORTE ANUAL POR SERVICIO
+    public function reporteAnual(Request $request)
+    {
+        $fechaSeleccionada = $request->a;
+        // Obtener la lista de servicios disponibles
+        $servicios = DB::table('epidemiologia.servicio')->get();
+        $informePorServicio = [];
+
+        foreach ($servicios as $servicio) {
+            $informeServicio = DB::table('epidemiologia.formulario_notificacion_paciente as f')
+                ->join('epidemiologia.antibiograma as a', 'f.cod_form_notificacion_p', '=', 'a.cod_formulario')
+                ->join('epidemiologia.bacterias_medicamentos as bm', function ($join) {
+                    $join->on('a.cod_bacte', '=', 'bm.cod_bacte');
+                    $join->on('a.cod_medi', '=', 'bm.cod_medi');
+                })
+                ->join('epidemiologia.bacterias as b', 'bm.cod_bacte', '=', 'b.cod_bacterias')
+                ->join('epidemiologia.medicamentos as m', 'bm.cod_medi', '=', 'm.cod_medicamento')
+                ->whereYear('f.fecha_llenado', $fechaSeleccionada)
+                ->where('f.servicio_inicio_sintomas', $servicio->cod_servicio)
+                ->where('f.estado', 'alta')
+                ->select(
+                    'b.nombre as bacteria',
+                    'm.nombre as medicamento',
+                    DB::raw('SUM(CASE WHEN a.nivel = \'Resistente\' THEN 1 ELSE 0 END) as casos_resistentes')
+                )
+                ->groupBy('b.nombre', 'm.nombre')
+                ->havingRaw('SUM(CASE WHEN a.nivel = \'Resistente\' THEN 1 ELSE 0 END) > 0') // Filtrar bacterias con al menos un caso resistente
+                ->orderBy('b.nombre', 'desc')
+                ->get();
+
+            $totalCasosResistentesPorBacteria = [];
+
+            // Inicializar el contador de casos resistentes para cada bacteria
+            $currentBacteria = null;
+            $currentTotalCasosResistentes = 0;
+
+            foreach ($informeServicio as $informe) {
+                if ($informe->casos_resistentes > 0) {
+                    if ($currentBacteria !== $informe->bacteria) {
+                        // Nueva bacteria encontrada, guardamos el total y reiniciamos el contador
+                        if ($currentBacteria !== null) {
+                            $totalCasosResistentesPorBacteria[$currentBacteria] = $currentTotalCasosResistentes;
+                        }
+                        $currentBacteria = $informe->bacteria;
+                        $currentTotalCasosResistentes = 0;
+                    }
+                    $currentTotalCasosResistentes += $informe->casos_resistentes;
+                }
+            }
+
+            // Agregar información de la bacteria y el total de casos resistentes por bacteria
+            if ($currentBacteria !== null) {
+                $totalCasosResistentesPorBacteria[$currentBacteria] = $currentTotalCasosResistentes;
+            }
+
+            $informePorServicio[] = [
+                'nombre_servicio' => $servicio->nombre,
+                'informe_servicio' => $informeServicio,
+                'total_casos_resistentes_bacteria' => $totalCasosResistentesPorBacteria,
+            ];
+        }
+        $fechaHoraActual = Carbon::now('America/La_Paz')->format('d/m/Y H:i:s');
+
+
+        $imagePath = public_path('img/logo_HDB.png');
+        $imageData = base64_encode(file_get_contents($imagePath));
+        $imageSrc = 'data:image/png;base64,' . $imageData;
+
+        $encabezado =public_path('img/encabezado.png');
+        $encabezadoData = base64_encode(file_get_contents($encabezado));
+        $encabezadoSrc = 'data:image/png;base64,' . $encabezadoData;
+
+        $paginacion = public_path('img/paginacion.png');
+        $paginacionData = base64_encode(file_get_contents($paginacion));
+        $paginacionSrc = 'data:image/png;base64,' . $paginacionData;
+
+        $data = [
+            'fecha_select' => $fechaSeleccionada,
+            'fechaHoraActual' => $fechaHoraActual,
+            'informePorServicio' => $informePorServicio,
+            'imageSrc'=> $imageSrc,
+            'encabezadoSrc' => $encabezadoSrc,
+            'paginacionSrc' => $paginacionSrc,
+        ];
+
+        $pdf = PDF::loadView('Form_IAAS.PDF.reporte_anual', $data);
+
+        $pdf->getDomPDF()->set_option('isHtml5ParserEnabled', true);
+        $pdf->getDomPDF()->set_option('isPhpEnabled', true);
+
+        // Establecer tamaño y orientación de página
+        $pdf->getDomPDF()->set_paper('A4', 'portrait');
+
+
+
+        // nombre personalizado para descargar con un nombre predeterminado
+        $nombreArchivo = 'Reporte_ANUAL_IAAS_' . $fechaSeleccionada . '.pdf';
+        return response($pdf->output(), 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="' . $nombreArchivo . '"'
+        ]);
+    }
+    //INFORME ANUAL ESPECIFICO
+    public function informeAnual(Request $request)
+    {
+        $fechaSeleccionada = $request->a;
+
+        // Nombres de las bacterias de interés
+        $bacteriasDeInteres = ['Enterococcus s.p.', 'Pseudomonas Aeruginosa' , 'Staphilococcus Aureus', 'Staphilococcus Coagulasa Neagtivo', 'Klebsiella Pneumoniae', 'Acinetobacter s.p.'];
+
+        // Obtener datos para las bacterias de interés
+        $informeBacterias = DB::table('epidemiologia.formulario_notificacion_paciente as f')
+            ->join('epidemiologia.antibiograma as a', 'f.cod_form_notificacion_p', '=', 'a.cod_formulario')
+            ->join('epidemiologia.bacterias_medicamentos as bm', function ($join) {
+                $join->on('a.cod_bacte', '=', 'bm.cod_bacte');
+                $join->on('a.cod_medi', '=', 'bm.cod_medi');
+            })
+            ->join('epidemiologia.bacterias as b', 'bm.cod_bacte', '=', 'b.cod_bacterias')
+            ->join('epidemiologia.medicamentos as m', 'bm.cod_medi', '=', 'm.cod_medicamento')
+            ->whereYear('f.fecha_llenado', $fechaSeleccionada)
+            ->whereIn('b.nombre', $bacteriasDeInteres)
+            ->where('f.estado', 'alta')
+            ->select(
+                'b.nombre as bacteria',
+                'm.nombre as medicamento',
+                DB::raw('SUM(CASE WHEN a.nivel = \'Resistente\' THEN 1 ELSE 0 END) as casos_resistentes')
+            )
+            ->groupBy('b.nombre', 'm.nombre')
+            ->havingRaw('SUM(CASE WHEN a.nivel = \'Resistente\' THEN 1 ELSE 0 END) > 0')
+            ->orderBy('b.nombre', 'desc')
+            ->get();
+
+        $totalCasosResistentesPorBacteria = [];
+
+        foreach ($informeBacterias as $informe) {
+            if (!isset($totalCasosResistentesPorBacteria[$informe->bacteria])) {
+                $totalCasosResistentesPorBacteria[$informe->bacteria] = [
+                    'total_resistentes' => 0,
+                    'medicamentos' => [],
+                ];
+            }
+
+            $totalCasosResistentesPorBacteria[$informe->bacteria]['total_resistentes'] += $informe->casos_resistentes;
+            $totalCasosResistentesPorBacteria[$informe->bacteria]['medicamentos'][] = $informe->medicamento;
+        }
+
+        // Consulta adicional para bacterias específicas y medicamento OXA
+        $bacteriasEspecificas = ['Staphilococcus Coagulasa Neagtivo', 'Staphilococcus Aureus', 'Enterococcus s.p.'];
+
+        $informeEspecifico = DB::table('epidemiologia.formulario_notificacion_paciente as f')
+            ->join('epidemiologia.antibiograma as a', 'f.cod_form_notificacion_p', '=', 'a.cod_formulario')
+            ->join('epidemiologia.bacterias_medicamentos as bm', function ($join) {
+                $join->on('a.cod_bacte', '=', 'bm.cod_bacte');
+                $join->on('a.cod_medi', '=', 'bm.cod_medi');
+            })
+            ->join('epidemiologia.bacterias as b', 'bm.cod_bacte', '=', 'b.cod_bacterias')
+            ->join('epidemiologia.medicamentos as m', 'bm.cod_medi', '=', 'm.cod_medicamento')
+            ->whereYear('f.fecha_llenado', $fechaSeleccionada)
+            ->whereIn('b.nombre', $bacteriasEspecificas)
+            ->whereIn('m.nombre', ['OXA', 'FOX'])
+            ->where('a.nivel', 'Resistente')
+            ->select(
+                'b.nombre as bacteria',
+                DB::raw('COUNT(*) as casos_resistentes')
+            )
+            ->groupBy('b.nombre')
+            ->orderBy('b.nombre', 'desc')
+            ->get();
+
+        // Bacterias y medicamentos de interés
+        $bacteriasEspecificas2 = ['Escherichia coli', 'Pseudomonas aeruginosa', 'Acinetobacter s.p.'];
+        $medicamentosEspecificos = ['IMP', 'MER'];
+
+
+
+        // Realizar la consulta
+        $informeEspecifico2 = DB::table('epidemiologia.formulario_notificacion_paciente as f')
+            ->join('epidemiologia.antibiograma as a', 'f.cod_form_notificacion_p', '=', 'a.cod_formulario')
+            ->join('epidemiologia.bacterias_medicamentos as bm', function ($join) {
+                $join->on('a.cod_bacte', '=', 'bm.cod_bacte');
+                $join->on('a.cod_medi', '=', 'bm.cod_medi');
+            })
+            ->join('epidemiologia.bacterias as b', 'bm.cod_bacte', '=', 'b.cod_bacterias')
+            ->join('epidemiologia.medicamentos as m', 'bm.cod_medi', '=', 'm.cod_medicamento')
+            ->whereYear('f.fecha_llenado', $fechaSeleccionada)
+            ->whereIn('b.nombre', $bacteriasEspecificas2)
+            ->whereIn('m.nombre', $medicamentosEspecificos)
+            ->where('a.nivel', 'Resistente')
+            ->select(
+                'b.nombre as bacteria',
+                'm.nombre as medicamento',
+                DB::raw('COUNT(*) as casos_resistentes')
+            )
+            ->groupBy('b.nombre', 'm.nombre')
+            ->orderBy('b.nombre', 'desc')
+            ->get();
+        // Inicializar un array para almacenar los conteos de casos resistentes por medicamento
+        $conteoCasosPorMedicamento = [];
+
+        foreach ($medicamentosEspecificos as $medicamento) {
+            foreach ($bacteriasEspecificas2 as $bacteria) {
+                $conteoCasosPorMedicamento[$bacteria][$medicamento] = $informeEspecifico2
+                    ->where('bacteria', $bacteria)
+                    ->where('medicamento', $medicamento)
+                    ->sum('casos_resistentes');
+            }
+        }
+
+        $fechaHoraActual = Carbon::now('America/La_Paz')->format('d/m/Y H:i:s');
+        $data = [
+            'fecha_select' => $fechaSeleccionada,
+            'fechaHoraActual' => $fechaHoraActual,
+            'total_casos_resistentes_por_bacteria' => $totalCasosResistentesPorBacteria,
+            'informeEspecifico' => $informeEspecifico,
+            'bacteriasEspecificas' => $bacteriasEspecificas,
+            'informeEspecifico2' => $informeEspecifico2,
+            'bacteriasEspecificas2' => $bacteriasEspecificas2,
+            'conteoCasosPorMedicamento' => $conteoCasosPorMedicamento,
+        ];
+
+        $pdf = PDF::loadView('Form_IAAS.PDF.informeAnual', $data);
+
+        // Configuración del PDF y respuesta
+        $pdf->getDomPDF()->set_option('isHtml5ParserEnabled', true);
+        $pdf->getDomPDF()->set_option('isPhpEnabled', true);
+        $pdf->getDomPDF()->set_paper('A4', 'portrait');
+        $nombreArchivo = 'Informe_ANUAL_IAAS_' . $fechaSeleccionada . '.pdf';
+
+        return response($pdf->output(), 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="' . $nombreArchivo . '"'
+        ]);
+    }
+    //REPORTE ANUAL POR MESES
+    public function reporteAnualPorMes(Request $request)
+    {
+        $añoSeleccionado = $request->a;
+        $fechaActual = now();
+        $mesActual = $fechaActual->month;
+        $informePorMes = [];
+        $totalCasosPorMes = [];
+
+        // Obtener la lista de meses disponibles
+        $meses = [
+            'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+            'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+        ];
+
+        // Inicializar la variable $totalCasosResistentesPorBacteria como un arreglo vacío
+        $totalCasosResistentesPorBacteria = [];
+
+        // Realizar la consulta de base de datos y generar informes por mes
+        foreach ($meses as $mesNumero => $nombreMes) {
+            if ($añoSeleccionado < $fechaActual->year || ($añoSeleccionado == $fechaActual->year && $mesNumero + 1 <= $mesActual)) {
+                // Realiza la consulta de base de datos para este mes
+                $informeMes = DB::table('epidemiologia.formulario_notificacion_paciente as f')
+                    ->join('epidemiologia.antibiograma as a', 'f.cod_form_notificacion_p', '=', 'a.cod_formulario')
+                    ->join('epidemiologia.bacterias_medicamentos as bm', function ($join) {
+                        $join->on('a.cod_bacte', '=', 'bm.cod_bacte');
+                        $join->on('a.cod_medi', '=', 'bm.cod_medi');
+                    })
+                    ->join('epidemiologia.bacterias as b', 'bm.cod_bacte', '=', 'b.cod_bacterias')
+                    ->join('epidemiologia.medicamentos as m', 'bm.cod_medi', '=', 'm.cod_medicamento')
+                    ->whereYear('f.fecha_llenado', $añoSeleccionado)
+                    ->whereMonth('f.fecha_llenado', $mesNumero + 1) // Ajustar el índice de mes a partir de 1
+                    ->where('f.estado', 'alta')
+                    ->select(
+                        'b.nombre as bacteria',
+                        'm.nombre as medicamento',
+                        DB::raw('SUM(CASE WHEN a.nivel = \'Resistente\' THEN 1 ELSE 0 END) as casos_resistentes')
+                    )
+                    ->groupBy('b.nombre', 'm.nombre')
+                    ->havingRaw('SUM(CASE WHEN a.nivel = \'Resistente\' THEN 1 ELSE 0 END) > 0') // Filtrar casos resistentes
+                    ->orderBy('b.nombre', 'desc')
+                    ->get();
+
+                // Almacenar el informe en el arreglo $informePorMes
+                $informePorMes[$nombreMes] = $informeMes;
+
+                $totalCasosPorMes[$nombreMes] = $informeMes->sum('casos_resistentes');
+                // Inicializar un arreglo para almacenar los totales de casos resistentes por bacteria en este mes
+                $totalCasosResistentesPorBacteria[$nombreMes] = [];
+
+                // Recorrer los resultados de la consulta y agregar los totales a $totalCasosResistentesPorBacteria
+                foreach ($informeMes as $informe) {
+                    if (!isset($totalCasosResistentesPorBacteria[$nombreMes][$informe->bacteria])) {
+                        $totalCasosResistentesPorBacteria[$nombreMes][$informe->bacteria] = 0;
+                    }
+                    $totalCasosResistentesPorBacteria[$nombreMes][$informe->bacteria] += $informe->casos_resistentes;
+                }
+            }
+        }
+        $fechaHoraActual = Carbon::now('America/La_Paz')->format('d/m/Y H:i:s');
+
+
+        $imagePath = public_path('img/logo_HDB.png');
+        $imageData = base64_encode(file_get_contents($imagePath));
+        $imageSrc = 'data:image/png;base64,' . $imageData;
+
+        $encabezado =public_path('img/encabezado.png');
+        $encabezadoData = base64_encode(file_get_contents($encabezado));
+        $encabezadoSrc = 'data:image/png;base64,' . $encabezadoData;
+
+        $paginacion = public_path('img/paginacion.png');
+        $paginacionData = base64_encode(file_get_contents($paginacion));
+        $paginacionSrc = 'data:image/png;base64,' . $paginacionData;
+
+        $data = [
+            'añoSeleccionado' => $añoSeleccionado,
+            'fechaHoraActual' => $fechaHoraActual,
+            'informeMes' => $informeMes,
+            'totalCasosPorMes' => $totalCasosPorMes,
+            'imageSrc'=> $imageSrc,
+            'encabezadoSrc' => $encabezadoSrc,
+            'paginacionSrc' => $paginacionSrc,
+            'meses' => $meses,
+            'informePorMes' => $informePorMes,
+        ];
+
+        $pdf = PDF::loadView('Form_IAAS.PDF.reporte_anual_por_mes', $data);
+
+        $pdf->getDomPDF()->set_option('isHtml5ParserEnabled', true);
+        $pdf->getDomPDF()->set_option('isPhpEnabled', true);
+
+        // Establecer tamaño y orientación de página
+        $pdf->getDomPDF()->set_paper('A4', 'portrait');
+
+        // nombre personalizado para descargar con un nombre predeterminado
+        $nombreArchivo = 'Reporte_ANUAL_por_meses_IAAS_año:' . $añoSeleccionado . '.pdf';
+        return response($pdf->output(), 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="' . $nombreArchivo . '"'
+        ]);
+    }
+
+    //REPORTE POR RANGO DE FECHAS
+    public function reporteRango(Request $request)
+    {
+        // Obtener las fechas de entrada y salida proporcionadas por el usuario
+        $fechaEntrada = $request->input('fecha_e');
+        $fechaSalida = $request->input('fecha_s');
+
+        // Desglose de la fecha de entrada
+        $yearEntrada = date('Y', strtotime($fechaEntrada));
+        $monthEntrada = date('m', strtotime($fechaEntrada));
+        $dayEntrada = date('d', strtotime($fechaEntrada));
+
+        // Desglose de la fecha de salida
+        $yearSalida = date('Y', strtotime($fechaSalida));
+        $monthSalida = date('m', strtotime($fechaSalida));
+        $daySalida = date('d', strtotime($fechaSalida));
+
+        $añoSeleccionado = date('Y', strtotime($fechaEntrada)); // Obtener el año del rango de fechas
+        $fechaActual = now();
+        $mesActual = $fechaActual->month;
+
+        // Realiza la consulta de base de datos para el rango de fechas proporcionado
+        $informe = DB::table('epidemiologia.formulario_notificacion_paciente as f')
+            ->join('epidemiologia.antibiograma as a', 'f.cod_form_notificacion_p', '=', 'a.cod_formulario')
+            ->join('epidemiologia.bacterias_medicamentos as bm', function ($join) {
+                $join->on('a.cod_bacte', '=', 'bm.cod_bacte');
+                $join->on('a.cod_medi', '=', 'bm.cod_medi');
+            })
+            ->join('epidemiologia.bacterias as b', 'bm.cod_bacte', '=', 'b.cod_bacterias')
+            ->join('epidemiologia.medicamentos as m', 'bm.cod_medi', '=', 'm.cod_medicamento')
+            ->whereDate('f.fecha_llenado', '>=', $fechaEntrada)
+            ->whereDate('f.fecha_llenado', '<=', $fechaSalida)
+            ->where('f.estado', 'alta')
+            ->select(
+                'b.nombre as bacteria',
+                'm.nombre as medicamento',
+                DB::raw('SUM(CASE WHEN a.nivel = \'Resistente\' THEN 1 ELSE 0 END) as casos_resistentes')
+            )
+            ->groupBy('b.nombre', 'm.nombre')
+            ->havingRaw('SUM(CASE WHEN a.nivel = \'Resistente\' THEN 1 ELSE 0 END) > 0') // Filtrar casos resistentes
+            ->orderBy('b.nombre', 'desc')
+            ->get();
+
+            $totalCasosResistentes = $informe->sum('casos_resistentes');
+            $totalCasosPorBacteria = $informe->groupBy('bacteria')->map(function ($item) {
+                return $item->sum('casos_resistentes');
+        });
+
+        $fechaHoraActual = Carbon::now('America/La_Paz')->format('d/m/Y H:i:s');
+
+
+        $imagePath = public_path('img/logo_HDB.png');
+        $imageData = base64_encode(file_get_contents($imagePath));
+        $imageSrc = 'data:image/png;base64,' . $imageData;
+
+        $encabezado =public_path('img/encabezado.png');
+        $encabezadoData = base64_encode(file_get_contents($encabezado));
+        $encabezadoSrc = 'data:image/png;base64,' . $encabezadoData;
+
+        $paginacion = public_path('img/paginacion.png');
+        $paginacionData = base64_encode(file_get_contents($paginacion));
+        $paginacionSrc = 'data:image/png;base64,' . $paginacionData;
+
+        $data = [
+
+            'fechaHoraActual' => $fechaHoraActual,
+            'informe' => $informe,
+            'imageSrc'=> $imageSrc,
+            'encabezadoSrc' => $encabezadoSrc,
+            'paginacionSrc' => $paginacionSrc,
+
+            'fechaEntrada' => $fechaEntrada,
+            'fechaSalida' => $fechaSalida,
+            'totalCasosResistentes' =>$totalCasosResistentes,
+            'totalCasosPorBacteria' => $totalCasosPorBacteria,
+        ];
+
+        $pdf = PDF::loadView('Form_IAAS.PDF.reporte_rango_IAAS', $data);
+
+        $pdf->getDomPDF()->set_option('isHtml5ParserEnabled', true);
+        $pdf->getDomPDF()->set_option('isPhpEnabled', true);
+
+        // Establecer tamaño y orientación de página
+        $pdf->getDomPDF()->set_paper('A4', 'portrait');
+
+        // nombre personalizado para descargar con un nombre predeterminado
+        $nombreArchivo = 'Reporte_ANUAL_por_meses_IAAS_año:' . $añoSeleccionado . '.pdf';
+        return response($pdf->output(), 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="' . $nombreArchivo . '"'
+        ]);
+    }
+
+
+
 
 }

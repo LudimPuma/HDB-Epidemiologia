@@ -44,8 +44,16 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/TablaIAAS', 'FormularioNotificacionPacienteController@tabla')->name('TablaIAAS');
     Route::get('/generar-pdf/{codigoFormulario}', 'FormularioNotificacionPacienteController@generarPDF')->name('generar.pdf');
-    Route::delete('/eliminar-formulario/{codigoFormulario}', 'FormularioNotificacionPacienteController@eliminarFormulario')->name('eliminar.formulario');
+    Route::delete('/eliminar-IAAS-formulario/{codigoFormulario}', 'FormularioNotificacionPacienteController@eliminarFormulario')->name('eliminar.formulario');
+    Route::put('/cambiarEstado/{codigoFormulario}', 'FormularioNotificacionPacienteController@estadoFormulario')->name('cambiar.estado');
+
+
+
     Route::post('/generar-reporte', 'FormularioNotificacionPacienteController@generarReporte')->name('generar.reporte');
+    Route::post('/reporte-anual', 'FormularioNotificacionPacienteController@reporteAnual')->name('reporte.anual');
+    Route::post('/informe-anual', 'FormularioNotificacionPacienteController@informeAnual')->name('informe.anual');
+    Route::post('/reporte-anual-por-mes', 'FormularioNotificacionPacienteController@reporteAnualPorMes')->name('reporte.anual.por.mes.IAAS');
+    Route::post('/reporte-por-rango-IAAS', 'FormularioNotificacionPacienteController@reporteRango')->name('reporte.por.rango.IAAS');
 
 
     //FORMULARIO ENFERMEDADES DE NOTIFICACION INMEDIATA
@@ -61,12 +69,23 @@ Route::middleware('auth')->group(function () {
     Route::post('/formulario/generar-reporte', 'FormularioEnfermedadesNotificacionInmediataController@generar')->name('formulario.generar');
 
     Route::get('/principal', 'FormularioEnfermedadesNotificacionInmediataController@mostrarGrafica')->name('principal');
+    Route::get('/TablaEnfermadesNotificacionInmediata', 'FormularioEnfermedadesNotificacionInmediataController@tabla')->name('TablaE_N_I');
+    // Route::get('/generar-pdf/{codigoFormulario}', 'FormularioEnfermedadesNotificacionInmediataController@generarPDF')->name('generar.pdf');
+    Route::delete('/eliminar-formulario/{codigoFormulario}', 'FormularioEnfermedadesNotificacionInmediataController@eliminarFormulario')->name('eliminar.formulario.N-I');
 
+    Route::post('/reporte-anual/Enf_Not_Inmediata', 'FormularioEnfermedadesNotificacionInmediataController@repAnual')->name('rep.anual.Enf.Not.Inmediata');
+    Route::post('/reporte-anual/Por_Meses', 'FormularioEnfermedadesNotificacionInmediataController@reporteAnual')->name('reporte.anual.Enf.Not.Inmediata');
+    Route::post('/reporte-por-rango-E_N_I', 'FormularioEnfermedadesNotificacionInmediataController@reporteRango')->name('reporte.por.rango.E_N_I');
 
     // web.php
 // routes/web.php
 Route::get('/visualizar-pdf', 'FormularioEnfermedadesNotificacionInmediataController@visualizarPDF')->name('formulario.visualizarPDF');
 
 
+    //REPORTES
+    Route::view('/Por_Gestion', 'Reportes.Por_Gestion')->name('Por.Gestion');
+    Route::view('/Por_Mes', 'Reportes.Por_Mes')->name('Por.Mes');
+    Route::view('/Por_Rango_Fecha', 'Reportes.Por_Rango_fecha')->name('Por.Rango_fecha');
+    Route::view('/Por_Servicio', 'Reportes.Por_Servicio')->name('Por.Servicio');
 //-----------------------------------------------------------------
 });

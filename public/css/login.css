@@ -1,8 +1,13 @@
 .contenedor{
     width: 25rem;
+    background-color: rgba(255, 255, 255, 0.5); /* Color blanco semi-transparente (0.8 es la opacidad) */
+    padding: 20px; /* Añade espacio alrededor del contenido para que el fondo sea visible */
 }
 .logo {
-    height: 7rem;
+    height: 9rem;
+    position: absolute;
+    top: 0.7cm;
+    left: 1cm;
 }
 .username{
     height: 1rem;
@@ -16,3 +21,5 @@
 .olvidaste{
     font-size: 0.9rem;
 }
+
+

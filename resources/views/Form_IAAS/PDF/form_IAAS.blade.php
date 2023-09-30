@@ -68,39 +68,40 @@
     {{-- <img src="img/logo1.png" class="img-fluid profile-image-pic img-thumbnail rounded-circle my-3" --}}
     {{-- width="50px" alt="profile"> --}}
     <h1>Hospital Daniel Bracamonte</h1>
-    <h3>Departamento de Epidemiología Hospitalaria</h3>
-    <h4>Ficha IAAS</h4>
+    <h3>Comité de Vigilancia Epidemiologica</h3>
+    <h4>Ficha de casos de IAAS</h4>
     <!-- DATOS GENERALES -->
     <div class="section">
         <h2>Datos Generales</h2>
         <table>
             <tr>
-                <th>Nro de Historial:</th>
+                <th>Nro de Historia Clinica:</th>
                 <td >{{ $h_clinico }}</td>
                 <th>Nombre Paciente:</th>
-                <td >{{ $nombreP->nombre_paciente }} {{ $nombreP->ap_paterno }} {{ $nombreP->ap_materno }}</td>
+                <td colspan="3">{{ $nombreP->nombre_paciente }} {{ $nombreP->ap_paterno }} {{ $nombreP->ap_materno }}</td>
             </tr>
             <tr>
-                <th>Fecha de Llenado</th>
+                <th>Fecha de Llenado:</th>
                 <td>{{ $fecha_llenado }}</td>
-                <th>Fecha de Ingreso</th>
+                <th>Fecha de Ingreso:</th>
                 <td>{{ $fecha_ingreso }}</td>
+                <th>Dias de Internacion:</th>
+                <td>{{$dias_internacion}}</td>
             </tr>
             <tr>
                 <th>Servicio de Inicio de sistomas: </th>
                 <td>{{ $servicio_inicio_sintomas->nombre }}</td>
                 <th>Servicio Notificador: </th>
-                <td>{{ $servicio_notificador->nombre }}</td>
+                <td colspan="3">{{ $servicio_notificador->nombre }}</td>
             </tr>
             <tr>
                 <th>Diagnóstico de ingreso</th>
-                <td colspan="3">{{ $diagnostico_ingreso }}</td>
+                <td colspan="5">{{ $diagnostico_ingreso }}</td>
             </tr>
             <tr>
                 <th>Diagnóstico de sala</th>
-                <td colspan="3">{{ $diagnostico_sala }}</td>
+                <td colspan="5">{{ $diagnostico_sala }}</td>
             </tr>
-
         </table>
     </div>
     <!-- DATOS LABORATORIO -->
@@ -122,6 +123,14 @@
                 <td>{{ $tipo_muestra_cultivo->nombre }}</td>
                 <th>Procedimiento Invasivo</th>
                 <td>{{ $procedimiento_invasivo->nombre }}</td>
+            </tr>
+            <tr>
+                <th>Tipo de Hongo</th>
+                <td colspan="3">
+                    @foreach ($nombresTipoHongos as $nombreTipoHongo)
+                        {{ $nombreTipoHongo }},
+                    @endforeach
+                </td>
             </tr>
         </table>
         <table>
@@ -162,6 +171,7 @@
                         </tr>
                     @endif
                 @endforeach
+
             </tbody>
         </table>
     </div>

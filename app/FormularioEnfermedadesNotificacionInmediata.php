@@ -8,7 +8,7 @@ class FormularioEnfermedadesNotificacionInmediata extends Model
 {
     protected $table='epidemiologia.formulario_enfermedades_notificacion_inmediata';
     protected $primaryKey = 'id_f_notificacion_inmediata';
-    protected $fillable=['h_clinico','fecha','cod_pato','cod_servi','notificador','acciones','observaciones'];
+    protected $fillable=['h_clinico','fecha','cod_pato','cod_servi','notificador','acciones','observaciones','estado','motivos_baja','pk_usuario'];
     public $timestamps = false;
     public function datoPaciente()
     {

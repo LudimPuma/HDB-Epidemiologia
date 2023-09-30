@@ -9,7 +9,7 @@ class FormularioNotificacionPaciente extends Model
     protected $table='epidemiologia.formulario_notificacion_paciente';
     protected $primaryKey = 'cod_form_notificacion_p';
     // protected $fillable=['h_clinico','fecha_llenado','fecha_ingreso','servicio_inicio_sintomas','servicio_notificador','diagnostico_ingreso','diagnostico_sala','tipo_infeccion','uso_antimicrobanos','agente_causal','tipo_muestra_cultivo','procedimiento_invasivo','medidas_tomar','aislamiento','seguimiento','observacion'];
-    protected $fillable=['h_clinico','fecha_llenado','fecha_ingreso','servicio_inicio_sintomas','servicio_notificador','diagnostico_ingreso','diagnostico_sala','uso_antimicrobanos','tipo_muestra_cultivo','procedimiento_invasivo','medidas_tomar','aislamiento','seguimiento','observacion'];
+    protected $fillable=['h_clinico','fecha_llenado','fecha_ingreso','servicio_inicio_sintomas','servicio_notificador','diagnostico_ingreso','diagnostico_sala','uso_antimicrobanos','tipo_muestra_cultivo','procedimiento_invasivo','medidas_tomar','aislamiento','seguimiento','observacion','dias_internacion','estado','motivos_baja','pk_usuario'];
     public $timestamps = false;
     public function datoPaciente()
     {
@@ -53,5 +53,9 @@ class FormularioNotificacionPaciente extends Model
     public function seleccionesTipoInfeccion()
     {
         return $this->hasMany(SeleccionTipoInfeccion::class, 'cod_form_notificacion_p');
+    }
+    public function seleccionesHongos()
+    {
+        return $this->hasMany(SeleccionHongos::class, 'cod_form_notificacion_p');
     }
 }

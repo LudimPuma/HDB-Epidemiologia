@@ -10,14 +10,6 @@
 
 <div class="row">
     <div class="col-lg-4">
-        <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#modalBusqueda">
-            Imprimir Formulario
-        </button>
-    </div>
-</div>
-
-<div class="row">
-    <div class="col-lg-4">
         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalreporte">
             Generar Reporte
         </button>
@@ -84,32 +76,6 @@
         </div>
     </div>
 </div>
-
-
-<!-- Modal IMPRIMIR FORMULARIO-->
-{{-- <div class="modal fade" id="modalBusqueda" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Buscar formulario por historial clínico</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form action="{{ route('buscar-form_2') }}" method="GET">
-                    <div class="mb-3">
-                        <label for="hClinico" class="form-label">Número de historial clínico:</label>
-                        <input type="number" class="form-control" id="hClinico" name="hClinico" required>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary">Buscar</button>
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-</div> --}}
-
 
 <!-- Modal de selección de fechas REPORTE-->
 <div class="modal fade" id="modalreporte" tabindex="-1" role="dialog" aria-labelledby="modalreporte" aria-hidden="true">

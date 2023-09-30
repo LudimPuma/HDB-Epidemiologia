@@ -17,6 +17,8 @@
     <link rel="stylesheet" href="{{asset('assets/css/materialdesignicons.min.css')}}" />
     <link rel="stylesheet" href="{{asset('assets/css/fullcalendar.css')}}" />
     <link rel="stylesheet" href="{{asset('assets/css/main.css')}}" />
+    <link rel="stylesheet" href="{{ asset('assets/js/sweetalert2/dist/sweetalert2.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/js/datatables.net/dataTables.bootstrap4.min.css') }}">
     @stack('style')
   </head>
   <body>
@@ -118,8 +120,8 @@
           <div class="row">
             <div class="order-last order-md-first">
               <div class="copyright text-center text-md-start">
-                <p class="text-sm" style="text-align: center">
-                  Diseñado y desarrollado por la Unidad de Informática -
+                <p class="text-sm" >
+                  2023
                   <a
                     href="https://www.facebook.com/profile.php?id=100063500984665&locale=es_LA"
                     rel="nofollow"
@@ -127,6 +129,11 @@
                   >
                   Hospital Daniel Bracamonte
                   </a>
+                  - developed by:
+                  <a href="mailto:ludimpuma1@gmail.com">ludimpuma1@gmail.com</a>
+                  Contact us
+                  <a href="https://wa.me/77474525">+591 77474525</a>
+
                 </p>
               </div>
             </div>
@@ -169,7 +176,7 @@
 
 
     <!-- ========= All Javascript files linkup ======== -->
-    {{-- <script src="assets/js/jquery-3.6.0.min.js"></script> --}}
+    <script src="assets/js/jquery-3.6.0.min.js"></script>
     <script src="assets/js/bootstrap.bundle.min.js"></script>
     <script src="assets/js/Chart.min.js"></script>
     <script src="assets/js/dynamic-pie-chart.js"></script>
@@ -179,9 +186,9 @@
     <script src="assets/js/world-merc.js"></script>
     <script src="assets/js/polyfill.js"></script>
     <script src="assets/js/main.js"></script>
-
-    <script>
-    </script>
+    <script src="assets/js/sweetalert2/dist/sweetalert2.min.js"></script>
+    <script src="assets/js/datatables.net/jquery.dataTables.min.js"> </script>
+    <script src="assets/js/datatables.net/dataTables.bootstrap4.min.js"> </script>
     @stack('script')
   </body>
 </html>
