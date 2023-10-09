@@ -1,0 +1,26 @@
+body{
+    font-family: Arial, sans-serif;
+}
+.table th, .table td {
+    text-align: center;
+}
+
+.table-header {
+    background-color: rgb(196, 27, 27);
+    color: #fff;
+}
+
+.table-footer {
+    background-color: rgba(27, 102, 8, 0.377);
+}
+
+.signature-container {
+    text-align: center;
+    margin-top: 100px;
+    border-top: 1px solid #000;
+    padding-top: 5px;
+    height: 20px;
+    width: 50%;
+    margin-left: auto;
+    margin-right: auto;
+}

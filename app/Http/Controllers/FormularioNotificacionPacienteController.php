@@ -1,9 +1,11 @@
 <?php
 
 namespace App\Http\Controllers;
-use PDF;
+use SnappyPDF;
 use Dompdf\Dompdf;
 use Carbon\Carbon;
+use Dompdf\Options;
+use PDF;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -19,6 +21,7 @@ use App\TipoMuestra;
 use App\Bacteria;
 use App\Medicamento;
 use App\FormularioNotificacionPaciente;
+use Intervention\Image\ImageManagerStatic as Image;
 class FormularioNotificacionPacienteController extends Controller
 {
 
@@ -84,160 +87,163 @@ class FormularioNotificacionPacienteController extends Controller
     }
     public function guardarDatos(Request $request)
     {
-    // Validar los datos del formulario
-    $request->validate([
-        'h_clinico' => 'required',
-        'fecha_llenado' => 'required',
-        'fecha_ingreso' => 'required',
-        'dias_internacion' => 'required|integer|min:1',
-        'servicio_inicio_sintomas' => 'required',
-        'servicio_notificador' => 'required',
-        'diagnostico_ingreso' => 'required',
-        'diagnostico_sala' => 'required',
-        'uso_antimicrobanos' => 'required',
-        'tipo_muestra_cultivo' => 'required',
-        'procedimiento_invasivo' => 'required',
-        'medidas_tomar' => 'required',
-        'aislamiento' => 'required',
-        'seguimiento' => 'required',
-        'observacion' => 'required',
-        'informacion_bacterias_input' => 'required',
-        'infecciones_seleccionadas'=> 'required',
-    ],
-    [
-        'h_clinico.required'=> 'El Nro. Clinico no puede estar vacio',
-        'fecha_llenado.required'=> 'La fecha de llenado no puede estar vacio',
-        'fecha_ingreso.required'=> 'La fecha de ingreso del paciente no puede estar vacio',
-        'dias_internacion' => 'El campo es obligatorio',
-        'servicio_inicio_sintomas.required'=> 'El servicio de inicio de sintomas no puede estar vacio',
-        'servicio_notificador.required'=> 'El servicio notificador no puede estar vacio',
-        'diagnostico_ingreso.required' => 'El diagnostico de ingreso no puede estar vacio',
-        'diagnostico_sala.required' => 'El diagnostico de sala no puede estar vacio',
-        'uso_antimicrobanos.required'=> 'Este campo no puede estar vacio',
-        'tipo_muestra_cultivo.required'=> 'Tipo de muestra cultivo no puede estar vacio',
-        'procedimiento_invasivo.required'=> 'Procedimiento invasivo no puede estar vacio',
-        'medidas_tomar.required'=> 'Medidas a tomar no puede estar vacio',
-        'aislamiento.required'=> 'No puede estar vacio',
-        'seguimiento.required'=> 'El seguimiento no puede estar vacio',
-        'observacion.required'=> 'La observacion no puede estar vacio',
+        // Validar los datos del formulario
+        $request->validate([
+            'h_clinico' => 'required',
+            'fecha_llenado' => 'required',
+            'fecha_ingreso' => 'required',
+            'dias_internacion' => 'required|integer|min:1',
+            'muerte' => 'required',
+            'servicio_inicio_sintomas' => 'required',
+            'servicio_notificador' => 'required',
+            'diagnostico_ingreso' => 'required',
+            'diagnostico_sala' => 'required',
+            'uso_antimicrobanos' => 'required',
+            'tipo_muestra_cultivo' => 'required',
+            'procedimiento_invasivo' => 'required',
+            'medidas_tomar' => 'required',
+            'aislamiento' => 'required',
+            'seguimiento' => 'required',
+            'observacion' => 'required',
+            'informacion_bacterias_input' => 'required',
+            'infecciones_seleccionadas'=> 'required',
+        ],
+        [
+            'h_clinico.required'=> 'El Nro. Clinico no puede estar vacio',
+            'fecha_llenado.required'=> 'La fecha de llenado no puede estar vacio',
+            'fecha_ingreso.required'=> 'La fecha de ingreso del paciente no puede estar vacio',
+            'dias_internacion' => 'El campo es obligatorio',
+            'muerte' => 'El campo es obligatorio',
+            'servicio_inicio_sintomas.required'=> 'El servicio de inicio de sintomas no puede estar vacio',
+            'servicio_notificador.required'=> 'El servicio notificador no puede estar vacio',
+            'diagnostico_ingreso.required' => 'El diagnostico de ingreso no puede estar vacio',
+            'diagnostico_sala.required' => 'El diagnostico de sala no puede estar vacio',
+            'uso_antimicrobanos.required'=> 'Este campo no puede estar vacio',
+            'tipo_muestra_cultivo.required'=> 'Tipo de muestra cultivo no puede estar vacio',
+            'procedimiento_invasivo.required'=> 'Procedimiento invasivo no puede estar vacio',
+            'medidas_tomar.required'=> 'Medidas a tomar no puede estar vacio',
+            'aislamiento.required'=> 'No puede estar vacio',
+            'seguimiento.required'=> 'El seguimiento no puede estar vacio',
+            'observacion.required'=> 'La observacion no puede estar vacio',
 
-    ]
-    );
+        ]
+        );
 
-    // Crear una nueva instancia del modelo FormularioNotificacionPaciente
-    $formulario = new FormularioNotificacionPaciente();
-    // Asignar los valores de los campos del formulario al modelo
-    $formulario->h_clinico = $request->input('h_clinico');
-    $formulario->fecha_llenado = $request->input('fecha_llenado');
-    $formulario->fecha_ingreso = $request->input('fecha_ingreso');
-    $formulario->dias_internacion = $request->input('dias_internacion');
-    $formulario->servicio_inicio_sintomas = $request->input('servicio_inicio_sintomas');
-    $formulario->servicio_notificador = $request->input('servicio_notificador');
-    $formulario->diagnostico_ingreso = $request->input('diagnostico_ingreso');
-    $formulario->diagnostico_sala = $request->input('diagnostico_sala');
-    $formulario->uso_antimicrobanos = $request->input('uso_antimicrobanos');
-    $formulario->tipo_muestra_cultivo = $request->input('tipo_muestra_cultivo');
-    $formulario->procedimiento_invasivo = $request->input('procedimiento_invasivo');
-    $formulario->medidas_tomar = $request->input('medidas_tomar');
-    $formulario->aislamiento = $request->input('aislamiento');
-    $formulario->seguimiento = $request->input('seguimiento');
-    $formulario->observacion = $request->input('observacion');
-    $formulario->estado = 'alta';
-    $formulario->pk_usuario = Auth::id();
+        // Crear una nueva instancia del modelo FormularioNotificacionPaciente
+        $formulario = new FormularioNotificacionPaciente();
+        // Asignar los valores de los campos del formulario al modelo
+        $formulario->h_clinico = $request->input('h_clinico');
+        $formulario->fecha_llenado = $request->input('fecha_llenado');
+        $formulario->fecha_ingreso = $request->input('fecha_ingreso');
+        $formulario->dias_internacion = $request->input('dias_internacion');
+        $formulario->muerte = $request->input('muerte');
+        $formulario->servicio_inicio_sintomas = $request->input('servicio_inicio_sintomas');
+        $formulario->servicio_notificador = $request->input('servicio_notificador');
+        $formulario->diagnostico_ingreso = $request->input('diagnostico_ingreso');
+        $formulario->diagnostico_sala = $request->input('diagnostico_sala');
+        $formulario->uso_antimicrobanos = $request->input('uso_antimicrobanos');
+        $formulario->tipo_muestra_cultivo = $request->input('tipo_muestra_cultivo');
+        $formulario->procedimiento_invasivo = $request->input('procedimiento_invasivo');
+        $formulario->medidas_tomar = $request->input('medidas_tomar');
+        $formulario->aislamiento = $request->input('aislamiento');
+        $formulario->seguimiento = $request->input('seguimiento');
+        $formulario->observacion = $request->input('observacion');
+        $formulario->estado = 'alta';
+        $formulario->pk_usuario = Auth::id();
 
-    // Guardar el formulario en la base de datos
-    $formulario->save();
+        // Guardar el formulario en la base de datos
+        $formulario->save();
 
-    // Obtener el código del formulario recién guardado
-    $codigoFormulario = $formulario->cod_form_notificacion_p ;
+        // Obtener el código del formulario recién guardado
+        $codigoFormulario = $formulario->cod_form_notificacion_p ;
 
-    //TABLA TIPO INFECCION
-    // Obtener las infecciones seleccionadas del campo oculto
-    $infeccionesSeleccionadas = $request->input('infecciones_seleccionadas');
+        //TABLA TIPO INFECCION
+        // Obtener las infecciones seleccionadas del campo oculto
+        $infeccionesSeleccionadas = $request->input('infecciones_seleccionadas');
 
-    // Decodificar el JSON y procesar las infecciones seleccionadas
-    $infeccionesSeleccionadas = json_decode($infeccionesSeleccionadas);
+        // Decodificar el JSON y procesar las infecciones seleccionadas
+        $infeccionesSeleccionadas = json_decode($infeccionesSeleccionadas);
 
-    // Crear una instancia de SeleccionTipoInfeccion para cada infección seleccionada
-    foreach ($infeccionesSeleccionadas as $codTipoInf) {
-        $seleccionTipoInfeccion = new SeleccionTipoInfeccion();
-        $seleccionTipoInfeccion->cod_formulario = $codigoFormulario;
-        $seleccionTipoInfeccion->h_cli = $request->input('h_clinico');
-        $seleccionTipoInfeccion->cod_tipo_inf = $codTipoInf;
-        $seleccionTipoInfeccion->save();
-    }
-
-    //TABLA TIPO HONGO
-    // Obtener las infecciones seleccionadas del campo oculto
-    $hongosSeleccionados = $request->input('hongos_seleccionados');
-
-    // Decodificar el JSON y procesar las infecciones seleccionadas
-    $hongosSeleccionados = json_decode($hongosSeleccionados);
-
-    // Crear una instancia de seleccionHongo para cada infección seleccionada
-    foreach ($hongosSeleccionados as $idH) {
-        $seleccionHongo = new SeleccionHongos();
-        $seleccionHongo->cod_formulario = $codigoFormulario;
-        $seleccionHongo->h_cli = $request->input('h_clinico');
-        $seleccionHongo->id_hongos = $idH;
-        $seleccionHongo->save();
-    }
-
-
-// TABLA ANTOIBIOGRAMA
-    // Obtener la información de antibiograma desde el input oculto
-    $informacionAntibiograma = $request->input('informacion_bacterias_input');
-    //dd($informacionAntibiograma); // Agregar esta línea
-    // Convertir la cadena en un array de líneas
-    $lineasAntibiograma = explode("\n", $informacionAntibiograma);
-    //dd($lineasAntibiograma);
-
-    //PRUEBA
-    // Arreglos para almacenar los nombres de bacterias y medicamentos
-    $nombresBacterias = [];
-    $nombresMedicamentos = [];
-    $datosAntibiograma = [];
-
-    // Recorrer las líneas y almacenar los datos en la base de datos
-    foreach ($lineasAntibiograma as $linea) {
-        $lineaLimpia = str_replace("\r", "", $linea);
-        // Si la línea está vacía, continuar con la siguiente iteración
-        if (empty($lineaLimpia)) {
-            continue;
+        // Crear una instancia de SeleccionTipoInfeccion para cada infección seleccionada
+        foreach ($infeccionesSeleccionadas as $codTipoInf) {
+            $seleccionTipoInfeccion = new SeleccionTipoInfeccion();
+            $seleccionTipoInfeccion->cod_formulario = $codigoFormulario;
+            $seleccionTipoInfeccion->h_cli = $request->input('h_clinico');
+            $seleccionTipoInfeccion->cod_tipo_inf = $codTipoInf;
+            $seleccionTipoInfeccion->save();
         }
 
-        //dd($linea);
-        // Separar los datos limpios
-        $datos = explode(",", $lineaLimpia);
-        $codBacte = $datos[0];
-        $codMedi = $datos[1];
-        $nivel = $datos[2];
+        //TABLA TIPO HONGO
+        // Obtener las infecciones seleccionadas del campo oculto
+        $hongosSeleccionados = $request->input('hongos_seleccionados');
 
-//*---------------------------------prueba pdf------------------------------------------------
-        // Consultar nombres de bacterias y medicamentos
-        $bacteria = Bacteria::where('cod_bacterias', $codBacte)->first();
-        $medicamento = Medicamento::where('cod_medicamento', $codMedi)->first();
-        if ($bacteria && $medicamento) {
-            $datosAntibiograma[] = [
-                'bacteria' => $bacteria->nombre,
-                'medicamento' => $medicamento->nombre,
-                'resistencia' => $nivel,
-            ];
+        // Decodificar el JSON y procesar las infecciones seleccionadas
+        $hongosSeleccionados = json_decode($hongosSeleccionados);
+
+        // Crear una instancia de seleccionHongo para cada infección seleccionada
+        foreach ($hongosSeleccionados as $idH) {
+            $seleccionHongo = new SeleccionHongos();
+            $seleccionHongo->cod_formulario = $codigoFormulario;
+            $seleccionHongo->h_cli = $request->input('h_clinico');
+            $seleccionHongo->id_hongos = $idH;
+            $seleccionHongo->save();
         }
-//*---------------------------------prueba pdf------------------------------------------------
 
-        // Crear y guardar una nueva entrada de antibiograma
-        $antibiograma = new Antibiograma();
-        $antibiograma->cod_formulario = $codigoFormulario;
-        $antibiograma->h_cli = $request->input('h_clinico');
-        $antibiograma->cod_bacte = $codBacte;
-        $antibiograma->cod_medi = $codMedi;
-        $antibiograma->nivel = $nivel;
-        // dd($antibiograma);
-        $antibiograma->save();
-    }
 
-    return redirect()->route('principal')->with('success', 'Los datos han sido guardados exitosamente.');
+        // TABLA ANTOIBIOGRAMA
+        // Obtener la información de antibiograma desde el input oculto
+        $informacionAntibiograma = $request->input('informacion_bacterias_input');
+        //dd($informacionAntibiograma); // Agregar esta línea
+        // Convertir la cadena en un array de líneas
+        $lineasAntibiograma = explode("\n", $informacionAntibiograma);
+        //dd($lineasAntibiograma);
+
+        //PRUEBA
+        // Arreglos para almacenar los nombres de bacterias y medicamentos
+        $nombresBacterias = [];
+        $nombresMedicamentos = [];
+        $datosAntibiograma = [];
+
+        // Recorrer las líneas y almacenar los datos en la base de datos
+        foreach ($lineasAntibiograma as $linea) {
+            $lineaLimpia = str_replace("\r", "", $linea);
+            // Si la línea está vacía, continuar con la siguiente iteración
+            if (empty($lineaLimpia)) {
+                continue;
+            }
+
+            //dd($linea);
+            // Separar los datos limpios
+            $datos = explode(",", $lineaLimpia);
+            $codBacte = $datos[0];
+            $codMedi = $datos[1];
+            $nivel = $datos[2];
+
+        //*---------------------------------prueba pdf------------------------------------------------
+            // Consultar nombres de bacterias y medicamentos
+            $bacteria = Bacteria::where('cod_bacterias', $codBacte)->first();
+            $medicamento = Medicamento::where('cod_medicamento', $codMedi)->first();
+            if ($bacteria && $medicamento) {
+                $datosAntibiograma[] = [
+                    'bacteria' => $bacteria->nombre,
+                    'medicamento' => $medicamento->nombre,
+                    'resistencia' => $nivel,
+                ];
+            }
+        //*---------------------------------prueba pdf------------------------------------------------
+
+            // Crear y guardar una nueva entrada de antibiograma
+            $antibiograma = new Antibiograma();
+            $antibiograma->cod_formulario = $codigoFormulario;
+            $antibiograma->h_cli = $request->input('h_clinico');
+            $antibiograma->cod_bacte = $codBacte;
+            $antibiograma->cod_medi = $codMedi;
+            $antibiograma->nivel = $nivel;
+            // dd($antibiograma);
+            $antibiograma->save();
+        }
+
+        return redirect()->route('principal')->with('success', 'Los datos han sido guardados exitosamente.');
     }
 
     public function tabla()
@@ -247,7 +253,7 @@ class FormularioNotificacionPacienteController extends Controller
         ->get();
         return view('Form_IAAS.VistaTabla', compact('formularios'));
     }
-
+    // PDF FORMULARIO
     public function generarPDF($codigoFormulario)
     {
         $formulario = FormularioNotificacionPaciente::find($codigoFormulario);
@@ -304,6 +310,7 @@ class FormularioNotificacionPacienteController extends Controller
         $fecha_llenado = $formulario->fecha_llenado;
         $fecha_ingreso = $formulario->fecha_ingreso;
         $dias_internacion = $formulario->dias_internacion;
+        $muerte = $formulario->muerte;
         $servicio_inicio_sintomas = $formulario->servicio_inicio_sintomas;
         $servicio_notificador = $formulario->servicio_notificador;
         $diagnostico_ingreso = $formulario->diagnostico_ingreso;
@@ -318,13 +325,14 @@ class FormularioNotificacionPacienteController extends Controller
 
         // Obtener la fecha y hora actual en horario de Bolivia
         $fechaHoraActual = Carbon::now('America/La_Paz')->format('d/m/Y H:i:s');
-
+        $fechaActual = Carbon::now('America/La_Paz')->format('d/m/Y ');
         $data = [
             'h_clinico' => $h_clinico,
             'nombreP' => DatoPaciente::where('n_h_clinico',$h_clinico)->first(),
             'fecha_llenado' => $fecha_llenado,
             'fecha_ingreso' => $fecha_ingreso,
             'dias_internacion' => $dias_internacion,
+            'muerte' => $muerte,
             'servicio_inicio_sintomas' => Servicio::where('cod_servicio',$servicio_inicio_sintomas)->first(),
             'servicio_notificador' => Servicio::where('cod_servicio',$servicio_notificador)->first(),
             'diagnostico_ingreso' => $diagnostico_ingreso,
@@ -343,8 +351,27 @@ class FormularioNotificacionPacienteController extends Controller
         ];
 
             // Generar el contenido del PDF a partir de la vista del formulario
-            $pdf = PDF::loadView('Form_IAAS.PDF.form_IAAS', $data);
-            return $pdf->stream();
+        $pdf = PDF::loadView('Form_IAAS.PDF.form_IAAS', $data);
+        $footerPath = base_path('resources/views/pdf/footer.html');
+        $headerPath = base_path('resources/views/pdf/header_form.html');
+
+        $pdf->setOptions([
+            'orientation' => 'portrait',
+            'footer-spacing' => 10,
+            'margin-top' => 20,
+            'header-spacing' => 0,
+            'margin-bottom' => 20,
+            'footer-font-size'=> 12,
+            'footer-html' => $footerPath,
+            'header-html' => $headerPath,
+        ]);
+
+        $nombreArchivo = 'Formulario_IAAS_' . $fechaActual . '.pdf';
+
+        return response($pdf->output(), 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="' . $nombreArchivo . '"'
+        ]);
     }
 
     // public function eliminarFormulario($codigoFormulario)
@@ -451,29 +478,22 @@ class FormularioNotificacionPacienteController extends Controller
         $fechaHoraActual = Carbon::now('America/La_Paz')->format('d/m/Y H:i:s');
 
 
-        $imagePath = public_path('img/logo_HDB.png');
-        $imageData = base64_encode(file_get_contents($imagePath));
-        $imageSrc = 'data:image/png;base64,' . $imageData;
 
-        $encabezado =public_path('img/encabezado.png');
-        $encabezadoData = base64_encode(file_get_contents($encabezado));
-        $encabezadoSrc = 'data:image/png;base64,' . $encabezadoData;
+        $data = compact('estadisticas', 'nombreMesSeleccionado', 'anioSeleccionado','fechaHoraActual');
+        $pdf = SnappyPDF::loadView('Form_IAAS.PDF.reporte', $data);
+        $footerPath = base_path('resources/views/pdf/footer.html');
+        $headerPath = base_path('resources/views/pdf/header.html');
 
-        $paginacion = public_path('img/paginacion.png');
-        $paginacionData = base64_encode(file_get_contents($paginacion));
-        $paginacionSrc = 'data:image/png;base64,' . $paginacionData;
-
-
-
-        $data = compact('estadisticas', 'nombreMesSeleccionado', 'anioSeleccionado','fechaHoraActual', 'imageSrc', 'encabezadoSrc', 'paginacionSrc');
-        $pdf = PDF::loadview('Form_IAAS.PDF.reporte', $data);
-
-
-        $pdf->getDomPDF()->set_option('isHtml5ParserEnabled', true);
-        $pdf->getDomPDF()->set_option('isPhpEnabled', true);
-
-        // Establecer tamaño y orientación de página
-        $pdf->getDomPDF()->set_paper('A4', 'portrait');
+        $pdf->setOptions([
+            'orientation' => 'portrait',
+            'footer-spacing' => 10,
+            'margin-top' => 30,
+            'header-spacing' => 10,
+            'margin-bottom' => 20,
+            'footer-font-size'=> 12,
+            'footer-html' => $footerPath,
+            'header-html' => $headerPath,
+        ]);
 
 
         // nombre personalizado para descargar con un nombre predeterminado
@@ -547,34 +567,43 @@ class FormularioNotificacionPacienteController extends Controller
         $fechaHoraActual = Carbon::now('America/La_Paz')->format('d/m/Y H:i:s');
 
 
-        $imagePath = public_path('img/logo_HDB.png');
-        $imageData = base64_encode(file_get_contents($imagePath));
-        $imageSrc = 'data:image/png;base64,' . $imageData;
+        // Crear una imagen en memoria para la gráfica con Intervention Image
+        $graficaImage = Image::canvas(400, 400);
 
-        $encabezado =public_path('img/encabezado.png');
-        $encabezadoData = base64_encode(file_get_contents($encabezado));
-        $encabezadoSrc = 'data:image/png;base64,' . $encabezadoData;
+        // Agregar la gráfica a la imagen (personaliza esto según tu implementación)
+        $graficaImage->rectangle(0, 0, 400, 400, function ($draw) {
+            $draw->background('#ffffff'); // Fondo blanco
+            $draw->border(2, '#000000');   // Borde negro
+        });
 
-        $paginacion = public_path('img/paginacion.png');
-        $paginacionData = base64_encode(file_get_contents($paginacion));
-        $paginacionSrc = 'data:image/png;base64,' . $paginacionData;
 
         $data = [
             'fecha_select' => $fechaSeleccionada,
             'fechaHoraActual' => $fechaHoraActual,
             'informePorServicio' => $informePorServicio,
-            'imageSrc'=> $imageSrc,
-            'encabezadoSrc' => $encabezadoSrc,
-            'paginacionSrc' => $paginacionSrc,
+            'graficaImage' => $graficaImage,
         ];
 
         $pdf = PDF::loadView('Form_IAAS.PDF.reporte_anual', $data);
 
-        $pdf->getDomPDF()->set_option('isHtml5ParserEnabled', true);
-        $pdf->getDomPDF()->set_option('isPhpEnabled', true);
+        $footerPath = base_path('resources/views/pdf/footer.html');
+        $headerPath = base_path('resources/views/pdf/header.html');
 
-        // Establecer tamaño y orientación de página
-        $pdf->getDomPDF()->set_paper('A4', 'portrait');
+        $pdf->setOptions([
+            'orientation' => 'portrait',
+            'footer-spacing' => 10,
+            'margin-top' => 30,
+            'header-spacing' => 10,
+            'margin-bottom' => 20,
+            'footer-font-size'=> 12,
+            'footer-html' => $footerPath,
+            'header-html' => $headerPath,
+            // 'enable-javascript' => true,
+            // 'javascript-delay' => 1000,
+            // 'no-stop-slow-scripts' => true,
+            // 'enable-smart-shrinking' => true,
+        ]);
+
 
 
 
@@ -705,10 +734,19 @@ class FormularioNotificacionPacienteController extends Controller
 
         $pdf = PDF::loadView('Form_IAAS.PDF.informeAnual', $data);
 
-        // Configuración del PDF y respuesta
-        $pdf->getDomPDF()->set_option('isHtml5ParserEnabled', true);
-        $pdf->getDomPDF()->set_option('isPhpEnabled', true);
-        $pdf->getDomPDF()->set_paper('A4', 'portrait');
+        $footerPath = base_path('resources/views/pdf/footer.html');
+        $headerPath = base_path('resources/views/pdf/header.html');
+
+        $pdf->setOptions([
+            'orientation' => 'portrait',
+            'footer-spacing' => 10,
+            'margin-top' => 30,
+            'header-spacing' => 10,
+            'margin-bottom' => 20,
+            'footer-font-size'=> 12,
+            'footer-html' => $footerPath,
+            'header-html' => $headerPath,
+        ]);
         $nombreArchivo = 'Informe_ANUAL_IAAS_' . $fechaSeleccionada . '.pdf';
 
         return response($pdf->output(), 200, [
@@ -775,40 +813,40 @@ class FormularioNotificacionPacienteController extends Controller
                 }
             }
         }
-        $fechaHoraActual = Carbon::now('America/La_Paz')->format('d/m/Y H:i:s');
 
 
-        $imagePath = public_path('img/logo_HDB.png');
-        $imageData = base64_encode(file_get_contents($imagePath));
-        $imageSrc = 'data:image/png;base64,' . $imageData;
-
-        $encabezado =public_path('img/encabezado.png');
-        $encabezadoData = base64_encode(file_get_contents($encabezado));
-        $encabezadoSrc = 'data:image/png;base64,' . $encabezadoData;
-
-        $paginacion = public_path('img/paginacion.png');
-        $paginacionData = base64_encode(file_get_contents($paginacion));
-        $paginacionSrc = 'data:image/png;base64,' . $paginacionData;
 
         $data = [
             'añoSeleccionado' => $añoSeleccionado,
-            'fechaHoraActual' => $fechaHoraActual,
+
             'informeMes' => $informeMes,
             'totalCasosPorMes' => $totalCasosPorMes,
-            'imageSrc'=> $imageSrc,
-            'encabezadoSrc' => $encabezadoSrc,
-            'paginacionSrc' => $paginacionSrc,
             'meses' => $meses,
             'informePorMes' => $informePorMes,
+
+
         ];
+        // dd($data);
 
         $pdf = PDF::loadView('Form_IAAS.PDF.reporte_anual_por_mes', $data);
 
-        $pdf->getDomPDF()->set_option('isHtml5ParserEnabled', true);
-        $pdf->getDomPDF()->set_option('isPhpEnabled', true);
+        $footerPath = base_path('resources/views/pdf/footer.html');
+        $headerPath = base_path('resources/views/pdf/header.html');
 
-        // Establecer tamaño y orientación de página
-        $pdf->getDomPDF()->set_paper('A4', 'portrait');
+        $pdf->setOptions([
+            'orientation' => 'portrait',
+            'footer-spacing' => 10,
+            'margin-top' => 30,
+            'header-spacing' => 10,
+            'margin-bottom' => 20,
+            'footer-font-size'=> 12,
+            'footer-html' => $footerPath,
+            'header-html' => $headerPath,
+            'enable-javascript' => true,
+            'javascript-delay' => 1000,
+            'no-stop-slow-scripts' => true,
+            'enable-smart-shrinking' => true,
+        ]);
 
         // nombre personalizado para descargar con un nombre predeterminado
         $nombreArchivo = 'Reporte_ANUAL_por_meses_IAAS_año:' . $añoSeleccionado . '.pdf';
@@ -869,25 +907,12 @@ class FormularioNotificacionPacienteController extends Controller
         $fechaHoraActual = Carbon::now('America/La_Paz')->format('d/m/Y H:i:s');
 
 
-        $imagePath = public_path('img/logo_HDB.png');
-        $imageData = base64_encode(file_get_contents($imagePath));
-        $imageSrc = 'data:image/png;base64,' . $imageData;
-
-        $encabezado =public_path('img/encabezado.png');
-        $encabezadoData = base64_encode(file_get_contents($encabezado));
-        $encabezadoSrc = 'data:image/png;base64,' . $encabezadoData;
-
-        $paginacion = public_path('img/paginacion.png');
-        $paginacionData = base64_encode(file_get_contents($paginacion));
-        $paginacionSrc = 'data:image/png;base64,' . $paginacionData;
 
         $data = [
 
             'fechaHoraActual' => $fechaHoraActual,
             'informe' => $informe,
-            'imageSrc'=> $imageSrc,
-            'encabezadoSrc' => $encabezadoSrc,
-            'paginacionSrc' => $paginacionSrc,
+
 
             'fechaEntrada' => $fechaEntrada,
             'fechaSalida' => $fechaSalida,
@@ -896,12 +921,20 @@ class FormularioNotificacionPacienteController extends Controller
         ];
 
         $pdf = PDF::loadView('Form_IAAS.PDF.reporte_rango_IAAS', $data);
+        $footerPath = base_path('resources/views/pdf/footer.html');
+        $headerPath = base_path('resources/views/pdf/header.html');
 
-        $pdf->getDomPDF()->set_option('isHtml5ParserEnabled', true);
-        $pdf->getDomPDF()->set_option('isPhpEnabled', true);
+        $pdf->setOptions([
+            'orientation' => 'portrait',
+            'footer-spacing' => 10,
+            'margin-top' => 30,
+            'header-spacing' => 10,
+            'margin-bottom' => 20,
+            'footer-font-size'=> 12,
+            'footer-html' => $footerPath,
+            'header-html' => $headerPath,
+        ]);
 
-        // Establecer tamaño y orientación de página
-        $pdf->getDomPDF()->set_paper('A4', 'portrait');
 
         // nombre personalizado para descargar con un nombre predeterminado
         $nombreArchivo = 'Reporte_ANUAL_por_meses_IAAS_año:' . $añoSeleccionado . '.pdf';
@@ -910,8 +943,5 @@ class FormularioNotificacionPacienteController extends Controller
             'Content-Disposition' => 'inline; filename="' . $nombreArchivo . '"'
         ]);
     }
-
-
-
 
 }

@@ -57,6 +57,7 @@ class FormularioEnfermedadesNotificacionInmediataController extends Controller
         return view('Form_E_N_I.Form_Enf_Not_Inm', compact('id','nombre', 'idFormulario', 'servicios', 'patologias','fechaActual'));
     }
 
+    //GUARDAR_ENFER_NOTI
     public function guardarDatos(Request $request)
     {
 
@@ -106,7 +107,6 @@ class FormularioEnfermedadesNotificacionInmediataController extends Controller
     }
 
 
-
     public function buscarFormularioPorHClinico(Request $request)
     {
         $hClinico = $request->input('hClinico');
@@ -122,7 +122,7 @@ class FormularioEnfermedadesNotificacionInmediataController extends Controller
         // Redirigir a la vista previa del PDF con el ID del formulario
         return redirect()->route('vista-previa-pdf', $formulario->id_f_notificacion_inmediata);
     }
-
+    //PDF FORMULARIO
     public function vistaPreviaPDF($id)
     {
         // Obtener el formulario por ID
@@ -154,9 +154,27 @@ class FormularioEnfermedadesNotificacionInmediataController extends Controller
             'fechaHoraActual' => $fechaHoraActual,
             'fechaActual' => $fechaActual,
         ];
-        // Generar el contenido del PDF a partir de la vista del formulario
         $pdf = PDF::loadView('Form_E_N_I.PDF.form_2_pdf', $data);
-        return $pdf->stream();
+        $footerPath = base_path('resources/views/pdf/footer.html');
+        $headerPath = base_path('resources/views/pdf/header_form.html');
+
+        $pdf->setOptions([
+            'orientation' => 'portrait',
+            'footer-spacing' => 10,
+            'margin-top' => 20,
+            'header-spacing' => 0,
+            'margin-bottom' => 20,
+            'footer-font-size'=> 12,
+            'footer-html' => $footerPath,
+            'header-html' => $headerPath,
+        ]);
+
+        $nombreArchivo = 'Formulario_E.N.I._' . $fechaActual . '.pdf';
+
+        return response($pdf->output(), 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="' . $nombreArchivo . '"'
+        ]);
     }
 
     // prueba
@@ -199,28 +217,37 @@ class FormularioEnfermedadesNotificacionInmediataController extends Controller
 
         $fechaHoraActual = Carbon::now('America/La_Paz')->format('d/m/Y H:i:s');
 
-        $imagePath = public_path('assets/images/profile/profile.png');
-        $imageData = base64_encode(file_get_contents($imagePath));
-        $imageSrc = 'data:image/png;base64,' . $imageData;
 
-        $encabezado =public_path('img/encabezado.png');
-        $encabezadoData = base64_encode(file_get_contents($encabezado));
-        $encabezadoSrc = 'data:image/png;base64,' . $encabezadoData;
 
-        $paginacion = public_path('img/paginacion.png');
-        $paginacionData = base64_encode(file_get_contents($paginacion));
-        $paginacionSrc = 'data:image/png;base64,' . $paginacionData;
+        $data = compact('fechaHoraActual','conteoCombinado', 'nombreMesSeleccionado', 'anioSeleccionado');
+        $pdf = PDF::loadView('Form_E_N_I.PDF.reporte_form2_pdf', $data);
+        $footerPath = base_path('resources/views/pdf/footer.html');
+        $headerPath = base_path('resources/views/pdf/header.html');
 
-        $data = compact('fechaHoraActual','conteoCombinado', 'nombreMesSeleccionado', 'anioSeleccionado', 'imageSrc','encabezadoSrc','paginacionSrc');
-
+        $pdf->setOptions([
+            'orientation' => 'portrait',
+            'footer-spacing' => 10,
+            'margin-top' => 30,
+            'header-spacing' => 10,
+            'margin-bottom' => 20,
+            'footer-font-size'=> 12,
+            'footer-html' => $footerPath,
+            'header-html' => $headerPath,
+        ]);
         // Renderiza la vista sin generar el PDF aún
-        $html = View::make('Form_E_N_I.PDF.reporte_form2_pdf', $data)->render();
+        // $html = View::make('Form_E_N_I.PDF.reporte_form2_pdf', $data)->render();
 
         // Crea el PDF con DomPDF
-        $pdf = PDF::loadHTML($html);
+        // $pdf = PDF::loadHTML($html);
 
         // Envía el PDF con la marca de agua como respuesta HTTP
-        return $pdf->stream();
+        // return $pdf->stream();
+        $nombreArchivo = 'Reporte_MENSUAL_' . $fechaSeleccionada . '.pdf';
+
+        return response($pdf->output(), 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="' . $nombreArchivo . '"'
+        ]);
     }
 
     // public function generar(Request $request)
@@ -393,9 +420,19 @@ class FormularioEnfermedadesNotificacionInmediataController extends Controller
 
         // Generar el PDF y configurar la respuesta
         $pdf = PDF::loadView('Form_E_N_I.PDF.reporte_anual', $data);
-        $pdf->getDomPDF()->set_option('isHtml5ParserEnabled', true);
-        $pdf->getDomPDF()->set_option('isPhpEnabled', true);
-        $pdf->getDomPDF()->set_paper('A4', 'portrait');
+        $footerPath = base_path('resources/views/pdf/footer.html');
+        $headerPath = base_path('resources/views/pdf/header.html');
+
+        $pdf->setOptions([
+            'orientation' => 'portrait',
+            'footer-spacing' => 10,
+            'margin-top' => 30,
+            'header-spacing' => 10,
+            'margin-bottom' => 20,
+            'footer-font-size'=> 12,
+            'footer-html' => $footerPath,
+            'header-html' => $headerPath,
+        ]);
         $nombreArchivo = 'Informe_ANUAL_' . $fechaSeleccionada . '.pdf';
 
         return response($pdf->output(), 200, [
@@ -461,9 +498,19 @@ class FormularioEnfermedadesNotificacionInmediataController extends Controller
 
         // Generar el PDF y configurar la respuesta
         $pdf = PDF::loadView('Form_E_N_I.PDF.reporte_anual_por_mes', $data);
-        $pdf->getDomPDF()->set_option('isHtml5ParserEnabled', true);
-        $pdf->getDomPDF()->set_option('isPhpEnabled', true);
-        $pdf->getDomPDF()->set_paper('A4', 'portrait');
+        $footerPath = base_path('resources/views/pdf/footer.html');
+        $headerPath = base_path('resources/views/pdf/header.html');
+
+        $pdf->setOptions([
+            'orientation' => 'portrait',
+            'footer-spacing' => 10,
+            'margin-top' => 30,
+            'header-spacing' => 10,
+            'margin-bottom' => 20,
+            'footer-font-size'=> 12,
+            'footer-html' => $footerPath,
+            'header-html' => $headerPath,
+        ]);
         $nombreArchivo = 'Informe_MENSUAL_' . $fechaSeleccionada . '.pdf';
 
         return response($pdf->output(), 200, [
@@ -507,40 +554,33 @@ class FormularioEnfermedadesNotificacionInmediataController extends Controller
             ->orderBy('p.nombre', 'asc')
             ->get();
 
+        // dd($informe);
         $totalCasos = $informe->sum('cantidad');
         $fechaHoraActual = Carbon::now('America/La_Paz')->format('d/m/Y H:i:s');
 
-
-        $imagePath = public_path('img/logo_HDB.png');
-        $imageData = base64_encode(file_get_contents($imagePath));
-        $imageSrc = 'data:image/png;base64,' . $imageData;
-
-        $encabezado =public_path('img/encabezado.png');
-        $encabezadoData = base64_encode(file_get_contents($encabezado));
-        $encabezadoSrc = 'data:image/png;base64,' . $encabezadoData;
-
-        $paginacion = public_path('img/paginacion.png');
-        $paginacionData = base64_encode(file_get_contents($paginacion));
-        $paginacionSrc = 'data:image/png;base64,' . $paginacionData;
 
         $data = [
 
             'fechaHoraActual' => $fechaHoraActual,
             'informe' => $informe,
-            'imageSrc'=> $imageSrc,
-            'encabezadoSrc' => $encabezadoSrc,
-            'paginacionSrc' => $paginacionSrc,
             'totalCasos' => $totalCasos,
             'fechaEntrada' => $fechaEntrada,
             'fechaSalida' => $fechaSalida,
         ];
         $pdf = PDF::loadView('Form_E_N_I.PDF.reporte_rango_E_N_I', $data);
+        $footerPath = base_path('resources/views/pdf/footer.html');
+        $headerPath = base_path('resources/views/pdf/header.html');
 
-        $pdf->getDomPDF()->set_option('isHtml5ParserEnabled', true);
-        $pdf->getDomPDF()->set_option('isPhpEnabled', true);
-
-        // Establecer tamaño y orientación de página
-        $pdf->getDomPDF()->set_paper('A4', 'portrait');
+        $pdf->setOptions([
+            'orientation' => 'portrait',
+            'footer-spacing' => 10,
+            'margin-top' => 30,
+            'header-spacing' => 10,
+            'margin-bottom' => 20,
+            'footer-font-size'=> 12,
+            'footer-html' => $footerPath,
+            'header-html' => $headerPath,
+        ]);
 
         // nombre personalizado para descargar con un nombre predeterminado
         $nombreArchivo = 'Reporte_ANUAL_por_meses_E_N_I_año:' . $añoSeleccionado . '.pdf';
@@ -550,4 +590,94 @@ class FormularioEnfermedadesNotificacionInmediataController extends Controller
         ]);
     }
 
+    //INFORME TUBERCULOSIS
+    public function informeTuberculosis(Request $request)
+    {
+        $anioSeleccionado = $request->input('a');
+
+        $meses = [
+            'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+            'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+        ];
+
+        $informeMensual = [];
+        $fechaActual = Carbon::now();
+        $mesActual = $fechaActual->month;
+
+        foreach ($meses as $mes) {
+            // Obtén el número de mes correspondiente al mes actual
+            $mesActualNumero = array_search($mes, $meses) + 1;
+            if ($mesActualNumero <= $mesActual) {
+
+                $fechaInicio = Carbon::create($anioSeleccionado, $mesActualNumero, 1)->startOfMonth();
+                $fechaFin = Carbon::create($anioSeleccionado, $mesActualNumero, 1)->endOfMonth();
+
+                // Realiza la consulta con el rango de fechas actual
+                $informeTuberculosis = DB::table('epidemiologia.formulario_enfermedades_notificacion_inmediata as f')
+                ->join('epidemiologia.seleccion_patologia as sp', 'f.id_f_notificacion_inmediata', '=', 'sp.cod_form_n_i')
+                ->join('epidemiologia.patologia as p', 'sp.cod_pato', '=', 'p.cod_patologia')
+                ->join('epidemiologia.datos_paciente as dp', 'f.h_clinico', '=', 'dp.n_h_clinico')
+                ->whereBetween('f.fecha', [$fechaInicio, $fechaFin])
+                ->where('f.estado', 'alta')
+                ->whereIn('p.nombre', ['Tuberculosis (Positivo)', 'Tuberculosis (Negativo)'])
+                ->select(
+                    'dp.sexo',
+                    DB::raw('SUM(CASE WHEN p.nombre = \'Tuberculosis (Positivo)\' THEN 1 ELSE 0 END) as positivo'),
+                    DB::raw('SUM(CASE WHEN p.nombre = \'Tuberculosis (Negativo)\' THEN 1 ELSE 0 END) as negativo')
+                )
+                ->groupBy('dp.sexo')
+                ->get();
+
+                // Calcular los totales
+                $totalMasculinoPositivo = $informeTuberculosis->where('sexo', 'M')->sum('positivo');
+                $totalMasculinoNegativo = $informeTuberculosis->where('sexo', 'M')->sum('negativo');
+                $totalFemeninoPositivo = $informeTuberculosis->where('sexo', 'F')->sum('positivo');
+                $totalFemeninoNegativo = $informeTuberculosis->where('sexo', 'F')->sum('negativo');
+                $totalMasculino = $totalMasculinoPositivo + $totalMasculinoNegativo;
+                $totalFemenino = $totalFemeninoPositivo + $totalFemeninoNegativo;
+                $totalMes = $totalMasculino + $totalFemenino;
+
+                // Agregar el informe del mes al informe mensual
+                $informeMensual[] = [
+                    'mes' => $mes,
+                    'informeTuberculosis' => $informeTuberculosis,
+                    'totalMasculinoPositivo' => $totalMasculinoPositivo,
+                    'totalMasculinoNegativo' => $totalMasculinoNegativo,
+                    'totalFemeninoPositivo' => $totalFemeninoPositivo,
+                    'totalFemeninoNegativo' => $totalFemeninoNegativo,
+                    'totalMasculino' => $totalMasculino,
+                    'totalFemenino' => $totalFemenino,
+                    'totalMes' => $totalMes,
+                ];
+            }
+        }
+
+        $data = [
+            'anioSeleccionado' => $anioSeleccionado,
+            'informeMensual' => $informeMensual,
+        ];
+
+        // Generar el PDF y configurar la respuesta
+        $pdf = PDF::loadView('Form_E_N_I.PDF.informe_tuberculosis', $data);
+        $footerPath = base_path('resources/views/pdf/footer.html');
+        $headerPath = base_path('resources/views/pdf/header.html');
+
+        $pdf->setOptions([
+            'orientation' => 'portrait',
+            'footer-spacing' => 10,
+            'margin-top' => 30,
+            'header-spacing' => 10,
+            'margin-bottom' => 20,
+            'footer-font-size'=> 12,
+            'footer-html' => $footerPath,
+            'header-html' => $headerPath,
+        ]);
+
+        $nombreArchivo = 'Informe_Tuberculosis_' . $anioSeleccionado . '.pdf';
+
+        return response($pdf->output(), 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="' . $nombreArchivo . '"'
+        ]);
+    }
 }

@@ -49,7 +49,7 @@
         <div class="chart">
           <canvas
             id="Chart3"
-            style="width: 100%; height: 450px"
+            style="width: 100%; height: 256px"
           ></canvas>
         </div>
       </div>
@@ -62,8 +62,48 @@
     </div>
 </div>
 
+<div class="row">
+    {{-- GRAFICA PATOLOGIA--}}
+    <div class="col-lg-7">
+        <div class="card-style mb-30">
+            <div class="">
+                <canvas id="miGrafico" width="400" height="400"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 <script src="assets/js/Chart.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+// Obtiene el elemento canvas por su id
+const canvas = document.getElementById('miGrafico');
+
+// Define los datos y etiquetas para el gráfico
+const data = {
+  labels: ['Manzanas', 'Plátanos', 'Naranjas'],
+  datasets: [{
+    data: [10, 5, 8], // Valores correspondientes a cada etiqueta
+    backgroundColor: ['#FF5733', '#FFC300', '#33FF57'] // Colores de fondo para las secciones del gráfico
+  }]
+};
+
+// Configura el gráfico
+const ctx = canvas.getContext('2d');
+const myDoughnutChart = new Chart(ctx, {
+  type: 'doughnut', // Tipo de gráfico (puedes usar 'pie' para un gráfico de pastel)
+  data: data,
+  options: {
+    // Opciones adicionales, como el título, leyenda, etc.
+    title: {
+      display: true,
+      text: 'Mi Gráfico de Rosquilla'
+    }
+  }
+});
+</script>
 
 {{-- <script>
     // Los datos reales que vienen desde el controlador

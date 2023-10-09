@@ -3,43 +3,43 @@
 
 <section class="tab-components">
 <style>
-#tablaMedicamentos table {
-  width: 100%;
-  margin-bottom: 1rem;
-  color: #212529;
-  border-collapse: collapse;
-}
+    #tablaMedicamentos table {
+    width: 100%;
+    margin-bottom: 1rem;
+    color: #212529;
+    border-collapse: collapse;
+    }
 
-#tablaMedicamentos th,
-#tablaMedicamentos td {
-  padding: 0.75rem;
-  vertical-align: top;
-  border-top: 1px solid #dee2e6;
+    #tablaMedicamentos th,
+    #tablaMedicamentos td {
+    padding: 0.75rem;
+    vertical-align: top;
+    border-top: 1px solid #dee2e6;
 
-}
+    }
 
-#tablaMedicamentos th {
-  font-weight: bold;
-  background-color: #f8f9fa;
-}
+    #tablaMedicamentos th {
+    font-weight: bold;
+    background-color: #f8f9fa;
+    }
 
-@media (max-width: 767.98px) {
-  /* Estilos específicos para pantallas pequeñas */
-  #tablaMedicamentos table {
-    display: block;
-    overflow-x: auto;
-  }
-}
+    @media (max-width: 767.98px) {
+    /* Estilos específicos para pantallas pequeñas */
+    #tablaMedicamentos table {
+        display: block;
+        overflow-x: auto;
+    }
+    }
 
-.my-custom-table tbody td,
-.my-custom-table tbody th {
-    padding-top: 5px; /* Ajusta el valor según tu preferencia */
-    padding-bottom: 5px; /* Ajusta el valor según tu preferencia */
-}
-.my-custom-table tbody tr {
-    padding-top: 5px; /* Ajusta el valor según tu preferencia */
-    padding-bottom: 5px; /* Ajusta el valor según tu preferencia */
-}
+    .my-custom-table tbody td,
+    .my-custom-table tbody th {
+        padding-top: 5px; /* Ajusta el valor según tu preferencia */
+        padding-bottom: 5px; /* Ajusta el valor según tu preferencia */
+    }
+    .my-custom-table tbody tr {
+        padding-top: 5px; /* Ajusta el valor según tu preferencia */
+        padding-bottom: 5px; /* Ajusta el valor según tu preferencia */
+    }
 </style>
 
 {{-- ESTILOS ALERTAS --}}
@@ -120,7 +120,7 @@
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-lg-4">
+                                    <div class="col-lg-3">
                                         <!-- Campo para fecha_ingreso -->
                                         <div class="form-group input-style-1">
                                             <label for="fecha_ingreso">Fecha de Ingreso:</label>
@@ -132,7 +132,7 @@
                                             @enderror
                                         </div>
                                     </div>
-                                    <div class="col-lg-4">
+                                    <div class="col-lg-3">
                                         <!-- Campo para dias internacion -->
                                         <div class="form-group input-style-1">
                                             <label for="dias_internacion">Días de Internacion:</label>
@@ -145,8 +145,27 @@
                                         </div>
 
                                     </div>
+                                    <div class="col-lg-3">
+                                        <!-- Campo para muerte -->
+                                        <div class="form-group select-style-1">
+                                            <label for="muerte">Muerte:</label>
+                                            <div class="select-position">
+                                                <select class="form-control @error('muerte') is-invalid @enderror" id="muerte" name="muerte" >
+                                                    <option value="">Seleccionar</option>
+                                                    <option value="si" @if(old('muerte') == 'si') selected @endif>Sí</option>
+                                                    <option value="no" @if(old('muerte') == 'no') selected @endif>No</option>
+                                                </select>
+                                                @error('muerte')
+                                                    <span class="invalid-feedback">
+                                                        <strong>{{$message}}</strong>
+                                                    </span>
+                                                @enderror
+                                            </div>
+                                        </div>
 
-                                    <div class="col-lg-4">
+                                    </div>
+
+                                    <div class="col-lg-3">
                                         <!-- Campo para servicio_inicio_sintomas -->
                                         <div class="form-group select-style-1">
                                             <label for="servicio_inicio_sintomas">Servicio de inicio de síntomas:</label>
