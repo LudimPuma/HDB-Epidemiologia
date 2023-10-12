@@ -139,18 +139,24 @@
             <span class="text"> Reportes </span>
             </a>
             <ul id="ddmenu_6" class="collapse dropdown-nav">
-              <li>
-                  <a href="{{ route('Por.Gestion') }}"> Por Gestión </a>
-              </li>
-              <li>
-                  <a href="{{ route('Por.Mes') }}"> Por Mes</a>
-              </li>
-              <li>
-                  <a href="{{ route('Por.Rango_fecha') }}"> Por Rango de Fechas</a>
-              </li>
-              <li>
-                  <a href="{{ route('Por.Servicio') }}"> Por Servcio</a>
-              </li>
+                <li>
+                    <a href="{{ route('Por.Gestion') }}"> Por Gestión </a>
+                </li>
+                <li>
+                    <a href="{{ route('Por.Mes') }}"> Por Mes</a>
+                </li>
+                <li>
+                    <a href="{{ route('Por.Rango_fecha') }}"> Por Rango de Fechas</a>
+                </li>
+                <li>
+                    <a href="{{ route('Por.Servicio') }}"> Por Servcio</a>
+                </li>
+                <li>
+                    <a href="{{ route('Trimestral.Por.Servicio') }}"> Trimestral</a>
+                </li>
+                <li>
+                    <a href="{{ route('Semestral.Por.Servicio') }}"> Semestral</a>
+                </li>
             </ul>
         </li>
         {{-- InFORMES --}}
@@ -173,13 +179,18 @@
             <span class="text"> Informes </span>
             </a>
             <ul id="ddmenu_7" class="collapse dropdown-nav">
-              <li>
-                  <a href="{{ route('Inf.Resistencia.Bacteriana') }}"> Resistencia Bacteriana IAAS </a>
-              </li>
-              <li>
-                  <a href="{{ route('Inf.Tuberculosis') }}"> Tuberculosis</a>
-              </li>
-
+                <li>
+                    <a href="{{ route('Inf.Resistencia.Bacteriana') }}"> Resistencia Bacteriana IAAS </a>
+                </li>
+                <li>
+                    <a href="{{ route('Inf.Tuberculosis') }}"> Tuberculosis</a>
+                </li>
+                <li>
+                    <a href="{{ route('Inf.Informe_Semestral') }}"> Semestral</a>
+                </li>
+                <li>
+                    <a href="{{ route('Inf.Informe_Trimestral') }}"> Trimestral</a>
+                </li>
             </ul>
         </li>
         <span class="divider"><hr /></span>

@@ -374,10 +374,11 @@ class FormularioEnfermedadesNotificacionInmediataController extends Controller
         return redirect()->back()->with('success', 'Formulario y registros relacionados eliminados exitosamente.');
     }
 
-
+    //REPORTE ANUAL POR SERVICIOS
     public function repAnual(Request $request)
     {
         $fechaSeleccionada = $request->a;
+        $nombre = "Anual";
         // Obtener datos para las patologías de interés
         $informePatologias = DB::table('epidemiologia.formulario_enfermedades_notificacion_inmediata as f')
             ->join('epidemiologia.seleccion_patologia as sp', 'f.id_f_notificacion_inmediata', '=', 'sp.cod_form_n_i')
@@ -405,8 +406,6 @@ class FormularioEnfermedadesNotificacionInmediataController extends Controller
         $totalCasosPorServicio = $informePatologias->groupBy('servicio')->map(function ($item) {
             return $item->sum('cantidad');
         });
-
-
         // Obtener la lista de servicios disponibles
         $servicios = Servicio::all();
 
@@ -416,6 +415,7 @@ class FormularioEnfermedadesNotificacionInmediataController extends Controller
             'informePatologias' => $informePatologias,
             'totalCasosPorPatologia' => $totalCasosPorPatologia,
             'servicios' => $servicios,
+            'nombre' => $nombre,
         ];
 
         // Generar el PDF y configurar la respuesta
@@ -433,13 +433,110 @@ class FormularioEnfermedadesNotificacionInmediataController extends Controller
             'footer-html' => $footerPath,
             'header-html' => $headerPath,
         ]);
-        $nombreArchivo = 'Informe_ANUAL_' . $fechaSeleccionada . '.pdf';
+        $nombreArchivo = 'Informe_anual_por_Servicios ' . $fechaSeleccionada . '.pdf';
 
         return response($pdf->output(), 200, [
             'Content-Type' => 'application/pdf',
             'Content-Disposition' => 'inline; filename="' . $nombreArchivo . '"'
         ]);
     }
+    //REPORTE TRIMESTRAL - SEMESTRAL POR SERVICIOS
+    public function reporteENITrimestralSemestralServicio(Request $request)
+    {
+        $fechaSeleccionada = $request->a;
+        $rangoSeleccionado = $request->input('rango');
+        $nombre = null;
+        // Calcular las fechas de inicio y fin del trimestre seleccionado
+        if ($rangoSeleccionado == 'primer_trimestre') {
+            $inicioRango = $fechaSeleccionada . '-01-01';
+            $finRango = $fechaSeleccionada . '-03-31';
+            $nombre = "Primer Trimestre: Enero - Marzo";
+        } elseif ($rangoSeleccionado == 'segundo_trimestre') {
+            $inicioRango = $fechaSeleccionada . '-04-01';
+            $finRango = $fechaSeleccionada . '-06-30';
+            $nombre = "Segundo Trimestre: Abril - Junio";
+        } elseif ($rangoSeleccionado == 'tercer_trimestre') {
+            $inicioRango = $fechaSeleccionada . '-07-01';
+            $finRango = $fechaSeleccionada . '-09-30';
+            $nombre = "Tercer Trimestre: Julio - Septiembre";
+        } elseif ($rangoSeleccionado == 'cuarto_trimestre') {
+            $inicioRango = $fechaSeleccionada . '-10-01';
+            $finRango = $fechaSeleccionada . '-12-31';
+            $nombre = "Cuarto Trimestre: Octubre - Diciembre";
+        } elseif ($rangoSeleccionado == 'primer_semestre') {
+            $inicioRango = $fechaSeleccionada . '-01-01';
+            $finRango = $fechaSeleccionada . '-06-30';
+            $nombre = "Primer Semestre: Enero - Junio";
+        } elseif ($rangoSeleccionado == 'segundo_semestre') {
+            $inicioRango = $fechaSeleccionada . '-07-01';
+            $finRango = $fechaSeleccionada . '-12-31';
+            $nombre = "Segundo Semestre: Julio - Diciembre";
+        } else {
+            // Manejo de error si se selecciona un trimestre inválido
+            return redirect()->back()->with('error', 'Trimestre no válido');
+        }
+        // Obtener datos para las patologías de interés
+        $informePatologias = DB::table('epidemiologia.formulario_enfermedades_notificacion_inmediata as f')
+            ->join('epidemiologia.seleccion_patologia as sp', 'f.id_f_notificacion_inmediata', '=', 'sp.cod_form_n_i')
+            ->join('epidemiologia.patologia as p', 'sp.cod_pato', '=', 'p.cod_patologia')
+            ->join('epidemiologia.servicio as s', 'f.cod_servi', '=', 's.cod_servicio')
+            ->whereBetween('f.fecha', [$inicioRango, $finRango])
+            ->where('f.estado', 'alta')
+            ->select(
+                's.nombre as servicio',
+                'p.nombre as patologia',
+                DB::raw('COUNT(*) as cantidad')
+            )
+            ->groupBy('s.nombre', 'p.nombre')
+            ->havingRaw('COUNT(*) > 0')
+            ->orderBy('s.nombre', 'asc')
+            ->orderBy('p.nombre', 'asc')
+            ->get();
+
+        // Sumar la cantidad total de casos por patología
+        $totalCasosPorPatologia = $informePatologias->groupBy('patologia')->map(function ($item) {
+            return $item->sum('cantidad');
+        });
+
+        // Sumar la cantidad total de casos por servicio
+        $totalCasosPorServicio = $informePatologias->groupBy('servicio')->map(function ($item) {
+            return $item->sum('cantidad');
+        });
+        // Obtener la lista de servicios disponibles
+        $servicios = Servicio::all();
+
+        // Combinar todos los datos necesarios en un arreglo
+        $data = [
+            'fecha_select' => $fechaSeleccionada,
+            'informePatologias' => $informePatologias,
+            'totalCasosPorPatologia' => $totalCasosPorPatologia,
+            'servicios' => $servicios,
+            'nombre' => $nombre,
+        ];
+
+        // Generar el PDF y configurar la respuesta
+        $pdf = PDF::loadView('Form_E_N_I.PDF.reporte_anual', $data);
+        $footerPath = base_path('resources/views/pdf/footer.html');
+        $headerPath = base_path('resources/views/pdf/header.html');
+
+        $pdf->setOptions([
+            'orientation' => 'portrait',
+            'footer-spacing' => 10,
+            'margin-top' => 30,
+            'header-spacing' => 10,
+            'margin-bottom' => 20,
+            'footer-font-size'=> 12,
+            'footer-html' => $footerPath,
+            'header-html' => $headerPath,
+        ]);
+        $nombreArchivo = 'Informe_anual_por_Servicios ' . $fechaSeleccionada . '.pdf';
+
+        return response($pdf->output(), 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="' . $nombreArchivo . '"'
+        ]);
+    }
+
     // REPORTE ANUAL POR MESES
     public function reporteAnual(Request $request)
     {
@@ -535,7 +632,7 @@ class FormularioEnfermedadesNotificacionInmediataController extends Controller
         $monthSalida = date('m', strtotime($fechaSalida));
         $daySalida = date('d', strtotime($fechaSalida));
 
-        $añoSeleccionado = date('Y', strtotime($fechaEntrada)); // Obtener el año del rango de fechas
+        $fechaSeleccionada = date('Y', strtotime($fechaEntrada)); // Obtener el año del rango de fechas
         $fechaActual = now();
         $mesActual = $fechaActual->month;
 
@@ -583,7 +680,7 @@ class FormularioEnfermedadesNotificacionInmediataController extends Controller
         ]);
 
         // nombre personalizado para descargar con un nombre predeterminado
-        $nombreArchivo = 'Reporte_ANUAL_por_meses_E_N_I_año:' . $añoSeleccionado . '.pdf';
+        $nombreArchivo = 'Reporte_ANUAL_por_meses_E_N_I_año:' . $fechaSeleccionada . '.pdf';
         return response($pdf->output(), 200, [
             'Content-Type' => 'application/pdf',
             'Content-Disposition' => 'inline; filename="' . $nombreArchivo . '"'
@@ -593,8 +690,8 @@ class FormularioEnfermedadesNotificacionInmediataController extends Controller
     //INFORME TUBERCULOSIS
     public function informeTuberculosis(Request $request)
     {
-        $anioSeleccionado = $request->input('a');
-
+        $fechaSeleccionada = $request->input('a');
+        $nombre = "Anual";
         $meses = [
             'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
             'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
@@ -609,8 +706,8 @@ class FormularioEnfermedadesNotificacionInmediataController extends Controller
             $mesActualNumero = array_search($mes, $meses) + 1;
             if ($mesActualNumero <= $mesActual) {
 
-                $fechaInicio = Carbon::create($anioSeleccionado, $mesActualNumero, 1)->startOfMonth();
-                $fechaFin = Carbon::create($anioSeleccionado, $mesActualNumero, 1)->endOfMonth();
+                $fechaInicio = Carbon::create($fechaSeleccionada, $mesActualNumero, 1)->startOfMonth();
+                $fechaFin = Carbon::create($fechaSeleccionada, $mesActualNumero, 1)->endOfMonth();
 
                 // Realiza la consulta con el rango de fechas actual
                 $informeTuberculosis = DB::table('epidemiologia.formulario_enfermedades_notificacion_inmediata as f')
@@ -653,7 +750,129 @@ class FormularioEnfermedadesNotificacionInmediataController extends Controller
         }
 
         $data = [
-            'anioSeleccionado' => $anioSeleccionado,
+            'fechaSeleccionada' => $fechaSeleccionada,
+            'informeMensual' => $informeMensual,
+            'nombre' => $nombre,
+        ];
+
+        // Generar el PDF y configurar la respuesta
+        $pdf = PDF::loadView('Form_E_N_I.PDF.informe_tuberculosis', $data);
+        $footerPath = base_path('resources/views/pdf/footer.html');
+        $headerPath = base_path('resources/views/pdf/header.html');
+
+        $pdf->setOptions([
+            'orientation' => 'portrait',
+            'footer-spacing' => 10,
+            'margin-top' => 30,
+            'header-spacing' => 10,
+            'margin-bottom' => 20,
+            'footer-font-size'=> 12,
+            'footer-html' => $footerPath,
+            'header-html' => $headerPath,
+        ]);
+
+        $nombreArchivo = 'Informe_Tuberculosis_' . $fechaSeleccionada . '.pdf';
+
+        return response($pdf->output(), 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="' . $nombreArchivo . '"'
+        ]);
+    }
+    //INFORME TRIMESTRAL-SEMESTRAL TUBERCULOSIS
+    public function informeTrimestralSemestralTuberculosis(Request $request)
+    {
+        $fechaSeleccionada = $request->input('a');
+        $rangoSeleccionado = $request->input('rango');
+
+        $nombre = null;
+        $meses = [];
+
+        switch ($rangoSeleccionado) {
+            case 'primer_trimestre':
+                $inicioRango = $fechaSeleccionada . '-01-01';
+                $finRango = $fechaSeleccionada . '-03-31';
+                $nombre = "Primer Trimestre: Enero - Marzo";
+                $meses = ['Enero', 'Febrero', 'Marzo'];
+                break;
+            case 'segundo_trimestre':
+                $inicioRango = $fechaSeleccionada . '-04-01';
+                $finRango = $fechaSeleccionada . '-06-30';
+                $nombre = "Segundo Trimestre: Abril - Junio";
+                $meses = ['Abril', 'Mayo', 'Junio'];
+                break;
+            case 'tercer_trimestre':
+                $inicioRango = $fechaSeleccionada . '-07-01';
+                $finRango = $fechaSeleccionada . '-09-30';
+                $nombre = "Tercer Trimestre: Julio - Septiembre";
+                $meses = ['Julio', 'Agosto', 'Septiembre'];
+                break;
+            case 'cuarto_trimestre':
+                $inicioRango = $fechaSeleccionada . '-10-01';
+                $finRango = $fechaSeleccionada . '-12-31';
+                $nombre = "Cuarto Trimestre: Octubre - Diciembre";
+                $meses = ['Octubre', 'Noviembre', 'Diciembre'];
+                break;
+            case 'primer_semestre':
+                $inicioRango = $fechaSeleccionada . '-01-01';
+                $finRango = $fechaSeleccionada . '-06-30';
+                $nombre = "Primer Semestre: Enero - Junio";
+                $meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio'];
+                break;
+            case 'segundo_semestre':
+                $inicioRango = $fechaSeleccionada . '-07-01';
+                $finRango = $fechaSeleccionada . '-12-31';
+                $nombre = "Segundo Semestre: Julio - Diciembre";
+                $meses = ['Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+                break;
+            default:
+                return redirect()->back()->with('error', 'Rango no válido');
+        }
+
+
+        $informeMensual = [];
+        $informeTuberculosis = DB::table('epidemiologia.formulario_enfermedades_notificacion_inmediata as f')
+            ->join('epidemiologia.seleccion_patologia as sp', 'f.id_f_notificacion_inmediata', '=', 'sp.cod_form_n_i')
+            ->join('epidemiologia.patologia as p', 'sp.cod_pato', '=', 'p.cod_patologia')
+            ->join('epidemiologia.datos_paciente as dp', 'f.h_clinico', '=', 'dp.n_h_clinico')
+            ->whereBetween('f.fecha', [$inicioRango, $finRango])
+            ->where('f.estado', 'alta')
+            ->whereIn('p.nombre', ['Tuberculosis (Positivo)', 'Tuberculosis (Negativo)'])
+            ->select(
+                'dp.sexo',
+                DB::raw("to_char(f.fecha, 'TMMonth')"),
+                DB::raw('SUM(CASE WHEN p.nombre = \'Tuberculosis (Positivo)\' THEN 1 ELSE 0 END) as positivo'),
+                DB::raw('SUM(CASE WHEN p.nombre = \'Tuberculosis (Negativo)\' THEN 1 ELSE 0 END) as negativo')
+            )
+            ->groupBy('dp.sexo','f.fecha')
+            ->get();
+        foreach ($meses as $mes) {
+
+            $datosMesActual = $informeTuberculosis->where('to_char', $mes);
+            $totalMasculinoPositivo = $datosMesActual->where('sexo', 'M')->sum('positivo');
+            $totalMasculinoNegativo = $datosMesActual->where('sexo', 'M')->sum('negativo');
+            $totalFemeninoPositivo = $datosMesActual->where('sexo', 'F')->sum('positivo');
+            $totalFemeninoNegativo = $datosMesActual->where('sexo', 'F')->sum('negativo');
+
+            $totalMasculino = $totalMasculinoPositivo + $totalMasculinoNegativo;
+            $totalFemenino = $totalFemeninoPositivo + $totalFemeninoNegativo;
+            $totalMes = $totalMasculino + $totalFemenino;
+
+            $informeMensual[] = [
+                'mes' => $mes,
+                'totalMasculinoPositivo' => $totalMasculinoPositivo,
+                'totalMasculinoNegativo' => $totalMasculinoNegativo,
+                'totalFemeninoPositivo' => $totalFemeninoPositivo,
+                'totalFemeninoNegativo' => $totalFemeninoNegativo,
+                'totalMasculino' => $totalMasculino,
+                'totalFemenino' => $totalFemenino,
+                'totalMes' => $totalMes,
+            ];
+        }
+
+        // dd($informeMensual);
+        $data = [
+            'fechaSeleccionada' => $fechaSeleccionada,
+            'nombre' =>$nombre,
             'informeMensual' => $informeMensual,
         ];
 
@@ -673,7 +892,7 @@ class FormularioEnfermedadesNotificacionInmediataController extends Controller
             'header-html' => $headerPath,
         ]);
 
-        $nombreArchivo = 'Informe_Tuberculosis_' . $anioSeleccionado . '.pdf';
+        $nombreArchivo = 'Informe_Tuberculosis_' . $fechaSeleccionada . '.pdf';
 
         return response($pdf->output(), 200, [
             'Content-Type' => 'application/pdf',

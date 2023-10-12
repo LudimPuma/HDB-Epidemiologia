@@ -7,8 +7,10 @@
     <link rel="stylesheet" href="{{ asset('pdf/pdf.css') }}" />
 </head>
 <body>
-    <h1 class="text-center"> Informe de Pacientes con diagnostico de tuberculosis H.D.B.</h1>
-    <h2 class="text-center">Gestion: {{$anioSeleccionado}}</h2>
+    <h1 class="text-center"> Informe {{$nombre}} </h1>
+    <h1 class="text-center"> Pacientes con diagnostico de tuberculosis H.D.B.</h1>
+
+    <h2 class="text-center">Gestion: {{$fechaSeleccionada}}</h2>
     <div class="container">
         @foreach ($informeMensual as $mesData)
             <h2>{{ $mesData['mes'] }}:</h2>

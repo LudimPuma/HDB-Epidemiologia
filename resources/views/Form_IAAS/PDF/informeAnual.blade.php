@@ -10,8 +10,10 @@
 </head>
 <body>
     <div class="container">
+
         <h1 class="text-center">Resistencia Bacteriana de IAAS </h1>
         <h2 class="text-center">Hospital Daniel Bracamonte</h2>
+        <h2 class="text-center">{{$nombre}} </h2>
         <table class="table ">
             <thead>
                 <tr class="table-header">

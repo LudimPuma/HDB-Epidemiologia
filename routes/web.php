@@ -53,9 +53,12 @@ Route::middleware('auth')->group(function () {
     Route::post('/reporte-anual', 'FormularioNotificacionPacienteController@reporteAnual')->name('reporte.anual');
     Route::post('/reporte-anual-por-mes', 'FormularioNotificacionPacienteController@reporteAnualPorMes')->name('reporte.anual.por.mes.IAAS');
     Route::post('/reporte-por-rango-IAAS', 'FormularioNotificacionPacienteController@reporteRango')->name('reporte.por.rango.IAAS');
+    Route::post('/reporte-trimestral-servicios-IAAS', 'FormularioNotificacionPacienteController@reporteIAASTrimestralSemestralServicio')->name('reporte.trimestral.semestral.por.servicio.IAAS');
+
 
     //INFORMES IAAS
     Route::post('/informe-anual', 'FormularioNotificacionPacienteController@informeAnual')->name('informe.anual');
+    Route::post('/informe-semestral-trimestral-IAAS', 'FormularioNotificacionPacienteController@informeTrimestralSemestralIAASEspecifico')->name('informe.semestral.trimestral.IAAS');
 
 
     //FORMULARIO ENFERMEDADES DE NOTIFICACION INMEDIATA
@@ -78,8 +81,11 @@ Route::middleware('auth')->group(function () {
     Route::post('/reporte-anual/Enf_Not_Inmediata', 'FormularioEnfermedadesNotificacionInmediataController@repAnual')->name('rep.anual.Enf.Not.Inmediata');
     Route::post('/reporte-anual/Por_Meses', 'FormularioEnfermedadesNotificacionInmediataController@reporteAnual')->name('reporte.anual.Enf.Not.Inmediata');
     Route::post('/reporte-por-rango-E_N_I', 'FormularioEnfermedadesNotificacionInmediataController@reporteRango')->name('reporte.por.rango.E_N_I');
-    Route::post('/informe-anual-Tuberculosis-E_N_I', 'FormularioEnfermedadesNotificacionInmediataController@informeTuberculosis')->name('informe.Tuberculosis.E_N_I');
+    Route::post('/reporte-trimestral-semestral-por-servicio-E_N_I', 'FormularioEnfermedadesNotificacionInmediataController@reporteENITrimestralSemestralServicio')->name('reporte.trimestre.semestre.por.servicio.E_N_I');
 
+
+    Route::post('/informe-anual-Tuberculosis-E_N_I', 'FormularioEnfermedadesNotificacionInmediataController@informeTuberculosis')->name('informe.Tuberculosis.E_N_I');
+    Route::post('/informe-semestral-trimestral-Tuberculosis-E_N_I', 'FormularioEnfermedadesNotificacionInmediataController@informeTrimestralSemestralTuberculosis')->name('informe.trimestre.semestre.Tuberculosis.E_N_I');
 
 
 
@@ -88,9 +94,13 @@ Route::middleware('auth')->group(function () {
     Route::view('/Por_Mes', 'Reportes.Por_Mes')->name('Por.Mes');
     Route::view('/Por_Rango_Fecha', 'Reportes.Por_Rango_fecha')->name('Por.Rango_fecha');
     Route::view('/Por_Servicio', 'Reportes.Por_Servicio')->name('Por.Servicio');
+    Route::view('/Trimestral_Por_Servicio', 'Reportes.Trimestral_Por_Servicio')->name('Trimestral.Por.Servicio');
+    Route::view('/Semestral_Por_Servicio', 'Reportes.Semestral_Por_Servicio')->name('Semestral.Por.Servicio');
     //INFORMES
 
     Route::view('/Informe-Resistencia-Bacteriana', 'Informes.Resistencia_Bacteriana')->name('Inf.Resistencia.Bacteriana');
     Route::view('/Informe-Tuberculosis', 'Informes.Tuberculosis')->name('Inf.Tuberculosis');
-//-----------------------------------------------------------------
+    Route::view('/Informe-Semestral', 'Informes.Informe_Semestral')->name('Inf.Informe_Semestral');
+    Route::view('/Informe-Trimestral', 'Informes.Informe_Trimestral')->name('Inf.Informe_Trimestral');
+    //-----------------------------------------------------------------
 });

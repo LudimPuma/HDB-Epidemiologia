@@ -8,7 +8,8 @@
 </head>
 <body>
     <div class="container">
-        <h1 class="text-center">Reporte Anual Por Servicios Enfermedades de Notificación Inmediata</h1>
+        <h1 class="text-center">Enfermedades de Notificación Inmediata</h1>
+        <h2 class="text-center">Reporte {{$nombre}} Por Servicios </h2>
         <h2 class="text-center">Gestión {{$fecha_select}}</h2>
         @foreach($informePatologias as $row)
             @if($loop->first || $row->servicio !== $currentService)
