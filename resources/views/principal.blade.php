@@ -17,6 +17,10 @@
 <h1 style="text-align: center">
   {{ $mensaje }} {{ Auth::user()->persona->nombres }}
 </h1>
+
+
+
+
 <div class="row">
     {{-- GRAFICA PATOLOGIA--}}
     <div class="col-lg-7">
@@ -44,7 +48,6 @@
                 </ul>
             </div>
         </div>
-
         <!-- End Title -->
         <div class="chart">
           <canvas
@@ -61,9 +64,9 @@
         </div>
     </div>
 </div>
+    {{-- GRAFICA prueba--}}
+{{-- <div class="row">
 
-<div class="row">
-    {{-- GRAFICA PATOLOGIA--}}
     <div class="col-lg-7">
         <div class="card-style mb-30">
             <div class="">
@@ -71,13 +74,13 @@
             </div>
         </div>
     </div>
-</div>
+</div> --}}
 
 
 <script src="assets/js/Chart.min.js"></script>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+{{-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> --}}
 
-<script>
+{{-- <script>
 // Obtiene el elemento canvas por su id
 const canvas = document.getElementById('miGrafico');
 
@@ -103,100 +106,8 @@ const myDoughnutChart = new Chart(ctx, {
     }
   }
 });
-</script>
-
-{{-- <script>
-    // Los datos reales que vienen desde el controlador
-    const labels = @json($labels);
-    const datasets = @json($datasets);
-
-    // =========== chart three start
-    const ctx3 = document.getElementById("Chart3").getContext("2d");
-    const chart3 = new Chart(ctx3, {
-        type: "line",
-
-        data: {
-            labels: labels,
-            datasets: datasets,
-        },
-
-        options: {
-            datasets: {
-                backgroundColor: "transparent",
-                borderColor: "#4a6cf7",
-                pointBackgroundColor: "transparent",
-                pointHoverBackgroundColor: "#4a6cf7",
-                pointBorderColor: "transparent",
-                pointHoverBorderColor: "#fff",
-                pointHoverBorderWidth: 3,
-                pointBorderWidth: 5,
-                pointRadius: 5,
-                pointHoverRadius: 8,
-                line: {
-                pointRadius: 0, // Establecemos el radio de los puntos a 0 para que no sean visibles
-            },
-        },
-            tooltips: {
-                intersect: false,
-                backgroundColor: "#fbfbfb",
-                titleFontColor: "#8F92A1",
-                titleFontSize: 14,
-                titleFontFamily: "Inter",
-                titleFontStyle: "400",
-                bodyFontFamily: "Inter",
-                bodyFontColor: "#171717",
-                bodyFontSize: 12,
-                multiKeyBackground: "transparent",
-                displayColors: false,
-                xPadding: 20,
-                yPadding: 10,
-                borderColor: "rgba(143, 146, 161, .1)",
-                borderWidth: 2,
-                title: false,
-            },
-
-            title: {
-                display: false,
-            },
-
-            layout: {
-                padding: {
-                    top: 0,
-                },
-            },
-
-            legend: {
-                display: false, // Ocultar la leyenda
-            },
-
-            scales: {
-                yAxes: [{
-                    gridLines: {
-                        display: false,
-                        drawTicks: false,
-                        drawBorder: false,
-                    },
-                    ticks: {
-                        padding: 35,
-                        suggestedMin: 0, // Inicio del eje Y en 0
-                        suggestedMax: 50, // Extensión máxima del eje Y hasta 100
-                        stepSize: 10, // Tamaño del paso entre los valores del eje Y
-                    },
-                }],
-                xAxes: [{
-                    gridLines: {
-                        drawBorder: false,
-                        color: "rgba(143, 146, 161, .1)",
-                        zeroLineColor: "rgba(143, 146, 161, .1)",
-                    },
-                    ticks: {
-                        padding: 20,
-                    },
-                }],
-            },
-        },
-    });
 </script> --}}
+
 <script>
 // Los datos reales que vienen desde el controlador
 const labels = @json($labels);

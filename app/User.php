@@ -5,42 +5,39 @@ namespace App;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
-    public $table = 'users';
     use Notifiable;
-
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
+    use HasRoles;
+    public $table = 'users';
     protected $primaryKey = 'id';
+    public $timestamps = false;
     protected $fillable = [
-    'email', 'password','profesion',
+        'email',
+        'password',
+        'persona_id',
+        'estado',
+        'profesion',
+        'matricula_profesion',
+        'matricula_colegio',
+        'cargo',
+        'area',
+        'resgister',
     ];
-
-    /**
-     * The attributes that should be hidden for arrays.
-     *
-     * @var array
-     */
     protected $hidden = [
         'password', 'remember_token',
     ];
-
-    /**
-     * The attributes that should be cast to native types.
-     *
-     * @var array
-     */
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+    // public function persona()
+    // {
+    //     return $this->belongsTo(Persona::class);
+    // }
     public function persona()
     {
-        return $this->belongsTo(Persona::class);
+        return $this->belongsTo(Persona::class, 'persona_id', 'id');
     }
 }

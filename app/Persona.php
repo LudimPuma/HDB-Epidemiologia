@@ -6,16 +6,29 @@ use Illuminate\Database\Eloquent\Model;
 
 class Persona extends Model
 {
-    // Nombre de la tabla en la base de datos
     protected $table = 'personas';
-
-    // Columna de la clave primaria
     protected $primaryKey = 'id';
-    protected $fillable = ['nombres'];
+    public $timestamps = false;
+    protected $fillable = [
+        'ci',
+        'extension',
+        'nombres',
+        'apellidos',
+        'genero',
+        'direccion',
+        'telefono',
+        'celular',
+        'fecha_nacimiento',
+        'estado_civil',
+        'resgister',
+    ];
 
-    // Relación con el modelo User
-    public function user()
+    // public function user()
+    // {
+    //     return $this->hasOne(User::class);
+    // }
+    public function users()
     {
-        return $this->hasOne(User::class);
+        return $this->hasMany(User::class, 'persona_id', 'id');
     }
 }

@@ -1,378 +1,151 @@
 @extends('layout')
 @section('content')
 
-<div class="tables-wrapper">
+<div class="container">
     <div class="row">
-      <div class="col-lg-12">
-        <div class="card-style mb-30">
-
-            <h2 class="mb-10" style="text-align: center">IAAS</h2>
-            {{-- BOTONES MODAL --}}
-            <div class="row">
-                <div class="col-lg-4 text-center">
-                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#h_paciente">
-                        Agregar Formulario
-                    </button>
-                </div>
-                <div class="col-lg-4 text-center">
-                    <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#modalreporte">
-                        Generar Reporte
-                    </button>
-                </div>
-                <div class="col-lg-4 text-center">
-                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalinforme">
-                        Informe General
-                    </button>
+        <div class="col-md-12 offset-md">
+            <div class="card">
+                <br>
+                <h2 class="text-center">IAAS</h2>
+                <div class="card-body">
+                    <table id="dataTable"  class="table text-center mt-3 table-hover table-bordered table-striped">
+                        <thead class="table-primary">
+                            <tr >
+                                <th>H. Clínico</th>
+                                <th>Nombre del Paciente</th>
+                                <th>Fecha de Llenado</th>
+                                <th>Estado</th>
+                                <th>Opciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($formularios as $formulario)
+                                <tr>
+                                    <td >
+                                        {{ $formulario->h_clinico }}
+                                    </td>
+                                    <td >
+                                        {{ $formulario->datopaciente->nombre_paciente }} {{ $formulario->datopaciente->ap_paterno }} {{ $formulario->datopaciente->ap_materno}}
+                                    </td>
+                                    <td >
+                                        {{ $formulario->fecha_llenado }}
+                                    </td>
+                                    <td >
+                                        @if ($formulario->estado ==='alta')
+                                            <div class="badge bg-success text-wrap" style="width: 5rem;">Habilitado</div>
+                                        @else
+                                            <div class="badge bg-danger text-wrap" style="width: 5rem;">Deshabilitado</div>
+                                        @endif
+                                    </td>
+                                    <td >
+                                        @can('button-form-pdf-iaas')
+                                            <a href="{{ route('generar.pdf', $formulario->cod_form_notificacion_p) }}" class="btn" target="_blanck">
+                                                <svg width="20" height="20" fill="currentColor" class="bi bi-filetype-pdf" viewBox="0 0 16 16" style="color: red; fill: red; opacity: 1;" onmouseover="this.style.fill='black'; this.style.opacity=1;" onmouseout="this.style.fill='red'; this.style.opacity=1;">
+                                                    <path fill-rule="evenodd" d="M14 4.5V14a2 2 0 0 1-2 2h-1v-1h1a1 1 0 0 0 1-1V4.5h-2A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v9H2V2a2 2 0 0 1 2-2h5.5L14 4.5ZM1.6 11.85H0v3.999h.791v-1.342h.803c.287 0 .531-.057.732-.173.203-.117.358-.275.463-.474a1.42 1.42 0 0 0 .161-.677c0-.25-.053-.476-.158-.677a1.176 1.176 0 0 0-.46-.477c-.2-.12-.443-.179-.732-.179Zm.545 1.333a.795.795 0 0 1-.085.380.574.574 0 0 1-.238.241.794.794 0 0 1-.375.082H.788V12.48h.66c.218 0 .389.06.512.181.123.122.185.296.185.522Zm1.217-1.333v3.999h1.46c.401 0 .734-.08.998-.237a1.45 1.45 0 0 0 .595-.689c.13-.3.196-.662.196-1.084 0-.42-.065-.778-.196-1.075a1.426 1.426 0 0 0-.589-.68c-.264-.156-.599-.234-1.005-.234H3.362Zm.791.645h.563c.248 0 .45.05.609.152a.89.89 0 0 1 .354.454c.079.201.118.452.118.753a2.3 2.3 0 0 1-.068.592 1.14 1.14 0 0 1-.196.422.8.8 0 0 1-.334.252 1.298 1.298 0 0 1-.483.082h-.563v-2.707Zm3.743 1.763v1.591h-.79V11.85h2.548v.653H7.896v1.117h1.606v.638H7.896Z"/>
+                                                </svg>
+                                            </a>
+                                        @endcan
+                                        @can('edit-form-iaas')
+                                            <button class="btn-editar" style="background: none; border: none; " data-id="{{ $formulario->cod_form_notificacion_p}}" data-h="{{$formulario->h_clinico}}" data-fecha_llenado="{{$formulario->fecha_llenado}}" data-nombre="{{ $formulario->datopaciente->nombre_paciente }} {{ $formulario->datopaciente->ap_paterno }} {{ $formulario->datopaciente->ap_materno}}" data-estado="{{ $formulario->estado }}" data-motivos="{{ $formulario->motivos_baja }}">
+                                                <svg width="20" height="20" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16" style="color: #FFC107; fill: #FFC107;" onmouseover="this.style.fill='#000';" onmouseout="this.style.fill='#FFC107';">
+                                                    <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+                                                    <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/>
+                                                </svg>
+                                            </button>
+                                        @endcan
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
                 </div>
             </div>
-            <br>
-
-        {{-- TABLA --}}
-          <div class="table-wrapper table-responsive">
-            <table class="table table-hover" id="dataTable" class="table">
-                <thead class="table-primary">
-                    <tr >
-                        {{-- <th><h6>Nro. Formulario</h6></th> --}}
-                        <th><h6>H. Clínico</h6></th>
-                        <th><h6>Nombre del Paciente</h6></th>
-                        <th><h6>Fecha de Llenado</h6></th>
-                        <th><h6>Estado</h6></th>
-                        <th><h6>Opciones</h6></th>
-                      </tr>
-                </thead>
-                <tbody>
-                    @foreach ($formularios as $formulario)
-                        <tr>
-                            {{-- <td class="min-width">
-                                <p>{{ $formulario->cod_form_notificacion_p }}</p>
-                            </td> --}}
-                            <td class="min-width">
-                                <p>{{ $formulario->h_clinico }}</p>
-                            </td>
-                            <td class="min-width">
-                                <p>{{ $formulario->datopaciente->nombre_paciente }} {{ $formulario->datopaciente->ap_paterno }} {{ $formulario->datopaciente->ap_materno}}</p>
-                            </td>
-                            <td class="min-width">
-                                <p>{{ $formulario->fecha_llenado }}</p>
-                            </td>
-                            <td class="min-width">
-                                <p>{{ $formulario->estado }}</p>
-                            </td>
-                            <td>
-                                <div class="action">
-                                    <a href="{{ route('generar.pdf', $formulario->cod_form_notificacion_p) }}" class="btn" target="_blanck">
-                                        <i class="lni lni-eye"></i>
-                                    </a>
-
-                                    {{-- PRUEBA --}}
-                                    <form id="cambiarEstadoFormulario{{ $formulario->cod_form_notificacion_p }}" action="{{ route('cambiar.estado', $formulario->cod_form_notificacion_p) }}" method="POST">
-                                        @csrf
-                                        @method('PUT') <!-- Usa PUT o POST según tu configuración -->
-                                        <button type="button" class="btn btn-link text-danger cambiar-estado-formulario" data-codigo="{{ $formulario->cod_form_notificacion_p }}">
-                                            <i class="lni lni-arrow-down"></i>
-                                        </button>
-                                        <input type="hidden" name="motivos_baja" value="{{ $formulario->motivos_baja }}">
-                                        <!-- Agregar aquí los motivos actuales -->
-                                        <p id="motivos-actuales">{{ $formulario->motivos_baja }}</p>
-                                    </form>
-
-
-
-
-
-
-
-
-                                    {{-- <form id="eliminarFormulario{{ $formulario->cod_form_notificacion_p }}" action="{{ route('eliminar.formulario', $formulario->cod_form_notificacion_p) }}" method="POST">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="button" class="btn btn-link text-danger" onclick="confirmarEliminacion('{{ $formulario->cod_form_notificacion_p }}')">
-                                            <i class="lni lni-trash-can"></i>
-                                        </button>
-                                    </form> --}}
-
-                                </div>
-
-                            </td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
-            <!-- end table -->
-          </div>
         </div>
-        <!-- end card -->
-      </div>
-      <!-- end col -->
     </div>
-    <!-- end row -->
 </div>
-
-<!-- Modal de selección de fechas REPORTE-->
-<div class="modal fade" id="modalreporte" tabindex="-1" role="dialog" aria-labelledby="modalreporte" aria-hidden="true">
-    <div class="modal-dialog" role="document">
+{{-- MODIFICAR --}}
+<div class="modal fade" id="modalModificar" tabindex="-1" aria-labelledby="modalModificarLabel" aria-hidden="true">
+    <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="modalreporte">Seleccionar Fechas para el Reporte</h5>
+                <h5 class="modal-title" id="modalModificarLabel">Modificar Agente</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form action="{{ route('generar.reporte') }}" method="POST" target="_blank">
+                <form id="form-modificar" method="POST" action="{{ route('actualizar-estado.IAAS', ['formulario' => ':id']) }}">
                     @csrf
+                    @method('PUT')
+                    <p></p>
                     <div class="form-group">
-                        <label for="fecha">Fech:</label>
-                        <input type="month" id="fecha" name="fecha" value="{{date("Y-m")}}" class="form-control" required>
+                        <label for="nombre">Nombre</label>
+                        <input type="text" id="nombre" name="nombre" class="form-control" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="estado">Estado</label>
+                        <select id="estado" name="estado" class="form-control" required>
+                            <option value="baja">Deshabilitado</option>
+                            <option value="alta">Habilitado</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Motivos de baja</label><br>
+                        <textarea type="text" class="form-control @error('motivos_baja') is-invalid @enderror" id="motivos_baja" name="motivos_baja"></textarea>
+                        @error('motivos_baja')
+                            <span class="invalid-feedback">
+                                <strong>{{$message}}</strong>
+                            </span>
+                        @enderror
                     </div>
                     <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary">Generar</button>
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                        <button type="submit" form="form-modificar" class="btn btn-primary">Actualizar</button>
                     </div>
                 </form>
-                <form action="{{ route('reporte.anual') }}" method="POST" target="_blank">
-                    @csrf
-
-                    <div class="modal-body">
-                        <div class="form-group">
-                            <label for="a">Año:</label>
-                            <input type="number" id="a" name="a" value="{{ date("Y") }}" class="form-control" required>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary">Generar</button>
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    </div>
-                </form>
-
             </div>
         </div>
     </div>
 </div>
 
-<!-- Modal de selección de fechas INFORME-->
-<div class="modal fade" id="modalinforme" tabindex="-1" role="dialog" aria-labelledby="modalinforme" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="modalinforme">Seleccionar Fechas para el Informe</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-
-                <form action="{{ route('informe.anual') }}" method="POST" target="_blank">
-                    @csrf
-
-                    <div class="modal-body">
-                        <div class="form-group">
-                            <label for="a">Año:</label>
-                            <input type="number" id="a" name="a" value="{{ date("Y") }}" class="form-control" required>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary">Generar</button>
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    </div>
-                </form>
-
-            </div>
-        </div>
-    </div>
-</div>
-
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10.15.5/dist/sweetalert2.min.css">
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10.15.5/dist/sweetalert2.min.js"></script>
-{{-- <script>
-    function confirmarEliminacion(codigoFormulario) {
-        Swal.fire({
-            title: '¿Estás seguro?',
-            text: 'Esta acción no se puede revertir.',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#d33',
-            cancelButtonColor: '#3085d6',
-            confirmButtonText: 'Sí, eliminar',
-            cancelButtonText: 'Cancelar'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                document.getElementById('eliminarFormulario' + codigoFormulario).submit();
-            }
-        });
-    }
-</script> --}}
-
-{{-- PRUEBA --}}
+<script src="{{asset('assets/js/jquery-3.6.0.min.js')}}"></script>
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        function confirmarCambioEstado(codigoFormulario) {
-            console.log(codigoFormulario);
+    $('.btn-editar').on('click', function() {
+        var id = $(this).data('id');
+        var actionUrl = "{{ route('actualizar-estado.IAAS', ['formulario' => ':id']) }}";
+        actionUrl = actionUrl.replace(':id', id);
+        var nombre = $(this).data('nombre');
+        var estado = $(this).data('estado');
+        var motivo = $(this).data('motivos');
 
-            if (codigoFormulario) {
-                // Obtener los motivos actuales y configurarlos en el elemento <p id="motivos-actuales">
-                var elementoMotivosActuales = document.getElementById('motivos-actuales');
-                var motivosActuales = elementoMotivosActuales.textContent; // Obtén los motivos actuales
+        $('#modalModificar #nombre').val(nombre);
+        $('#modalModificar #estado').val(estado);
+        $('#modalModificar #motivos_baja').val(motivo);
 
-                // Configura los motivos actuales en el mensaje de la ventana modal
-                Swal.fire({
-                    title: '¿Estás seguro?',
-                    text: 'Esta acción cambiará el estado a "baja".',
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#d33',
-                    cancelButtonColor: '#3085d6',
-                    confirmButtonText: 'Sí, cambiar estado',
-                    cancelButtonText: 'Cancelar',
-                    html:
-                        '<p>Motivos de baja actuales:</p>' +
-                        '<p>' + motivosActuales + '</p>' +
-                        '<input id="motivos_baja" class="swal2-input" placeholder="Nuevos motivos de baja">',
-                    preConfirm: function () {
-                        return document.getElementById('motivos_baja').value;
-                    }
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        // Obtener los nuevos motivos de baja
-                        var nuevosMotivos = result.value;
-
-                        // Aquí puedes realizar la actualización del estado con nuevosMotivos si es necesario
-
-                        Swal.fire(
-                            'Estado cambiado',
-                            'El estado del formulario se ha cambiado a "baja".',
-                            'success'
-                        ).then(function () {
-                            // Actualizar la vista si es necesario
-                            location.reload();
-                        });
-                    }
-                });
-
-                // Aquí debes configurar data-motivos en el momento adecuado
-                var elemento = document.querySelector('.cambiar-estado-formulario[data-motivos="' + codigoFormulario + '"]');
-                console.log(elemento);
-                // elemento.setAttribute('data-motivos', motivosActuales);
-            } else {
-                console.error('Código de formulario no válido.');
-                // Puedes mostrar un mensaje al usuario o realizar otra acción aquí
-            }
-        }
-
-        // Agregar el evento click a los botones después de cargar el DOM
-        var buttons = document.querySelectorAll('.cambiar-estado-formulario');
-        buttons.forEach(function (button) {
-            button.addEventListener('click', function () {
-                var codigoFormulario = this.getAttribute('data-codigo');
-                confirmarCambioEstado(codigoFormulario);
-            });
-        });
-    });
-</script>
-
-
-
-
-{{-- <script>
-function confirmarCambioEstado(codigoFormulario) {
-    console.log(codigoFormulario);
-    document.addEventListener("DOMContentLoaded", function () {
-
-        if (codigoFormulario) {
-            // Obtener los motivos actuales y configurarlos en el elemento <p id="motivos-actuales">
-            var elementoMotivosActuales = document.getElementById('motivos-actuales');
-            var motivosActuales = elementoMotivosActuales.textContent; // Obtén los motivos actuales
-
-            // Configura los motivos actuales en el mensaje de la ventana modal
-            Swal.fire({
-                title: '¿Estás seguro?',
-                text: 'Esta acción cambiará el estado a "baja".',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Sí, cambiar estado',
-                cancelButtonText: 'Cancelar',
-                html:
-                    '<p>Motivos de baja actuales:</p>' +
-                    '<p>' + motivosActuales + '</p>' +
-                    '<input id="motivos_baja" class="swal2-input" placeholder="Nuevos motivos de baja">',
-                preConfirm: function () {
-                    return document.getElementById('motivos_baja').value;
-                }
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    // Obtener los nuevos motivos de baja
-                    var nuevosMotivos = result.value;
-
-                    // Aquí puedes realizar la actualización del estado con nuevosMotivos si es necesario
-
-                    Swal.fire(
-                        'Estado cambiado',
-                        'El estado del formulario se ha cambiado a "baja".',
-                        'success'
-                    ).then(function () {
-                        // Actualizar la vista si es necesario
-                        location.reload();
-                    });
-                }
-            });
-
-            // Aquí debes configurar data-motivos en el momento adecuado
-            var elemento = document.querySelector('.cambiar-estado-formulario[data-motivos="' + codigoFormulario + '"]');
-            console.log(elemento);
-            // elemento.setAttribute('data-motivos', motivosActuales);
+        $('#form-modificar').attr('action', actionUrl);
+        if (estado === 'baja' && motivo === '') {
+            Swal.fire('Error', 'Debe proporcionar un motivo de baja.', 'error');
         } else {
-            console.error('Código de formulario no válido.');
-            // Puedes mostrar un mensaje al usuario o realizar otra acción aquí
+            $('#modalModificar').modal('show');
         }
-
-    // if (codigoFormulario) {
-    //     var elemento = document.getElementById('cambiarEstadoFormulario' + codigoFormulario);
-
-    //     if (elemento) {
-    //         var motivos = elemento.getAttribute('data-motivos');
-    //         console.log(motivos);
-
-    //     } else {
-    //         console.error('Elemento no encontrado.');
-    //         // Puedes mostrar un mensaje al usuario o realizar otra acción aquí
-    //     }
-    // } else {
-    //     console.error('Código de formulario no válido.');
-    //     // Puedes mostrar un mensaje al usuario o realizar otra acción aquí
-    // }
-
-});
-}
-
-</script> --}}
-
-
-
-
-
-
-
-
-<!-- Agrega los archivos de DataTables y jQuery -->
-<link rel="stylesheet" href="https://cdn.datatables.net/1.10.25/css/dataTables.bootstrap4.min.css">
-{{-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> --}}
-<script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/1.10.25/js/dataTables.bootstrap4.min.js"></script>
-
-{{-- DATATABLE --}}
-<script>
-    $(document).ready(function () {
-        $('#dataTable').DataTable({
-            "language": {
-                "url": "https://cdn.datatables.net/plug-ins/1.10.25/i18n/Spanish.json" // Traducción al español
-            },
-            "paging": true, // Activar paginación
-            "searching": true, // Activar búsqueda
-            "lengthChange": true, // Cambiar cantidad de resultados por página
-            "pageLength": 10, // Cantidad de resultados por página
-            "ordering": false // Desactivar la ordenación de la tabla
-        });
     });
 
+    $('#form-modificar').on('submit', function(event) {
+        var estado = $('#estado').val();
+        var motivos = $('#motivos_baja').val();
+
+        if (estado === 'baja' && motivos.trim() === '') {
+            event.preventDefault();
+            Swal.fire('Error', 'Debe proporcionar un motivo de baja.', 'error');
+        }
+    });
+
+    $(document).ready(function () {
+        var successMessage = '{{ Session::get('success') }}';
+        if (successMessage) {
+            Swal.fire('Éxito', successMessage, 'success');
+        }
+    });
 </script>
+
 @endsection
 
 

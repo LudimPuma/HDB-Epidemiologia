@@ -5,12 +5,16 @@
     <form id="miFormulario" action="#" method="POST" target="_blank">
         @csrf
         <div class="card-style mb-30">
-            <h1 style="text-align: center">Reporte Trimestral por Servicio</h1>
+            <h1 style="text-align: center">Informe Trimestral por Servicio</h1>
             <br>
             <select id="seleccion" name="seleccion">
                 <option value="">Seleccione</option>
-                <option value="Resistencia_Bacteriana_IAAS">Resistencia Bacteriana IAAS</option>
-                <option value="Tuberculosis">Tuberculosis</option>
+                @can('button-form-informe-iaas')
+                    <option value="Resistencia_Bacteriana_IAAS">Resistencia Bacteriana IAAS</option>
+                @endcan
+                @can('button-form-informe-eni')
+                    <option value="Tuberculosis">Tuberculosis</option>
+                @endcan
             </select>
             <div class="modal-body">
                 <div class="form-group">

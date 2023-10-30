@@ -8,7 +8,7 @@ class Bacteria extends Model
 {
     protected $table='epidemiologia.bacterias';
     protected $primaryKey = 'cod_bacterias';
-    protected $fillable=['nombre'];
+    protected $fillable=['nombre','estado','motivos_baja'];
     public $timestamps = false;
     public function antibiogramas()
     {
@@ -16,7 +16,6 @@ class Bacteria extends Model
     }
     public function medicamentos()
     {
-        return $this->belongsToMany(Medicamento::class, 'BACTERIAS_MEDICAMENTOS', 'COD_BACTE', 'COD_MEDI');
+        return $this->belongsToMany(Medicamento::class, 'epidemiologia.bacterias_medicamentos', 'cod_bacte', 'cod_medi');
     }
-
 }

@@ -8,21 +8,6 @@
     </div>
 </div>
 
-<div class="row">
-    <div class="col-lg-4">
-        <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#modalBusqueda">
-             Imprimir Formulario
-        </button>
-    </div>
-</div>
-
-<div class="row">
-    <div class="col-lg-4">
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalreporte">
-            Generar Reporte
-        </button>
-    </div>
-</div>
 
 <!-- Modal GENERAR FORMULARIO-->
 <div class="modal fade" id="h_paciente" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -86,58 +71,7 @@
 </div>
 
 
-<!-- Modal IMPRIMIR FORMULARIO-->
-<div class="modal fade" id="modalBusqueda" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Buscar formulario por historial clínico</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form action="{{ route('buscar-form_2') }}" method="GET">
-                    <div class="mb-3">
-                        <label for="hClinico" class="form-label">Número de historial clínico:</label>
-                        <input type="number" class="form-control" id="hClinico" name="hClinico" required>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary">Buscar</button>
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-
-
-
-<!-- Modal reporte -->
-<div class="modal fade" id="modalreporte" tabindex="-1" role="dialog" aria-labelledby="modalreporte" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="modalreporte">Seleccionar Mes para el Reporte</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form action="{{ route('formulario.generar') }}" method="POST" target="_blank">
-                    @csrf
-                    <div class="form-group">
-                        <label for="fecha">Año:</label>
-                        <input type="month" id="fecha" name="fecha" value="{{date("Y-m")}}" class="form-control" required>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary">Generar Reporte</button>
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="{{asset('assets/js/jquery-3.6.0.min.js')}}"></script>
 <script>
 function enableGenerateButton(enabled) {
     var generarFormularioBtn = document.getElementById('generarFormularioBtn');

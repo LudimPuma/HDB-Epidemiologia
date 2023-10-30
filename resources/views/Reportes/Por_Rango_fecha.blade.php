@@ -10,8 +10,12 @@
             <br>
             <select id="seleccion" name="seleccion">
                 <option value="" disabled selected>Seleccionar</option>
-                <option value="IAAS">IAAS</option>
-                <option value="Enf_Not_Inm">Enfermedades de Notificación Inmediata</option>
+                @can('button-form-reports-iaas')
+                    <option value="IAAS">IAAS</option>
+                @endcan
+                @can('button-form-reports-eni')
+                    <option value="Enf_Not_Inm">Enfermedades de Notificación Inmediata</option>
+                @endcan
             </select>
             <div class="">
                 <div class="form-group">

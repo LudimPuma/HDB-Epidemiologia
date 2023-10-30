@@ -8,7 +8,7 @@ class TipoInfeccion extends Model
 {
     protected $table='epidemiologia.tipo_infeccion';
     protected $primaryKey = 'cod_tipo_infeccion';
-    protected $fillable=['nombre'];
+    protected $fillable=['nombre','estado','motivos_baja'];
     public $timestamps = false;
 
     // public function formulariosNotificacionesPacientes()

@@ -19,6 +19,9 @@
     <link rel="stylesheet" href="{{asset('assets/css/main.css')}}" />
     <link rel="stylesheet" href="{{ asset('assets/js/sweetalert2/dist/sweetalert2.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/js/datatables.net/dataTables.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{asset('css/select2.min.css')}}" />
+    <link rel="stylesheet" href="{{asset('css/select2-bootstrap-5-theme.rtl.min.css')}}" />
+    <link rel="stylesheet" href="{{asset('css/select2-bootstrap-5-theme.min.css')}}" />
     @stack('style')
   </head>
   <body>
@@ -36,12 +39,14 @@
             <div class="col-lg-5 col-md-5 col-6">
               <div class="header-left d-flex align-items-center">
                 <div class="menu-toggle-btn mr-20">
+                    {{-- <button class="btn rounded-fill"><i class="bi bi-moon-fill"></i></button> --}}
                   <button
                     id="menu-toggle"
                     class="main-btn primary-btn btn-hover"
                   >
                     <i class="lni lni-chevron-left me-2"></i> Menu
                   </button>
+
                 </div>
               </div>
             </div>
@@ -176,19 +181,33 @@
 
 
     <!-- ========= All Javascript files linkup ======== -->
-    <script src="assets/js/jquery-3.6.0.min.js"></script>
-    <script src="assets/js/bootstrap.bundle.min.js"></script>
-    <script src="assets/js/Chart.min.js"></script>
-    <script src="assets/js/dynamic-pie-chart.js"></script>
-    <script src="assets/js/moment.min.js"></script>
-    <script src="assets/js/fullcalendar.js"></script>
-    <script src="assets/js/jvectormap.min.js"></script>
-    <script src="assets/js/world-merc.js"></script>
-    <script src="assets/js/polyfill.js"></script>
-    <script src="assets/js/main.js"></script>
-    <script src="assets/js/sweetalert2/dist/sweetalert2.min.js"></script>
-    <script src="assets/js/datatables.net/jquery.dataTables.min.js"> </script>
-    <script src="assets/js/datatables.net/dataTables.bootstrap4.min.js"> </script>
+
+    <script src="{{asset('assets/js/jquery-3.6.0.min.js')}}"></script>
+    <script src="{{asset('assets/js/bootstrap.bundle.min.js')}}"></script>
+    <script src="{{asset('assets/js/Chart.min.js')}}"></script>
+    <script src="{{asset('assets/js/dynamic-pie-chart.js')}}"></script>
+    <script src="{{asset('assets/js/moment.min.js')}}"></script>
+    <script src="{{asset('assets/js/fullcalendar.js')}}"></script>
+    <script src="{{asset('assets/js/jvectormap.min.js')}}"></script>
+    <script src="{{asset('assets/js/world-merc.js')}}"></script>
+    <script src="{{asset('assets/js/polyfill.js')}}"></script>
+    <script src="{{asset('assets/js/main.js')}}"></script>
+    <script src="{{asset('assets/js/sweetalert2/dist/sweetalert2.min.js')}}"></script>
+    <script src="{{asset('assets/js/datatables.net/jquery.dataTables.min.js')}}"> </script>
+    <script src="{{asset('assets/js/datatables.net/dataTables.bootstrap4.min.js')}}"> </script>
+
+    <script src="{{ asset('js/select2.min.js') }}"></script>
+    <script>
+        $(document).ready(function () {
+            $('#dataTable').DataTable({
+                "paging": true, // Activar paginación
+                "searching": true, // Activar búsqueda
+                "lengthChange": true, // Cambiar cantidad de resultados por página
+                "pageLength": 10, // Cantidad de resultados por página
+                "ordering": false // Desactivar la ordenación de la tabla
+            });
+        });
+    </script>
     @stack('script')
   </body>
 </html>

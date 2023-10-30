@@ -18,6 +18,18 @@ use PDF;
 
 class FormularioEnfermedadesNotificacionInmediataController extends Controller
 {
+    public function __construct(){
+        $this->middleware('can:create-form-eni')->only('showViewForm');
+        $this->middleware('can:create-form-eni')->only('searchHistorial');
+        $this->middleware('can:create-form-eni')->only('mostrarFormulario');
+        $this->middleware('can:create-form-eni')->only('guardarDatos');
+        $this->middleware('can:button-form-eni-table')->only('tabla');
+        $this->middleware('can:button-form-pdf-eni')->only('vistaPreviaPDF');
+        $this->middleware('can:edit-form-eni')->only('update');
+        $this->middleware('can:button-form-informe-eni')->only('informeTuberculosis');
+        $this->middleware('can:button-form-informe-eni')->only('informeTrimestralSemestralTuberculosis');
+    }
+
     public function showViewForm()
     {
         return view('Form_E_N_I.view_form_2');
@@ -105,23 +117,40 @@ class FormularioEnfermedadesNotificacionInmediataController extends Controller
         }
         return redirect()->route('principal')->with('success', 'Los datos han sido guardados exitosamente.');
     }
-
-
-    public function buscarFormularioPorHClinico(Request $request)
+    //MODIFICAR ESTADO
+    public function update(Request $request, FormularioEnfermedadesNotificacionInmediata $formulario)
     {
-        $hClinico = $request->input('hClinico');
+        $request->validate([
+            'estado' => 'required|in:alta,baja',
+        ]);
 
-        // Buscar el formulario por h_clinico
-        $formulario = FormularioEnfermedadesNotificacionInmediata::where('h_clinico', $hClinico)->first();
+        $data = [
+            'estado' => $request->estado,
+        ];
 
-        if (!$formulario) {
-            // El formulario no existe, puedes mostrar un mensaje de error o redirigir a otra página
-            return redirect()->back()->with('error', 'No se encontró ningún formulario para el historial clínico ingresado.');
+        if ($request->estado === 'baja') {
+            $request->validate([
+                'motivos_baja' => 'required',
+            ],
+            [
+                'motivos_baja.required'=> 'Debe dar un motivo de baja',
+            ]
+        );
+            $data['motivos_baja'] = $request->motivos_baja;
+        } else {
+            $data['motivos_baja'] = null;
         }
+        $formulario->update($data);
+        if ($formulario->update($data)) {
+            $request->session()->flash('success', 'Estado actualizado exitosamente');
+        }
+        $formularios = FormularioEnfermedadesNotificacionInmediata::with('datopaciente')
+        ->orderBy('id_f_notificacion_inmediata', 'desc')
+        ->get();
 
-        // Redirigir a la vista previa del PDF con el ID del formulario
-        return redirect()->route('vista-previa-pdf', $formulario->id_f_notificacion_inmediata);
+        return view('Form_E_N_I.VistaTabla', ['formularios' => $formularios]);
     }
+
     //PDF FORMULARIO
     public function vistaPreviaPDF($id)
     {
@@ -250,47 +279,6 @@ class FormularioEnfermedadesNotificacionInmediataController extends Controller
         ]);
     }
 
-    // public function generar(Request $request)
-    // {
-    //     $fechaSeleccionada = $request->fecha;
-    //     $mesSeleccionado = Carbon::parse($fechaSeleccionada)->month;
-    //     $nombreMesSeleccionado = Carbon::parse($fechaSeleccionada)->locale('es')->monthName;
-    //     $anioSeleccionado = Carbon::parse($fechaSeleccionada)->year;
-    //     // Obtener todas las patologías disponibles
-    //     $todasLasPatologias = Patologia::select('nombre')->get();
-
-    //     // Consulta para obtener el conteo por patología
-    //     $conteoPorPatologia = SeleccionPatologia::select(
-    //         'p.nombre as patologia',
-    //         DB::raw('COUNT(*) as total_casos')
-    //     )
-    //     ->rightJoin('epidemiologia.patologia as p', 'p.cod_patologia', '=', 'seleccion_patologia.cod_pato')
-    //     ->rightJoin('epidemiologia.formulario_enfermedades_notificacion_inmediata as f', 'f.id_f_notificacion_inmediata', '=', 'seleccion_patologia.cod_form_n_i')
-    //     ->whereMonth('f.fecha', $mesSeleccionado)
-    //     ->whereYear('f.fecha', $anioSeleccionado)
-    //     ->where('f.estado', 'alta')
-    //     ->groupBy('p.nombre')
-    //     ->get();
-    //     // Combinar el conteo con todas las patologías para mostrar las que tienen 0 casos
-    //     $conteoCombinado = collect([]);
-    //     foreach ($todasLasPatologias as $patologia) {
-    //         $conteo = $conteoPorPatologia->firstWhere('patologia', $patologia->nombre);
-    //         if ($conteo) {
-    //             $conteoCombinado->push($conteo);
-    //         } else {
-    //             $conteoCombinado->push([
-    //                 'patologia' => $patologia->nombre,
-    //                 'total_casos' => 0,
-    //             ]);
-    //         }
-    //     }
-
-    //     $data = compact('conteoCombinado', 'nombreMesSeleccionado', 'anioSeleccionado');
-    //     $pdf = PDF::loadview('Form_E_N_I.PDF.reporte_form2_pdf', $data);
-    //     return $pdf->stream();
-    // }
-
-
     public function mostrarGrafica()
     {
         // Obtener el año actual
@@ -344,6 +332,9 @@ class FormularioEnfermedadesNotificacionInmediataController extends Controller
         }
 
         $datasets = array_values($datasets); // Convierte el array asociativo a un array indexado
+        //++++++++++++++++++++++++++++++++
+
+
 
         return view('principal', compact('labels', 'datasets'));
     }
@@ -354,24 +345,6 @@ class FormularioEnfermedadesNotificacionInmediataController extends Controller
         ->orderBy('id_f_notificacion_inmediata', 'desc')
         ->get();
         return view('Form_E_N_I.VistaTabla', compact('formularios'));
-    }
-
-    public function eliminarFormulario($codigoFormulario)
-    {
-        // Buscar el formulario por el código
-        $formulario = FormularioEnfermedadesNotificacionInmediata::find($codigoFormulario);
-
-        if (!$formulario) {
-            return redirect()->back()->with('error', 'No se encontró el formulario solicitado.');
-        }
-
-        // Eliminar registros relacionados en ANTIBIOGRAMA
-        SeleccionPatologia::where('cod_form_n_i', $codigoFormulario)->delete();
-
-        // Eliminar el formulario y sus registros relacionados en FORMULARIO_NOTIFICACION_PACIENTE
-        $formulario->delete();
-
-        return redirect()->back()->with('success', 'Formulario y registros relacionados eliminados exitosamente.');
     }
 
     //REPORTE ANUAL POR SERVICIOS

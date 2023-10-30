@@ -5,9 +5,6 @@
         Registro creado/actualizado exitosamente.
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
-
-
-
     <div class="row">
         <div class="col-md-6">
           <button class="btn btn-primary btn-insertar" data-target="#modalInsertar" data-bs-toggle="modal">Crear Agente Causal</button>

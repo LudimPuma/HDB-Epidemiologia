@@ -8,7 +8,8 @@ class Patologia extends Model
 {
     protected $table='epidemiologia.patologia';
     protected $primaryKey = 'cod_patologia';
-    protected $fillable=['nombre'];
+    protected $fillable=['nombre','estado','motivos_baja'];
+    public $timestamps = false;
 
     public function formulariosEnfermedadesNotificacionesInmediatas()
     {

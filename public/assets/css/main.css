@@ -1107,7 +1107,7 @@ h6,
 }
 
 /* =========== tables css =========== */
-.table {
+/* .table {
   border-collapse: inherit;
   border-spacing: 0px;
 }
@@ -1277,10 +1277,10 @@ h6,
 }
 .referrals-table-card .referrals-table td {
   padding: 10px;
-}
+}*/
 
 /* ===== lead-table ===== */
-.lead-table th,
+/* .lead-table th,
 .lead-table td {
   padding: 10px 5px;
 }
@@ -1315,7 +1315,7 @@ h6,
 }
 .clients-table .employee-image {
   margin-right: 0px;
-}
+} */
 
 /* =========== form elements css ========== */
 /* ===== input style ===== */

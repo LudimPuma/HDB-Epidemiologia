@@ -9,7 +9,7 @@ class Hongo extends Model
     protected $table = 'epidemiologia.hongos';
     protected $primaryKey = 'id';
 
-    protected $fillable = ['nombre'];
+    protected $fillable = ['nombre','estado','motivos_baja'];
     public $timestamps = false;
 
 

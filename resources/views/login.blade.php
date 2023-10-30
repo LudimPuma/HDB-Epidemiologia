@@ -62,7 +62,7 @@
 
             {{-- <div class="d-flex justify-content-around mt-1">
                 <div class="d-flex align-items-center gap-1">
-                    <input class="form-check-input" type="checkbox" name="remember" id="remember" value="1">
+                    <input class="form-check-input" type="checkbox" name="" id="" value="1">
                     <div class="recordar pt-1">Recordar</div>
 
                 </div>

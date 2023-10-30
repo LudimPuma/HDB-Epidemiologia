@@ -8,9 +8,13 @@
             <h1 style="text-align: center">Reporte por Sermestre</h1>
             <br>
             <select id="seleccion" name="seleccion">
-                <option value="">Seleccione</option>
-                <option value="IAAS">IAAS</option>
-                <option value="Enf_Not_Inm">Enfermedades de Notificación Inmediata</option>
+                <option value="" disabled selected>Seleccionar</option>
+                @can('button-form-reports-iaas')
+                    <option value="IAAS">IAAS</option>
+                @endcan
+                @can('button-form-reports-eni')
+                    <option value="Enf_Not_Inm">Enfermedades de Notificación Inmediata</option>
+                @endcan
             </select>
             <div class="modal-body">
                 <div class="form-group">

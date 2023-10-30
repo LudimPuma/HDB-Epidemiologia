@@ -7,34 +7,18 @@ use Illuminate\Http\Request;
 
 class TipoInfeccionController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+    public function __construct()
+    {
+        $this->middleware('can:crud-index-tipoInfeccion')->only('index');
+        $this->middleware('can:crud-create-tipoInfeccion')->only('store');
+        $this->middleware('can:crud-edit-tipoInfeccion')->only('update');
+    }
     public function index()
     {
-        $tInfecciones = TipoInfeccion::orderBy('cod_tipo_infeccion')->get();
+        $tInfecciones = TipoInfeccion::orderBy('nombre')->get();
         return view('one.crudTipoInfeccion', compact('tInfecciones'));
     }
 
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
         $request->validate([
@@ -42,70 +26,38 @@ class TipoInfeccionController extends Controller
         ]);
 
         TipoInfeccion::create($request->all());
-
+        $request->session()->flash('success', 'Tipo de Infección agregado exitosamente');
         return redirect()->route('tipoInfeccion.index')->with('success', 'Tipo Infeccion creado exitosamente');
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\TipoInfeccion  $tipoInfeccion
-     * @return \Illuminate\Http\Response
-     */
-    public function show(TipoInfeccion $tipoInfeccion)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\TipoInfeccion  $tipoInfeccion
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(TipoInfeccion $tipoInfeccion)
-    {
-
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\TipoInfeccion  $tipoInfeccion
-     * @return \Illuminate\Http\Response
-     */
     public function update(Request $request, TipoInfeccion $tipoInfeccion)
     {
-        //
         $request->validate([
             'nombre' => 'required|max:100',
+            'estado' => 'required|boolean',
         ]);
 
-        $tipoInfeccion->update($request->all());
+        $data = [
+            'nombre' => $request->nombre,
+            'estado' => $request->estado,
+        ];
 
-        return redirect()->route('tipoInfeccion.index')->with('success', 'Tipo Infeccion actualizado exitosamente');
-    }
+        if (!$request->estado) {
+            $request->validate([
+                'motivos_baja' => 'required',
+            ],
+            [
+                'motivos_baja.required' => 'Debe proporcionar un motivo de baja',
+            ]);
+            $data['motivos_baja'] = $request->motivos_baja;
+        } else {
+            $data['motivos_baja'] = null;
+        }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\TipoInfeccion  $tipoInfeccion
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(TipoInfeccion $tipoInfeccion)
-    {
-        //
-        $tipoInfeccion->delete();
+        $tipoInfeccion->update($data);
 
-        return redirect()->route('tipoInfeccion.index')->with('success', 'Tipo Infeccion eliminado exitosamente');
-    }
-    public function search(Request $request)
-    {
-      $query = $request->input('query');
+        $request->session()->flash('success', 'Estado actualizado exitosamente');
 
-      $bacterias = TipoInfeccion::where('nombre', 'like', '%'.$query.'%')->get();
-
-      return response()->json($bacterias);
+        return redirect()->route('tipoInfeccion.index');
     }
 }
