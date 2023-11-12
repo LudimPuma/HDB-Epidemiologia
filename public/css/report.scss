@@ -1,0 +1,52 @@
+/* Estilos personalizados para el formulario */
+.custom-form {
+    background-color: #f8f9fa; /* Color de fondo */
+    color: #333; /* Color del texto */
+    padding: 20px; /* Espaciado interior */
+    border: 1px solid #ccc; /* Borde */
+    border-radius: 5px; /* Bordes redondeados */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra ligera */
+
+    .card-body {
+        background-color: #ffffff; /* Fondo del cuerpo del formulario */
+        padding: 20px; /* Espaciado interior del cuerpo del formulario */
+        border: 1px solid #ccc; /* Borde del cuerpo del formulario */
+        border-radius: 5px; /* Bordes redondeados del cuerpo del formulario */
+
+        h1 {
+            font-size: 24px; /* Tamaño de fuente del título */
+            margin-top: 0; /* Elimina el margen superior del título */
+        }
+
+        .form-group {
+            margin-bottom: 20px; /* Espaciado entre grupos de formulario */
+
+            label {
+                font-weight: bold; /* Texto en negrita para etiquetas */
+            }
+        }
+
+        select, input[type="number"] {
+            background-color: #f8f9fa; /* Color de fondo de los campos de entrada */
+            color: #333; /* Color del texto de los campos de entrada */
+            border: 1px solid #ccc; /* Borde de los campos de entrada */
+            border-radius: 5px; /* Bordes redondeados de los campos de entrada */
+            width: 100%; /* Ancho del 100% para ajustarse al contenedor */
+            padding: 10px; /* Espaciado interior de los campos de entrada */
+        }
+
+        .btn.custom-btn {
+            background-color: #007BFF; /* Color de fondo del botón primario */
+            color: #fff; /* Color del texto del botón primario */
+            border: none; /* Sin borde */
+            border-radius: 5px; /* Bordes redondeados del botón */
+            padding: 10px 20px; /* Espaciado del botón */
+            cursor: pointer; /* Cambio de cursor en hover */
+            transition: background-color 0.2s; /* Transición de color de fondo en hover */
+
+            &:hover {
+                background-color: #0056b3; /* Cambio de color de fondo en hover */
+            }
+        }
+    }
+}

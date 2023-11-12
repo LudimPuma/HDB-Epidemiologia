@@ -92,9 +92,9 @@
             <table class="table">
                 <tr>
                     <th>Nombre:</th>
-                    <td>{{ Auth::user()->persona->nombres }} {{ Auth::user()->persona->apellidos }}</td>
+                    <td>{{ $NombreFormSave}}</td>
                     <th>Cargo</th>
-                    <td>{{ Auth::user()->profesion  }}</td>
+                    <td>{{ $cargo->cargo }}</td>
                 </tr>
             </table>
         </div>

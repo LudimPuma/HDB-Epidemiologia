@@ -4,7 +4,7 @@
     <div class="container">
         <h1>Add User</h1>
 
-        <form method="POST" action="{{ route('usuarios.store') }}">
+        <form method="POST" action="{{ route('usuarios.store') }}" enctype="multipart/form-data">
             @csrf
             <h2 class="text-center">Person</h2>
             <div class="row">
@@ -118,27 +118,27 @@
                                 <select class="form-select " id="profesion" name="profesion" required data-placeholder="Seleccione un una Profesión">
                                     <option></option>
                                     <option value="Bachiller">Bachiller</option>
-                                    <option value="Licenciatura">Licenciado(a)</option>
-                                    <option value="Ingenieria">Ingeniero(a)</option>
-                                    <option value="Técnico Medio">Técnico Medio en Enfermería</option>
-                                    <option value="Doctor">Doctor(a)</option>
-                                    <option value="Enfermero">Enfermero(a)</option>
+                                    <option value="Licenciado(a)">Licenciado(a)</option>
+                                    <option value="Ingeniero(a)">Ingeniero(a)</option>
+                                    <option value="Técnico Medio en Enfermería">Técnico Medio en Enfermería</option>
+                                    <option value="Doctor(a)">Doctor(a)</option>
+                                    <option value="Enfermero(a)">Enfermero(a)</option>
                                     <option value="Terapeuta">Terapeuta</option>
-                                    <option value="Radiólogo">Radiólogo(a)</option>
+                                    <option value="Radiólogo(a)">Radiólogo(a)</option>
                                     <option value="Farmacéutico(a)">Farmacéutico(a)</option>
                                     <option value="Nutricionista">Nutricionista</option>
-                                    <option value="Psicólogo">Psicólogo(a)</option>
-                                    <option value="Trabajador Social">Trabajador(a) Social</option>
+                                    <option value="Psicólogo(a)">Psicólogo(a)</option>
+                                    <option value="Trabajador(a) Social">Trabajador(a) Social</option>
                                     <option value="Técnico de Laboratorio">Técnico de Laboratorio</option>
-                                    <option value="Administrador de Salud">Administrador(a) de Salud</option>
+                                    <option value="Administrador(a) de Salud">Administrador(a) de Salud</option>
                                     <option value="Fisioterapeuta">Fisioterapeuta</option>
                                     <option value="Terapeuta Ocupacional">Terapeuta Ocupacional</option>
                                     <option value="Dentista">Dentista</option>
-                                    <option value="Asistente Médico">Asistente Médico(a)</option>
+                                    <option value="Asistente Médico">Asistente Médico</option>
                                     <option value="Optometrista">Optometrista</option>
                                     <option value="Logopeda">Logopeda</option>
                                     <option value="Técnico en Imagenología">Técnico en Imagenología</option>
-                                    <option value="Paramédico">Paramédico(a)</option>
+                                    <option value="Paramédico(a)">Paramédico(a)</option>
                                 </select>
                         </div>
                     </div>
@@ -164,9 +164,9 @@
                             <option></option>
                             <option value="Responsable">Responsable</option>
                             <option value="Medico">Medico</option>
-                            <option value="Asesor Legal">Asesor(a) Legal</option>
+                            <option value="Asesor(a) Legal">Asesor(a) Legal</option>
                             <option value="Enfermero(a)">Enfermero(a)</option>
-                            <option value="Asesor Adjunto">Asesor Adjunto</option>
+                            <option value="Asesor(a) Adjunto">Asesor(a) Adjunto</option>
                             <option value="Auxiliar Administrativo">Auxiliar Administrativo</option>
                             <option value="Personal">Personal</option>
                         </select>
@@ -188,6 +188,12 @@
                                 <option value="{{ $role->name }}">{{ $role->name }}</option>
                             @endforeach
                         </select>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="imagen">Subir imagen</label>
+                        <input type="file" name="imagen" class="form-control-file" accept="image/*">
                     </div>
                 </div>
             </div>

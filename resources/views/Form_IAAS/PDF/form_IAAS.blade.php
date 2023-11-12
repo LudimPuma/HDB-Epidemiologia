@@ -78,7 +78,7 @@
                     <td>{{ $servicio_inicio_sintomas->nombre }}</td>
                     <th>Servicio Notificador: </th>
                     <td >{{ $servicio_notificador->nombre }}</td>
-                    <th>Muerte:</th>
+                    <th>Defunción:</th>
                     <td>{{$muerte}}</td>
                 </tr>
                 <tr>
@@ -190,14 +190,18 @@
             <table >
                 <tr>
                     <th>Nombre:</th>
-                    <td>{{ Auth::user()->persona->nombres }} {{ Auth::user()->persona->apellidos }}</td>
+                    <td>{{ $NombreFormSave}}</td>
                     <th>Cargo</th>
-                    <td>{{ Auth::user()->profesion  }}</td>
+                    <td>{{ $cargo->cargo }}</td>
                 </tr>
             </table>
         </div>
         <div class="signature-container">
             <h5>{{ Auth::user()->persona->nombres }} {{ Auth::user()->persona->apellidos }}</h5>
+
+
+
+
         </div>
     </div>
 </body>

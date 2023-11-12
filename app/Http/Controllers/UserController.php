@@ -7,6 +7,7 @@ use App\User;
 use App\Persona;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
+use Illuminate\Support\Facades\Storage;
 class UserController extends Controller
 {
     // public function __constructo()
@@ -67,6 +68,11 @@ class UserController extends Controller
         // $persona->resgister = Auth::id();
         $persona->save();
 
+        // imagen
+        $imagenPath = null;
+        if ($request->hasFile('imagen')) {
+            $imagenPath = $request->file('imagen')->store('images', 'public');
+        }
         $user = new User();
         $user->email = $request->input('email');
         $user->password = bcrypt($request->input('password'));
@@ -76,6 +82,7 @@ class UserController extends Controller
         $user->area = $request->input('area');
         $user->persona_id = $persona->id;
         // $user->resgister = Auth::id();
+        $user->imagen=$imagenPath;
         $user->save();
         $user->assignRole($request->input('roles'));
         return redirect()->route('usuarios.index')->with('success', 'Usuario y persona creados exitosamente');
@@ -149,7 +156,14 @@ class UserController extends Controller
         if ($request->has('password') && !empty($request->input('password'))) {
             $user->password = bcrypt($request->input('password'));
         }
-
+        if ($request->hasFile('nuevaimagen')) {
+            if ($user->imagen) {
+                // dd($user->imagen);
+                Storage::disk('public')->delete($user->imagen);
+            }
+            $imagenPath = $request->file('nuevaimagen')->store('images', 'public');
+            $user->imagen = $imagenPath;
+        }
         $user->save();
         $user->syncRoles($request->input('roles'));
 

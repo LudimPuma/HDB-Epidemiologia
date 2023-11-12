@@ -1,4 +1,5 @@
 @extends('layout')
+@section('title', 'Tipos de Infección')
 @section('content')
 <div class="container">
     <div class="row">
@@ -67,7 +68,7 @@
                 @method('PUT')
                 <div class="form-group">
                 <label for="nombre">Nombre</label>
-                <input type="text" id="nombre" name="nombre" class="form-control" required>
+                <input type="text" id="nombre" name="nombre" class="form-control" pattern="^[A-Za-zÀ-ÖØ-öø-ÿ\s.\-()]+$" title="Solo inserte letras" required>
                 </div>
                 <div class="form-group">
                     <label for="estado">Estado</label>

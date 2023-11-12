@@ -1,38 +1,48 @@
 @extends('layout')
+@section('title', 'Reporte | Semestral por Servicios')
 @section('content')
 <div class="tables-wrapper">
-    <br><br><br><br>
     <form id="miFormulario" action="#" method="POST" target="_blank">
         @csrf
         <div class="card-style mb-30">
-            <h1 style="text-align: center">Reporte por Sermestre</h1>
+            <h1 class="text-center">Reporte por Sermestreee</h1>
             <br>
-            <select id="seleccion" name="seleccion">
-                <option value="" disabled selected>Seleccionar</option>
-                @can('button-form-reports-iaas')
-                    <option value="IAAS">IAAS</option>
-                @endcan
-                @can('button-form-reports-eni')
-                    <option value="Enf_Not_Inm">Enfermedades de Notificación Inmediata</option>
-                @endcan
-            </select>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label for="a">Año:</label>
-                    <input type="number" id="a" name="a" value="{{ date("Y") }}" class="form-control" required>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="seleccion">Seleccione un servicio:</label>
+                            <select id="seleccion" name="seleccion" class="form-control custom-select">
+                                <option value="" disabled selected>Seleccionar</option>
+                                @can('button-form-reports-iaas')
+                                    <option value="IAAS">IAAS</option>
+                                @endcan
+                                @can('button-form-reports-eni')
+                                    <option value="Enf_Not_Inm">Enfermedades de Notificación Inmediata</option>
+                                @endcan
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="a">Año:</label>
+                            <input type="number" id="a" name="a" value="{{ date("Y") }}" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="rango">Semestre:</label>
+                            <select name="rango" id="rango" class="form-control custom-select">
+                                <option value="" disabled selected>Seleccionar</option>
+                                <option value="primer_semestre"> primer semestre</option>
+                                <option value="segundo_semestre"> segundo semestre</option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
-                <div>
-                    <label for="rango">semestre</label>
-                    <select name="rango" id="rango">
-                        <option value="">Seleccione</option>
-                        <option value="primer_semestre"> primer semestre</option>
-                        <option value="segundo_semestre"> segundo semestre</option>
-
-                    </select>
+                <br>
+                <div class="text-center">
+                    <button type="button" id="generar-btn" class="btn btn-success">Generar</button>
                 </div>
-            </div>
-            <br>
-            <button type="button" id="generar-btn" class="btn btn-primary">Generar</button>
         </div>
     </form>
 </div>

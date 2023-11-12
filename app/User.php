@@ -25,6 +25,7 @@ class User extends Authenticatable
         'cargo',
         'area',
         'resgister',
+        'imagen',
     ];
     protected $hidden = [
         'password', 'remember_token',

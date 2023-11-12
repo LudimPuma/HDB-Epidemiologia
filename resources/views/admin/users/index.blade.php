@@ -18,7 +18,7 @@
                             <tr>
                                 <th>Name</th>
                                 <th>Email</th>
-                                <th>Permission</th>
+                                <th>Roles</th>
                                 <th>State</th>
                                 <th>Actions</th>
                             </tr>

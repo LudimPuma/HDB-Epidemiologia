@@ -1,34 +1,40 @@
 @extends('layout')
+@section('title', 'Reporte | Por Servicios - Gestión')
 @section('content')
 <div class="tables-wrapper">
-    <br><br><br><br>
     <form id="miFormulario" action="#" method="POST" target="_blank">
         @csrf
         <div class="card-style mb-30">
-            <h1 style="text-align: center">Reporte por Gestión</h1>
+            <h1 style="text-align: center">Reporte Por Servicios - Gestión</h1>
             <br>
-            <select id="seleccion" name="seleccion">
-                <option value="" disabled selected>Seleccionar</option>
-                @can('button-form-reports-iaas')
-                    <option value="IAAS">IAAS</option>
-                @endcan
-                @can('button-form-reports-eni')
-                    <option value="Enf_Not_Inm">Enfermedades de Notificación Inmediata</option>
-                @endcan
-            </select>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label for="a">Año:</label>
-                    <input type="number" id="a" name="a" value="{{ date("Y") }}" class="form-control" required>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="seleccion">Seleccionar:</label>
+                        <select id="seleccion" name="seleccion" class="form-control">
+                            <option value="" disabled selected>Seleccionar</option>
+                            @can('button-form-reports-iaas')
+                                <option value="IAAS">IAAS</option>
+                            @endcan
+                            @can('button-form-reports-eni')
+                                <option value="Enf_Not_Inm">Enfermedades de Notificación Inmediata</option>
+                            @endcan
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <label for="a">Año:</label>
+                        <input type="number" id="a" name="a" value="{{ date("Y") }}" class="form-control" required>
+                    </div>
                 </div>
             </div>
             <br>
-            <button type="button" id="generar-btn" class="btn btn-primary">Generar</button>
+            <div class="text-center">
+                <button type="button" id="generar-btn" class="btn btn-success">Generar</button>
+            </div>
         </div>
     </form>
-
-    <p id="seleccionado"></p>
-    <p id="anho"></p>
 </div>
 
 <script>
@@ -51,11 +57,6 @@
             });
             return; // Salir de la función sin hacer nada
         }
-
-        // Mostrar la selección y el año en los elementos <p>
-        document.getElementById("seleccionado").innerText = "Selección: " + seleccion;
-        document.getElementById("anho").innerText = "Año: " + year;
-
         // Enviar el formulario
         document.getElementById("miFormulario").submit();
     });

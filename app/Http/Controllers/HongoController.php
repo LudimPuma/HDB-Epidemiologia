@@ -21,7 +21,7 @@ class HongoController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nombre' => 'required|max:100',
+            'nombre' => 'required|letters_spaces',
         ]);
         Hongo::create($request->all());
         return redirect()->route('hongo.index')->with('success', 'Hongo creado exitosamente');
@@ -29,8 +29,8 @@ class HongoController extends Controller
     public function update(Request $request, Hongo $hongo)
     {
         $request->validate([
-            'nombre' => 'required|max:100',
-            'estado' => 'required|boolean',
+            'nombre' => 'required|letters_spaces',
+            'estado' => 'required|only_zero_one',
         ]);
 
         $data = [
@@ -40,7 +40,7 @@ class HongoController extends Controller
 
         if (!$request->estado) {
             $request->validate([
-                'motivos_baja' => 'required',
+                'motivos_baja' => 'required|letters_dash_spaces_dot',
             ],
             [
                 'motivos_baja.required' => 'Debe proporcionar un motivo de baja',

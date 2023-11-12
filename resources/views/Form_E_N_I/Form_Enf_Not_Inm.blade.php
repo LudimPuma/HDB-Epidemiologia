@@ -1,11 +1,13 @@
 @extends('layout')
+@section('title', 'Enf. Notificación Inmediata')
 @section('content')
 
 <section class="tab-components">
     <div class="container-fluid">
         <div class="form-elements-wrapper">
             <div class="row">
-                <h1>Enfermedades de Notificacion Inmediata</h1>
+                <h1 class="text-center">Enfermedades de Notificación Inmediata</h1>
+                <br>
                 <form method="POST" action="{{ route('guardar_datos_form_Enf_Not_Inmediata') }}">
                     @csrf
                     {{-- datos paciente --}}
@@ -16,7 +18,8 @@
                                 <!-- Nro Historial -->
                                 <div class="form-group input-style-1">
                                     <label for="h_clinico">N° Historial:</label>
-                                    <input type="text" class="form-control" id="h_clinico" name="h_clinico" value="{{ $id }}" >
+                                    <input type="text" class="form-control" id="h_clinico" name="h_clinico" value="{{ $id }}" pattern="[0-9]+" title="Solo numeros."  required>
+                                    {{-- <input type="text" class="form-control" id="h_clinico" name="h_clinico" value="{{ $HCL_CODIGO }}" required> --}}
                                 </div>
                             </div>
                             <div class="col-lg-6">
@@ -30,14 +33,13 @@
                         <div class="row">
                             <div class="col-lg-4">
                                 <!-- fecha-->
-                                <div class="form-group input-style-1">
-                                    <label for="fecha">Fecha</label>
-                                    <input type="date" name="fecha" id="fecha" class="form-control" value="{{ $fechaActual }}">
-                                </div>
+                                {{-- <div class="form-group input-style-1">
+                                    <label for="fecha">Fecha</label> --}}
+                                    <input type="hidden" name="fecha" id="fecha" class="form-control" value="{{ $fechaActual }}" pattern="[0-9\-]+" title="Solo fechas." required>
+                                {{-- </div> --}}
                             </div>
                         </div>
                     </div>
-
                     {{-- llenado del formulario --}}
                     <div class="card-style mb-30">
                         <h6 class="mb-25">Enfermedades de Notificacion Inmediata</h6>
@@ -47,7 +49,7 @@
                                 <div class="form-group select-style-1">
                                     <label for="servicio_inicio_sintomas">Servicio:</label>
                                     <div class="select-position">
-                                        <select class="form-control" id="servicio_inicio_sintomas" name="servicio_inicio_sintomas">
+                                        <select class="form-control" id="servicio_inicio_sintomas" name="servicio_inicio_sintomas"  required>
                                             <option value="">Seleccionar</option>
                                             @foreach ($servicios as $servicio)
                                                 <option value="{{ $servicio->cod_servicio }}">{{ $servicio->nombre }}</option>
@@ -61,7 +63,7 @@
                                 <div class="form-group select-style-1">
                                     <label for="patologia">Patología:</label>
                                     <div class="select-position">
-                                        <select class="form-control" id="patologia" name="patologia">
+                                        <select class="form-control" id="patologia" name="patologia"  required>
                                             <option value="">Seleccionar</option>
                                             @foreach ($patologias as $patologia)
                                                 <option value="{{ $patologia->cod_patologia }}">{{ $patologia->nombre }}</option>
@@ -74,7 +76,7 @@
                                 <!-- Campo para Notificador -->
                                 <div class="form-group input-style-1">
                                     <label for="notificador">Notificador:</label>
-                                    <input type="text" class="form-control" id="notificador" name="notificador" required>
+                                    <input type="text" class="form-control" id="notificador" name="notificador" pattern="[A-Za-zÀ-ÖØ-öø-ÿ\s.\-()\d]+"  required>
                                 </div>
                             </div>
                         </div>
@@ -89,14 +91,14 @@
                                 <!-- Campo para acciones -->
                                 <div class="form-group input-style-1">
                                     <label for="acciones">Acciones:</label>
-                                    <textarea class="form-control" id="acciones" name="acciones" required></textarea>
+                                    <textarea class="form-control" id="acciones" name="acciones" pattern="[A-Za-zÀ-ÖØ-öø-ÿ\s.\-()\d]+" required ></textarea>
                                 </div>
                             </div>
                             <div class="col-lg-6">
                                 <!-- Campo para observaciones -->
                                 <div class="form-group input-style-1">
                                     <label for="observaciones">Observaciones:</label>
-                                    <textarea class="form-control" id="observaciones" name="observaciones" required></textarea>
+                                    <textarea class="form-control" id="observaciones" name="observaciones" required ></textarea>
                                 </div>
                             </div>
                         </div>
@@ -107,7 +109,16 @@
         </div>
     </div>
 </section>
+@if(isset($success) && $success)
+    <script>
+        Swal.fire('Éxito', '{{ $success }}', 'success');
+    </script>
+@endif
+
+
+
 <script src="{{asset('assets/js/jquery-3.6.0.min.js')}}"></script>
+<script src="{{asset('assets/js/sweetalert2/dist/sweetalert2.min.js')}}"></script>
 {{-- TABLA SELECCION PATOLOGIA --}}
 <script>
     $('#patologia').on('change', function () {
@@ -152,15 +163,23 @@
         $('#tablaDatosSeleccionados').html(tablaHTML);
         console.log(patologiasSeleccionadas);
     }
-
     function eliminarInfeccion(patologia) {
         var index = patologiasSeleccionadas.indexOf(patologia);
         if (index !== -1) {
             patologiasSeleccionadas.splice(index, 1);
             actualizarTabla();
         }
-
     }
 </script>
+{{-- <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var successMessage = '{{ Session::get('success') }}';
+        if (successMessage) {
+            console.log('Mensaje de éxito:', successMessage);
+            Swal.fire('Éxito', successMessage, 'success');
+        }
+    });
+
+</script> --}}
 
 @endsection

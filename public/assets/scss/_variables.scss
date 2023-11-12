@@ -81,3 +81,10 @@ $lg: "only screen and (min-width: 992px) and (max-width: 1199px)";
 $md: "only screen and (min-width: 768px) and (max-width: 991px)";
 $xs: "(max-width: 767px)";
 $sm: "only screen and (min-width: 550px) and (max-width: 767px)";
+.card-body {
+    background-color: $light; // Fondo gris claro
+    color: $dark; // Texto oscuro
+    padding: 20px; // Espaciado interior
+    border: 1px solid $gray-2; // Borde gris más claro
+    border-radius: 5px; // Bordes redondeados
+}

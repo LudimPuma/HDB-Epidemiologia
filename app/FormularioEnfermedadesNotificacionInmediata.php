@@ -27,4 +27,8 @@ class FormularioEnfermedadesNotificacionInmediata extends Model
     {
         return $this->belongsTo(Servicio::class,'cod_servi');
     }
+    public function usuarioCreador()
+    {
+        return User::where('id', $this->pk_usuario)->first();
+    }
 }

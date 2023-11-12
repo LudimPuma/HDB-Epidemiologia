@@ -1,4 +1,5 @@
 @extends('layout')
+@section('title', 'IAAS')
 @section('content')
 
 <section class="tab-components">
@@ -59,31 +60,31 @@
 {{-- {{$errors}} --}}
 <div class="row">
     <div class="container-fluid">
-        <h2 style="">Formulario IAAS</h2>
+        <h2 class="text-center">IAAS</h2>
+        <br>
         <div class="form-elements-wrapper">
-            <form method="POST" action="{{ route('guardar_datos_form_IAAS') }}" novalidate >
+            <form method="POST" action="{{ route('guardar_datos_form_IAAS') }}"  >
                 @csrf
                 <div class="row">
                     <div class="list-group" id="list-tab" role="tablist">
 
                         <div class="row">
                             <div class="col-4">
-                                <a class="list-group-item list-group-item-action  list-group-item-danger " id="list-home-list" data-bs-toggle="list" href="#list-home" role="tab" aria-controls="list-home">Datos Generales</a>
+                                <a class="list-group-item list-group-item-action list-group-item-dark active text-center" id="list-home-list" data-bs-toggle="list" href="#list-home" role="tab" aria-controls="list-home">Datos Generales</a>
                             </div>
                             <div class="col-4">
-                                <a class="list-group-item list-group-item-action list-group-item-warning " id="list-profile-list" data-bs-toggle="list" href="#list-profile" role="tab" aria-controls="list-profile">Datos Laboratorio</a>
+                                <a class="list-group-item list-group-item-action list-group-item-dark text-center" id="list-profile-list" data-bs-toggle="list" href="#list-profile" role="tab" aria-controls="list-profile">Datos Laboratorio</a>
                             </div>
                             <div class="col-4">
-                                <a class="list-group-item list-group-item-action list-group-item-success" id="list-messages-list" data-bs-toggle="list" href="#list-messages" role="tab" aria-controls="list-messages">Datos Epideilogico</a>
+                                <a class="list-group-item list-group-item-action list-group-item-dark text-center" id="list-messages-list" data-bs-toggle="list" href="#list-messages" role="tab" aria-controls="list-messages">Datos Epideilogico</a>
                             </div>
                         </div>
-                    </div>
                     </div>
                     <div class="col-12">
                     <div class="tab-content" id="nav-tabContent">
                         <br>
                         {{-- DATOS GENERALES --}}
-                        <div class="tab-pane fade " id="list-home" role="tabpanel" aria-labelledby="list-home-list">
+                        <div class="tab-pane fade show active" id="list-home" role="tabpanel" aria-labelledby="list-home-list">
                             <div class="card-style mb-30">
                                 <h6 class="mb-25">Datos Generales</h6>
                                 <div class="row">
@@ -91,12 +92,13 @@
                                         <!-- Nro Historial -->
                                         <div class="form-group input-style-1">
                                             <label for="h_clinico">N° Historial:</label>
-                                            <input type="text" class="form-control @error('h_clinico') is-invalid @enderror" id="h_clinico" name="h_clinico" value="{{ $id }}">
-                                            @error('h_clinico')
+                                            <input type="text" class="form-control @error('h_clinico') is-invalid @enderror" id="h_clinico" name="h_clinico" value="{{ $id }}" required>
+                                            {{-- <input type="text" class="form-control" id="h_clinico" name="h_clinico" value="{{ $HCL_CODIGO }}" required> --}}
+                                            {{-- @error('h_clinico')
                                                 <span class="invalid-feedback">
                                                     <strong>{{$message}}</strong>
                                                 </span>
-                                            @enderror
+                                            @enderror --}}
                                         </div>
                                     </div>
                                     <div class="col-lg-5">
@@ -108,15 +110,15 @@
                                     </div>
                                     <div class="col-lg-4">
                                         <!-- Campo para fecha_llenado -->
-                                        <div class="form-group input-style-1">
-                                            <label for="fecha_llenado">Fecha de Llenado:</label>
-                                            <input type="date" class="form-control @error('fecha_llenado') is-invalid @enderror" id="fecha_llenado" name="fecha_llenado" value="{{ $fechaActual }}" >
-                                            @error('fecha_llenado')
+                                        {{-- <div class="form-group input-style-1">
+                                            <label for="fecha_llenado">Fecha de Llenado:</label> --}}
+                                            <input type="hidden" class="form-control @error('fecha_llenado') is-invalid @enderror" id="fecha_llenado" name="fecha_llenado" value="{{ $fechaActual }}" required>
+                                            {{-- @error('fecha_llenado')
                                                 <span class="invalid-feedback">
                                                     <strong>{{$message}}</strong>
                                                 </span>
-                                            @enderror
-                                        </div>
+                                            @enderror --}}
+                                        {{-- </div> --}}
                                     </div>
                                 </div>
                                 <div class="row">
@@ -124,47 +126,46 @@
                                         <!-- Campo para fecha_ingreso -->
                                         <div class="form-group input-style-1">
                                             <label for="fecha_ingreso">Fecha de Ingreso:</label>
-                                            <input type="date" class="form-control @error('fecha_ingreso') is-invalid @enderror" id="fecha_ingreso" name="fecha_ingreso" value="{{old('fecha_ingreso')}}">
-                                            @error('fecha_ingreso')
+                                            <input type="date" class="form-control @error('fecha_ingreso') is-invalid @enderror" id="fecha_ingreso" name="fecha_ingreso" value="{{old('fecha_ingreso')}}" required>
+                                            {{-- @error('fecha_ingreso')
                                                 <span class="invalid-feedback">
                                                     <strong>{{$message}}</strong>
                                                 </span>
-                                            @enderror
+                                            @enderror --}}
                                         </div>
                                     </div>
                                     <div class="col-lg-3">
                                         <!-- Campo para dias internacion -->
                                         <div class="form-group input-style-1">
                                             <label for="dias_internacion">Días de Internacion:</label>
-                                            <input type="number" class="form-control @error('dias_internacion') is-invalid @enderror" id="dias_internacion" name="dias_internacion" value="{{old('dias_internacion', 1)}}">
-                                            @error('dias_internacion')
+                                            <input type="number" class="form-control @error('dias_internacion') is-invalid @enderror" id="dias_internacion" name="dias_internacion" value="{{old('dias_internacion', 1)}}" required>
+                                            {{-- @error('dias_internacion')
                                                 <span class="invalid-feedback">
                                                     <strong>{{$message}}</strong>
                                                 </span>
-                                            @enderror
+                                            @enderror --}}
                                         </div>
 
                                     </div>
                                     <div class="col-lg-3">
                                         <!-- Campo para muerte -->
                                         <div class="form-group select-style-1">
-                                            <label for="muerte">Muerte:</label>
+                                            <label for="muerte">Defunción:</label>
                                             <div class="select-position">
-                                                <select class="form-control @error('muerte') is-invalid @enderror" id="muerte" name="muerte" >
+                                                <select class="form-control @error('muerte') is-invalid @enderror" id="muerte" name="muerte" required>
                                                     <option value="">Seleccionar</option>
                                                     <option value="si" @if(old('muerte') == 'si') selected @endif>Sí</option>
                                                     <option value="no" @if(old('muerte') == 'no') selected @endif>No</option>
                                                 </select>
-                                                @error('muerte')
+                                                {{-- @error('muerte')
                                                     <span class="invalid-feedback">
                                                         <strong>{{$message}}</strong>
                                                     </span>
-                                                @enderror
+                                                @enderror --}}
                                             </div>
                                         </div>
 
                                     </div>
-
                                     <div class="col-lg-3">
                                         <!-- Campo para servicio_inicio_sintomas -->
                                         <div class="form-group select-style-1">
@@ -177,11 +178,11 @@
                                                         <option value="{{ $servicio->cod_servicio }}" @if(old('servicio_inicio_sintomas') == $servicio->cod_servicio) selected @endif>{{ $servicio->nombre }}</option>
                                                     @endforeach
                                                 </select>
-                                                @error('servicio_inicio_sintomas')
+                                                {{-- @error('servicio_inicio_sintomas')
                                                     <span class="invalid-feedback">
                                                         <strong>{{$message}}</strong>
                                                     </span>
-                                                @enderror
+                                                @enderror --}}
                                             </div>
                                         </div>
                                     </div>
@@ -192,17 +193,17 @@
                                         <div class="form-group select-style-1">
                                             <label for="servicio_notificador">Servicio notificador:</label>
                                             <div class="select-position">
-                                                <select class="form-control @error('servicio_notificador') is-invalid @enderror" id="servicio_notificador" name="servicio_notificador">
+                                                <select class="form-control @error('servicio_notificador') is-invalid @enderror" id="servicio_notificador" name="servicio_notificador" required>
                                                     <option value="">Seleccionar</option>
                                                     @foreach ($servicios as $servicio)
                                                     <option value="{{ $servicio->cod_servicio }}" @if(old('servicio_notificador') == $servicio->cod_servicio) selected @endif>{{ $servicio->nombre }}</option>
                                                     @endforeach
                                                 </select>
-                                                @error('servicio_notificador')
+                                                {{-- @error('servicio_notificador')
                                                     <span class="invalid-feedback">
                                                         <strong>{{$message}}</strong>
                                                     </span>
-                                                @enderror
+                                                @enderror --}}
                                             </div>
                                         </div>
                                     </div>
@@ -215,12 +216,12 @@
 
                                         <div class="form-group input-style-1">
                                             <label for="diagnostico_ingreso">Diagnóstico de ingreso:</label>
-                                            <textarea class="form-control @error('diagnostico_ingreso') is-invalid @enderror " id="diagnostico_ingreso" name="diagnostico_ingreso" >{{old('diagnostico_ingreso')}}</textarea>
-                                            @error('diagnostico_ingreso')
+                                            <textarea class="form-control @error('diagnostico_ingreso') is-invalid @enderror " id="diagnostico_ingreso" name="diagnostico_ingreso" required>{{old('diagnostico_ingreso')}}</textarea>
+                                            {{-- @error('diagnostico_ingreso')
                                                 <span class="invalid-feedback">
                                                     <strong>{{$message}}</strong>
                                                 </span>
-                                            @enderror
+                                            @enderror --}}
                                         </div>
                                     </div>
                                     <div class="col-lg-4">
@@ -232,12 +233,12 @@
 
                                         <div class="form-group input-style-1">
                                             <label for="diagnostico_sala">Diagnóstico de sala:</label>
-                                            <textarea class="form-control @error('diagnostico_sala') is-invalid @enderror " id="diagnostico_sala" name="diagnostico_sala">{{old('diagnostico_sala')}}</textarea>
-                                            @error('diagnostico_sala')
+                                            <textarea class="form-control @error('diagnostico_sala') is-invalid @enderror " id="diagnostico_sala" name="diagnostico_sala" required>{{old('diagnostico_sala')}}</textarea>
+                                            {{-- @error('diagnostico_sala')
                                                 <span class="invalid-feedback">
                                                     <strong>{{$message}}</strong>
                                                 </span>
-                                            @enderror
+                                            @enderror --}}
                                         </div>
                                     </div>
                                 </div>
@@ -248,12 +249,12 @@
                             <div class="card-style mb-30">
                                 <h6 class="mb-25">Datos de Laboratorio</h6>
                                 <div class="row">
-                                    <div class="col-lg-3">
+                                    <div class="col-lg-4">
                                         <!-- Campo para tipo_infeccion -->
                                         <div class="form-group select-style-1">
                                             <label for="tipo_infeccion">Tipo de infección Hospitalaria:</label>
                                             <div class="select-position">
-                                                <select class="form-control" id="tipo_infeccion" name="tipo_infeccion">
+                                                <select class="form-control" id="tipo_infeccion" name="tipo_infeccion" required>
                                                     <option value="">Seleccionar</option>
                                                     @foreach ($tiposInfeccion as $tipoInfeccion)
                                                         <option value="{{ $tipoInfeccion->cod_tipo_infeccion }}">{{ $tipoInfeccion->nombre }}</option>
@@ -262,31 +263,12 @@
                                             </div>
                                         </div>
                                     </div>
-
-                                    <div class="col-lg-2">
-                                        <!-- Campo para uso_antimicrobanos -->
-                                        <div class="form-group select-style-1">
-                                            <label for="uso_antimicrobanos">Uso de antimicrobianos:</label>
-                                            <div class="select-position">
-                                                <select class="form-control @error('uso_antimicrobanos') is-invalid @enderror" id="uso_antimicrobanos" name="uso_antimicrobanos" >
-                                                    <option value="">Seleccionar</option>
-                                                    <option value="si" @if(old('uso_antimicrobanos') == 'si') selected @endif>Sí</option>
-                                                    <option value="no" @if(old('uso_antimicrobanos') == 'no') selected @endif>No</option>
-                                                </select>
-                                                @error('uso_antimicrobanos')
-                                                    <span class="invalid-feedback">
-                                                        <strong>{{$message}}</strong>
-                                                    </span>
-                                                @enderror
-                                            </div>
-                                        </div>
-                                    </div>
                                     <div class="col-lg-4">
                                         <!-- Campo para tipo_muestra_cultivo -->
                                         <div class="form-group select-style-1">
                                             <label for="tipo_muestra_cultivo">Tipo de muestra para cultivo:</label>
                                             <div class="select-position">
-                                                <select class="form-control @error('tipo_muestra_cultivo') is-invalid @enderror" id="tipo_muestra_cultivo" name="tipo_muestra_cultivo" >
+                                                <select class="form-control @error('tipo_muestra_cultivo') is-invalid @enderror" id="tipo_muestra_cultivo" name="tipo_muestra_cultivo" required>
                                                     <option value="">Seleccionar</option>
                                                     @foreach ($tiposMuestra as $tipoMuestra)
                                                         <option value="{{ $tipoMuestra->cod_tipo_muestra }}" @if(old('tipo_muestra_cultivo') == $tipoMuestra->cod_tipo_muestra) selected @endif>{{ $tipoMuestra->nombre }}</option>
@@ -300,12 +282,12 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-lg-3">
+                                    <div class="col-lg-4">
                                         <!-- Campo para procedimiento_invasivo -->
                                         <div class="form-group select-style-1">
                                             <label for="procedimiento_invasivo">Procedimiento invasivo:</label>
                                             <div class="select-position">
-                                                <select class="form-control @error('procedimiento_invasivo') is-invalid @enderror" id="procedimiento_invasivo" name="procedimiento_invasivo" >
+                                                <select class="form-control @error('procedimiento_invasivo') is-invalid @enderror" id="procedimiento_invasivo" name="procedimiento_invasivo" required>
                                                     <option value="">Seleccionar</option>
                                                     @foreach ($procedimientosInmasivos as $procedimientoInvasivo)
                                                         <option value="{{ $procedimientoInvasivo->cod_procedimiento_invasivo }}" @if(old('procedimiento_invasivo') == $procedimientoInvasivo->cod_procedimiento_invasivo) selected @endif>{{ $procedimientoInvasivo->nombre }}</option>
@@ -319,21 +301,37 @@
                                             </div>
                                         </div>
                                     </div>
-
                                 </div>
                                 {{-- TABLA DE TIPO INFECCION --}}
                                 <div id="tablaDatosSeleccionados"></div>
                                 {{-- INPUT INVISIBLE QUE ALMACENA LOS TIPOS DE INFECCION --}}
                                 <input type="hidden" id="infecciones_seleccionadas" name="infecciones_seleccionadas" >
 
-
                                 <div class="row">
+                                    <div class="col-lg-3">
+                                        <!-- Campo para uso_antimicrobanos -->
+                                        <div class="form-group select-style-1">
+                                            <label for="uso_antimicrobanos">Uso de antimicrobianos:</label>
+                                            <div class="select-position">
+                                                <select class="form-control @error('uso_antimicrobanos') is-invalid @enderror" id="uso_antimicrobanos" name="uso_antimicrobanos" required>
+                                                    <option value="">Seleccionar</option>
+                                                    <option value="si" @if(old('uso_antimicrobanos') == 'si') selected @endif>Sí</option>
+                                                    <option value="no" @if(old('uso_antimicrobanos') == 'no') selected @endif>No</option>
+                                                </select>
+                                                {{-- @error('uso_antimicrobanos')
+                                                    <span class="invalid-feedback">
+                                                        <strong>{{$message}}</strong>
+                                                    </span>
+                                                @enderror --}}
+                                            </div>
+                                        </div>
+                                    </div>
                                     <div class="col-lg-3">
                                         <!-- Campo para Hongos -->
                                         <div class="form-group select-style-1">
                                             <label for="hongo">Hongos:</label>
                                             <div class="select-position">
-                                                <select class="form-control" id="hongo" name="hongo">
+                                                <select class="form-control" id="hongo" name="hongo" required>
                                                     <option value="">Seleccionar</option>
                                                     @foreach ($hongos as $hongo)
                                                         <option value="{{ $hongo->id }}">{{ $hongo->nombre }}</option>
@@ -381,12 +379,12 @@
                                         <!-- Campo para medidas_tomar -->
                                         <div class="form-group input-style-1">
                                             <label for="medidas_tomar">Medidas a tomar:</label>
-                                            <textarea class="form-control @error('medidas_tomar') is-invalid @enderror" id="medidas_tomar" name="medidas_tomar" >{{old('diagnostico_sala')}}</textarea>
-                                            @error('medidas_tomar')
+                                            <textarea class="form-control @error('medidas_tomar') is-invalid @enderror" id="medidas_tomar" name="medidas_tomar" required>{{old('diagnostico_sala')}}</textarea>
+                                            {{-- @error('medidas_tomar')
                                                 <span class="invalid-feedback">
                                                     <strong>{{$message}}</strong>
                                                 </span>
-                                            @enderror
+                                            @enderror --}}
                                         </div>
                                     </div>
                                     <div class="col-lg-4">
@@ -394,16 +392,16 @@
                                         <div class="form-group select-style-1">
                                             <label for="aislamiento">Aislamiento:</label>
                                             <div class="select-position">
-                                                <select class="form-control  @error('aislamiento') is-invalid @enderror" id="aislamiento" name="aislamiento" >
+                                                <select class="form-control  @error('aislamiento') is-invalid @enderror" id="aislamiento" name="aislamiento" required>
                                                     <option value="">Seleccionar</option>
                                                     <option value="si" @if(old('aislamiento') == 'si') selected @endif>Sí</option>
                                                     <option value="no" @if(old('aislamiento') == 'no') selected @endif>No</option>
                                                 </select>
-                                                @error('aislamiento')
+                                                {{-- @error('aislamiento')
                                                     <span class="invalid-feedback">
                                                         <strong>{{$message}}</strong>
                                                     </span>
-                                                @enderror
+                                                @enderror --}}
                                             </div>
                                         </div>
                                     </div>
@@ -411,12 +409,12 @@
                                         <!-- Campo para seguimiento -->
                                         <div class="form-group input-style-1">
                                             <label for="seguimiento">Seguimiento:</label>
-                                            <textarea class="form-control @error('seguimiento') is-invalid @enderror" id="seguimiento" name="seguimiento" >{{old('seguimiento')}}</textarea>
-                                            @error('seguimiento')
+                                            <textarea class="form-control @error('seguimiento') is-invalid @enderror" id="seguimiento" name="seguimiento" required>{{old('seguimiento')}}</textarea>
+                                            {{-- @error('seguimiento')
                                                 <span class="invalid-feedback">
                                                     <strong>{{$message}}</strong>
                                                 </span>
-                                            @enderror
+                                            @enderror --}}
                                         </div>
                                     </div>
                                 </div>
@@ -425,26 +423,52 @@
                                         <!-- Campo para observacion -->
                                         <div class="form-group input-style-1">
                                             <label for="observacion">Observación:</label>
-                                            <textarea class="form-control @error('observacion') is-invalid @enderror" id="observacion" name="observacion" >{{old('observacion')}}</textarea>
-                                            @error('observacion')
+                                            <textarea class="form-control @error('observacion') is-invalid @enderror" id="observacion" name="observacion" required>{{old('observacion')}}</textarea>
+                                            {{-- @error('observacion')
                                                 <span class="invalid-feedback">
                                                     <strong>{{$message}}</strong>
                                                 </span>
-                                            @enderror
+                                            @enderror --}}
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <input type="submit" value="Guardar" class="btn btn-primary">
                         </div>
-
-                    </div>
                     </div>
                 </div>
+                <div class="text-center">
+                    {{-- <input type="submit" value="Guardar" class="btn btn-primary text-center"> --}}
+                    <input type="submit" value="Guardar" class="btn btn-primary text-center" id="guardar-btn" disabled>
 
+                </div>
             </form>
         </div>
     </div>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Verificar si hay un mensaje de éxito en la sesión
+        let successMessage = '{{ session('success') }}';
+
+        if (successMessage) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Éxito',
+                text: successMessage,
+            });
+        }
+    });
+</script>
+{{-- @if (session('success'))
+    <script src="{{asset('assets/js/jquery-3.6.0.min.js')}}"></script>
+    <script src="{{asset('assets/js/sweetalert2/dist/sweetalert2.min.js')}}"></script>
+    <div class="alert alert-success">
+        {{ session('success') }}
+    </div>
+    <script>
+        Swal.fire('Éxito', '{{ session('success') }}', 'success');
+    </script>
+@endif --}}
 
 
 <!-- Modal para mostrar el nombre de la bacteria y la tabla de medicamentos -->
@@ -467,23 +491,56 @@
 </div>
 <script src="{{asset('assets/js/jquery-3.6.0.min.js')}}"></script>
 <script src="{{asset('assets/js/sweetalert2/dist/sweetalert2.min.js')}}"></script>
-{{-- SCRIPT PRUEBA --}}
+{{-- PRUEBA --}}
 <script>
+    // Función para comprobar si todos los campos requeridos están llenos
+    function checkFormValidity() {
+        const requiredFields = document.querySelectorAll('form [required]');
+        for (const field of requiredFields) {
+            if (field.value.trim() === '') {
+                return false; // Al menos un campo requerido está vacío
+            }
+        }
+        return true; // Todos los campos requeridos están llenos
+
+    }
+
+    // Escucha el evento 'input' en todos los campos del formulario
+    document.querySelectorAll('form [required]').forEach(field => {
+        field.addEventListener('input', function() {
+            const isValid = checkFormValidity();
+            const guardarBtn = document.getElementById('guardar-btn');
+            guardarBtn.disabled = !isValid;
+        });
+    });
+
+</script>
+
+{{-- SWEETALERT --}}
+{{-- <script>
     $(document).ready(function () {
         $('form').submit(function (event) {
-            // Verificar si los campos ocultos están vacíos
-            if ($('#informacion_bacterias_input').val() === '' && $('#infecciones_seleccionadas').val() === '' && $('#hongos_seleccionados').val() === '') {
-                event.preventDefault(); // Evitar el envío del formulario
-                // Mostrar una alerta de Bootstrap
+            console.log("Submit event fired.");
+            if ($('#informacion_bacterias_input').val() === '' && $('#infecciones_seleccionadas').val() === '' && $('#hongos_seleccionados').val() === '' &&
+                    $('#h_clinico').val() === '' && $('#dato_paciente').val() === '' && $('#fecha_ingreso').val() === '' && $('#dias_internacion').val() === '' &&
+                    $('#muerte').val() === '' && $('#servicio_inicio_sintomas').val() === '' && $('#servicio_notificador').val() === '' && $('#diagnostico_ingreso').val() === '' &&
+                    $('#diagnostico_sala').val() === '' && $('#uso_antimicrobanos').val() === '' && $('#tipo_muestra_cultivo').val() === '' && $('#procedimiento_invasivo').val() === '' &&
+                    $('#medidas_tomar').val() === '' && $('#aislamiento').val() === '' && $('#seguimiento').val() === '' && $('#observacion').val() === ''
+            ) {
+                event.preventDefault();
                 Swal.fire({
                     icon: 'error',
                     title: 'Campos vacíos',
-                    text: 'Los campos: "Tipo Infeccion Hospitalaria" y "Bacteria" no pueden ser guardados vacíos.',
+                    text: 'No deben existir espacios en blanco',
                 });
+            }
+            else{
+                console.log("Success branch executed.");
+                Swal.fire('Éxito', successMessage, 'success');
             }
         });
     });
-</script>
+</script> --}}
 
 
 {{-- SCRIPT MODAL --}}

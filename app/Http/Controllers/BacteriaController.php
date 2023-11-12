@@ -23,7 +23,7 @@ class BacteriaController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nombre' => 'required|max:100',
+            'nombre' => 'required|letters_spaces',
         ]);
         $bacteria = Bacteria::create($request->except('medicamentos'));
         $bacteria->medicamentos()->sync($request->input('medicamentos'));
@@ -33,8 +33,8 @@ class BacteriaController extends Controller
     public function update(Request $request, Bacteria $bacteria)
     {
         $request->validate([
-            'nombre' => 'required|max:100',
-            'estado' => 'required|boolean',
+            'nombre' => 'required|letters_spaces',
+            'estado' => 'required|only_zero_one',
         ]);
 
         $data = [
@@ -44,7 +44,7 @@ class BacteriaController extends Controller
 
         if (!$request->estado) {
             $request->validate([
-                'motivos_baja' => 'required',
+                'motivos_baja' => 'required|letters_dash_spaces_dot',
             ],
             [
                 'motivos_baja.required' => 'Debe proporcionar un motivo de baja',

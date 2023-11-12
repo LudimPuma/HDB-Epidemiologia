@@ -26,26 +26,14 @@ class FormularioNotificacionPaciente extends Model
         return $this->belongsTo(Servicio::class,'servicio_notificador');
     }
 
-    // public function tipoInfeccion()
-    // {
-    //     return $this->belongsTo(TipoInfeccion::class,'tipo_infeccion');
-    // }
-
     public function procedimientoInvasivo()
     {
         return $this->belongsTo(ProcedimientoInmasivo::class,'procedimiento_invasivo');
     }
-
-    // public function agenteCausal()
-    // {
-    //     return $this->belongsTo(Agente::class,'agente_causal');
-    // }
-
     public function tipoMuestra()
     {
         return $this->belongsTo(TipoMuestra::class,'tipo_muestra_cultivo');
     }
-    //relacion de uno a muchos con antibiograma
     public function antibiogramas()
     {
         return $this->hasMany(Antibiograma::class,'cod_form_notificacion_p');
@@ -57,5 +45,14 @@ class FormularioNotificacionPaciente extends Model
     public function seleccionesHongos()
     {
         return $this->hasMany(SeleccionHongos::class, 'cod_form_notificacion_p');
+    }
+    public function usuarioCreador()
+    {
+        return User::where('id', $this->pk_usuario)->first();
+    }
+
+    public function getNombreCreadorAttribute()
+    {
+        return $this->creador->persona->nombres . ' ' . $this->creador->persona->apellidos;
     }
 }

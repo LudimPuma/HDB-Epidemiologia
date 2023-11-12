@@ -25,7 +25,6 @@
                             <td>{{ $informeItem->cantidad }}</td>
                         </tr>
                     @endforeach
-                    <!-- Mostrar la sumatoria de total de casos -->
                     <tr class="table-footer">
                         <th>Total de Casos</th>
                         <th>{{ $totalCasos }}</th>

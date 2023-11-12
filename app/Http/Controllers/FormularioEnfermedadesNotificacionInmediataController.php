@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\View;
 use App\DatoPaciente;
 use App\Servicio;
 use App\Patologia;
+use App\User;
 use App\SeleccionPatologia;
 use App\FormularioEnfermedadesNotificacionInmediata;
 use Dompdf\Dompdf;
@@ -38,17 +39,14 @@ class FormularioEnfermedadesNotificacionInmediataController extends Controller
     {
         $patientId = $request->input('patientId');
 
-        // Buscar al paciente en la base de datos por su ID
         $patient = DatoPaciente::where('n_h_clinico', $patientId)->first();
-
+        // $patient = DatoPaciente::where('HCL_CODIGO', $patientId)->first();
         if ($patient) {
-            // El paciente fue encontrado, devolver los datos del paciente
             return response()->json([
                 'found' => true,
                 'patientData' => $patient
             ]);
         } else {
-            // El paciente no fue encontrado
             return response()->json([
                 'found' => false,
                 'patientData' => null
@@ -63,7 +61,7 @@ class FormularioEnfermedadesNotificacionInmediataController extends Controller
         // Consulta los datos necesarios de los modelos relacionados
         $datosPacientes = DatoPaciente::all();
         $servicios = Servicio::all();
-        $patologias = Patologia::all();
+        $patologias = Patologia::where('estado', true)->orderBy('nombre', 'asc')->get();
         $fechaActual = Carbon::now('America/La_Paz')->format('Y-m-d');
         // Pasa los datos a la vista del formulario
         return view('Form_E_N_I.Form_Enf_Not_Inm', compact('id','nombre', 'idFormulario', 'servicios', 'patologias','fechaActual'));
@@ -72,18 +70,15 @@ class FormularioEnfermedadesNotificacionInmediataController extends Controller
     //GUARDAR_ENFER_NOTI
     public function guardarDatos(Request $request)
     {
-
-        // Validar los datos del formulario (puedes agregar reglas de validación según tus necesidades)
         $request->validate([
-            'h_clinico' => 'required',
-            'fecha' => 'required',
-            'patologia' => 'required',
-            'servicio_inicio_sintomas' => 'required',
-            'notificador' => 'required',
-            'acciones' => 'required',
-            'observaciones' => 'required',
+            'h_clinico' => 'required|only_numbers',
+            'fecha' => 'required|numbers_with_dash',
+            'patologia' => 'required|only_numbers',
+            'servicio_inicio_sintomas' => 'required|only_numbers',
+            'notificador' => 'required|letters_dash_spaces_dot',
+            'acciones' => 'required|letters_dash_spaces_dot',
+            'observaciones' => 'required|letters_dash_spaces_dot',
         ]);
-        // Crear una nueva instancia del modelo FormularioEnfermedadesNotificacionInmediata
         $formulario = new FormularioEnfermedadesNotificacionInmediata();
         $formulario->h_clinico = $request->input('h_clinico');
         $formulario->fecha = $request->input('fecha');
@@ -93,21 +88,14 @@ class FormularioEnfermedadesNotificacionInmediataController extends Controller
         $formulario->observaciones = $request->input('observaciones');
         $formulario->estado = 'alta';
         $formulario->pk_usuario = Auth::id();
-
-        // Guardar el formulario en la base de datos
         $formulario->save();
 
-        // Obtener el ID del formulario que se generó automáticamente
         $idFormulario = $formulario->id_f_notificacion_inmediata;
 
-        //TABLA SELECCION PATOLOGIA
         $patologiasSeleccionadas = $request->input('patologias_seleccionadas');
 
-
-        // Decodificar el JSON y procesar las patologias seleccionadas
         $patologiasSeleccionadas = json_decode($patologiasSeleccionadas);
 
-        // Crear una instancia de seleccionPatologia para cada patologia seleccionada
         foreach ($patologiasSeleccionadas as $codTipoPat) {
             $seleccionPatologia = new SeleccionPatologia();
             $seleccionPatologia->cod_form_n_i = $idFormulario;
@@ -115,7 +103,8 @@ class FormularioEnfermedadesNotificacionInmediataController extends Controller
             $seleccionPatologia->cod_pato = $codTipoPat;
             $seleccionPatologia->save();
         }
-        return redirect()->route('principal')->with('success', 'Los datos han sido guardados exitosamente.');
+        // $request->session()->flash('success', 'Exitosamente');
+        return redirect()->route('principal')->with('success', 'Exitosamente');
     }
     //MODIFICAR ESTADO
     public function update(Request $request, FormularioEnfermedadesNotificacionInmediata $formulario)
@@ -130,7 +119,7 @@ class FormularioEnfermedadesNotificacionInmediataController extends Controller
 
         if ($request->estado === 'baja') {
             $request->validate([
-                'motivos_baja' => 'required',
+                'motivos_baja' => 'required|letters_dash_spaces_dot',
             ],
             [
                 'motivos_baja.required'=> 'Debe dar un motivo de baja',
@@ -154,14 +143,12 @@ class FormularioEnfermedadesNotificacionInmediataController extends Controller
     //PDF FORMULARIO
     public function vistaPreviaPDF($id)
     {
-        // Obtener el formulario por ID
+
         $formulario = FormularioEnfermedadesNotificacionInmediata::find($id);
         if (!$formulario) {
-            // El formulario no existe, puedes mostrar un mensaje de error o redirigir a otra página
+
             return redirect()->back()->with('error', 'No se encontró el formulario solicitado.');
         }
-
-        // Obtener los datos relacionados del formulario
         $paciente = $formulario->datoPaciente;
         // $patologia = $formulario->patologia;
         $servicio = $formulario->servicio;
@@ -170,7 +157,8 @@ class FormularioEnfermedadesNotificacionInmediataController extends Controller
             ->where('seleccion_patologia.cod_form_n_i', $id)
             ->get();
 
-        // Obtener la fecha y hora actual en horario de Bolivia
+        $usuarioCreador = $formulario->usuarioCreador();
+        $nombreUsuarioCreador = $usuarioCreador->persona->nombres . ' ' . $usuarioCreador->persona->apellidos;
         $fechaHoraActual = Carbon::now('America/La_Paz')->format('d/m/Y H:i:s');
         $fechaActual = Carbon::now('America/La_Paz')->format('d/m/Y ');
 
@@ -182,6 +170,8 @@ class FormularioEnfermedadesNotificacionInmediataController extends Controller
             'patologias' => $patologias,
             'fechaHoraActual' => $fechaHoraActual,
             'fechaActual' => $fechaActual,
+            'NombreFormSave' => $nombreUsuarioCreador,
+            'cargo' => User::where('id',$formulario->pk_usuario)->first(),
         ];
         $pdf = PDF::loadView('Form_E_N_I.PDF.form_2_pdf', $data);
         $footerPath = base_path('resources/views/pdf/footer.html');
@@ -280,64 +270,117 @@ class FormularioEnfermedadesNotificacionInmediataController extends Controller
     }
 
     public function mostrarGrafica()
-    {
-        // Obtener el año actual
-        $year = Carbon::now()->year;
+{
+    // Obtener el año actual
+    $year = Carbon::now()->year;
 
-        // La cantidad de casos registrados por patología en cada mes del año actual
-        $datosGrafica = DB::table('epidemiologia.seleccion_patologia')
-            ->join('epidemiologia.patologia', 'seleccion_patologia.cod_pato', '=', 'patologia.cod_patologia')
-            ->join('epidemiologia.formulario_enfermedades_notificacion_inmediata', 'seleccion_patologia.cod_form_n_i', '=', 'formulario_enfermedades_notificacion_inmediata.id_f_notificacion_inmediata')
-            ->select(DB::raw('extract(month from formulario_enfermedades_notificacion_inmediata.fecha) as mes, patologia.nombre as patologia, count(*) as total_casos'))
-            ->whereYear('formulario_enfermedades_notificacion_inmediata.fecha', $year)
-            ->groupBy('mes', 'patologia')
-            ->get();
+    // La cantidad de casos registrados por patología en cada mes del año actual
+    $datosGrafica = DB::table('epidemiologia.seleccion_patologia')
+        ->join('epidemiologia.patologia', 'seleccion_patologia.cod_pato', '=', 'patologia.cod_patologia')
+        ->join('epidemiologia.formulario_enfermedades_notificacion_inmediata', 'seleccion_patologia.cod_form_n_i', '=', 'formulario_enfermedades_notificacion_inmediata.id_f_notificacion_inmediata')
+        ->select(DB::raw('extract(month from formulario_enfermedades_notificacion_inmediata.fecha) as mes, patologia.nombre as patologia, count(*) as total_casos, patologia.estado'))
+        ->whereYear('formulario_enfermedades_notificacion_inmediata.fecha', $year)
+        ->where('formulario_enfermedades_notificacion_inmediata.estado', 'alta')
+        ->groupBy('mes', 'patologia', 'patologia.estado')
+        ->get();
 
-        // Organizar los datos para la gráfica
-        $labels = [
-            "Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"
-        ];
-        $datasets = [];
-        $colorPalette = [
-            'Meningitis' => '#1f77b4', // Azul
-            'Viruela Simica' => '#ff7f0e', // Naranja
-            'Leptospirosis' => '#2ca02c', // Verde
-            'Tosferna' => '#d62728', // Rojo
-            'Virus rábico' => '#9467bd', // Púrpura
-            'Sarampión - Rubeola' => '#8c564b', // Marrón
-            'Dipteria' => '#e377c2', // Rosa
-            'VIH' => '#17becf', // Turquesa
-        ];
+    $labels = [
+        "Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"
+    ];
+    $datasets = [];
 
-        foreach ($datosGrafica as $index => $dato) {
-            $mes = (int) $dato->mes;
-            $patologia = $dato->patologia;
-            $totalCasos = $dato->total_casos;
+    // Un array para almacenar colores únicos para patologías activas
+    $activeColors = [];
 
-            // Si la patología no tiene un color asignado, se le asignará un color gris
-            $color = isset($colorPalette[$patologia]) ? $colorPalette[$patologia] : '#7f7f7f';
+    foreach ($datosGrafica as $index => $dato) {
+        $mes = (int) $dato->mes;
+        $patologia = $dato->patologia;
+        $totalCasos = $dato->total_casos;
+        $estadoPatologia = $dato->estado;
+
+        // Asignar colores únicos a patologías activas
+        if ($estadoPatologia == true) {
+            if (!isset($activeColors[$patologia])) {
+                $activeColors[$patologia] = '#' . substr(str_shuffle('ABCDEF0123456789'), 0, 6);
+            }
+        }
+
+        // Solo agregar patologías activas a los datasets
+        if ($estadoPatologia == true) {
+            $color = $activeColors[$patologia];
 
             if (!isset($datasets[$patologia])) {
                 $datasets[$patologia] = [
                     'label' => $patologia,
                     'backgroundColor' => 'transparent',
-                    'borderColor' => $color, // Asignar el color correspondiente
+                    'borderColor' => $color,
                     'pointStyle' => 'circle',
-                    'pointBackgroundColor' => $color, // Asignar el color correspondiente
+                    'pointBackgroundColor' => $color,
                     'data' => array_fill(0, 12, 0),
                 ];
             }
 
             $datasets[$patologia]['data'][$mes - 1] = $totalCasos;
         }
-
-        $datasets = array_values($datasets); // Convierte el array asociativo a un array indexado
-        //++++++++++++++++++++++++++++++++
-
-
-
-        return view('principal', compact('labels', 'datasets'));
     }
+
+    $datasets = array_values($datasets);
+
+    return view('principal', compact('labels', 'datasets'));
+}
+
+    // public function mostrarGrafica()
+    // {
+    //     // Obtener el año actual
+    //     $year = Carbon::now()->year;
+
+    //     // La cantidad de casos registrados por patología en cada mes del año actual
+    //     $datosGrafica = DB::table('epidemiologia.seleccion_patologia')
+    //         ->join('epidemiologia.patologia', 'seleccion_patologia.cod_pato', '=', 'patologia.cod_patologia')
+    //         ->join('epidemiologia.formulario_enfermedades_notificacion_inmediata', 'seleccion_patologia.cod_form_n_i', '=', 'formulario_enfermedades_notificacion_inmediata.id_f_notificacion_inmediata')
+    //         ->select(DB::raw('extract(month from formulario_enfermedades_notificacion_inmediata.fecha) as mes, patologia.nombre as patologia, count(*) as total_casos'))
+    //         ->whereYear('formulario_enfermedades_notificacion_inmediata.fecha', $year)
+    //         ->where('formulario_enfermedades_notificacion_inmediata.estado','alta')
+    //         ->groupBy('mes', 'patologia')
+    //         ->get();
+    //     $labels = [
+    //         "Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"
+    //     ];
+    //     $datasets = [];
+    //     $colorPalette = [
+    //         'Meningitis' => '#1f77b4', // Azul
+    //         'Viruela Simica' => '#ff7f0e', // Naranja
+    //         'Leptospirosis' => '#2ca02c', // Verde
+    //         'Tosferna' => '#d62728', // Rojo
+    //         'Virus rábico' => '#9467bd', // Púrpura
+    //         'Sarampión - Rubeola' => '#8c564b', // Marrón
+    //         'Dipteria' => '#e377c2', // Rosa
+    //         'VIH' => '#17becf', // Turquesa
+    //     ];
+
+    //     foreach ($datosGrafica as $index => $dato) {
+    //         $mes = (int) $dato->mes;
+    //         $patologia = $dato->patologia;
+    //         $totalCasos = $dato->total_casos;
+    //         $color = isset($colorPalette[$patologia]) ? $colorPalette[$patologia] : '#7f7f7f';
+
+    //         if (!isset($datasets[$patologia])) {
+    //             $datasets[$patologia] = [
+    //                 'label' => $patologia,
+    //                 'backgroundColor' => 'transparent',
+    //                 'borderColor' => $color,
+    //                 'pointStyle' => 'circle',
+    //                 'pointBackgroundColor' => $color,
+    //                 'data' => array_fill(0, 12, 0),
+    //             ];
+    //         }
+
+    //         $datasets[$patologia]['data'][$mes - 1] = $totalCasos;
+    //     }
+    //     $datasets = array_values($datasets);
+
+    //     return view('principal', compact('labels', 'datasets'));
+    // }
 
     public function tabla()
     {

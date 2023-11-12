@@ -16,6 +16,7 @@ use App\Servicio;
 use App\TipoInfeccion;
 use App\ProcedimientoInmasivo;
 use App\Hongo;
+use App\User;
 use App\SeleccionHongos;
 use App\TipoMuestra;
 use App\Bacteria;
@@ -48,17 +49,14 @@ class FormularioNotificacionPacienteController extends Controller
     {
         $patientId = $request->input('patientId');
 
-        // Buscar al paciente en la base de datos por su ID
         $patient = DatoPaciente::where('n_h_clinico', $patientId)->first();
-
+        // $patient = DatoPaciente::where('HCL_CODIGO', $patientId)->first();
         if ($patient) {
-            // El paciente fue encontrado, devolver los datos del paciente
             return response()->json([
                 'found' => true,
                 'patientData' => $patient
             ]);
         } else {
-            // El paciente no fue encontrado
             return response()->json([
                 'found' => false,
                 'patientData' => null
@@ -72,7 +70,7 @@ class FormularioNotificacionPacienteController extends Controller
         $datosPacientes = DatoPaciente::all();
         $servicios = Servicio::all();
         $tiposInfeccion = TipoInfeccion::where('estado', true)->orderBy('nombre', 'asc')->get();
-        $hongos = Hongo::all();
+        $hongos = Hongo::where('estado', true)->orderBy('nombre', 'asc')->get();
         $procedimientosInmasivos = ProcedimientoInmasivo::all();
         $tiposMuestra = TipoMuestra::all();
         $bacterias = Bacteria::where('estado',true)->orderBy('nombre', 'asc')->get();
@@ -103,22 +101,22 @@ class FormularioNotificacionPacienteController extends Controller
     {
         // Validar los datos del formulario
         $request->validate([
-            'h_clinico' => 'required',
-            'fecha_llenado' => 'required',
-            'fecha_ingreso' => 'required',
-            'dias_internacion' => 'required|integer|min:1',
-            'muerte' => 'required',
-            'servicio_inicio_sintomas' => 'required',
-            'servicio_notificador' => 'required',
-            'diagnostico_ingreso' => 'required',
-            'diagnostico_sala' => 'required',
-            'uso_antimicrobanos' => 'required',
-            'tipo_muestra_cultivo' => 'required',
-            'procedimiento_invasivo' => 'required',
-            'medidas_tomar' => 'required',
-            'aislamiento' => 'required',
-            'seguimiento' => 'required',
-            'observacion' => 'required',
+            'h_clinico' => 'required|only_numbers',
+            'fecha_llenado' => 'required|numbers_with_dash',
+            'fecha_ingreso' => 'required|numbers_with_dash',
+            'dias_internacion' => 'required|only_numbers|min:1',
+            'muerte' => 'required|letters_spaces',
+            'servicio_inicio_sintomas' => 'required|only_numbers',
+            'servicio_notificador' => 'required|only_numbers',
+            'diagnostico_ingreso' => 'required|letters_dash_spaces_dot',
+            'diagnostico_sala' => 'required|letters_dash_spaces_dot',
+            'uso_antimicrobanos' => 'required|letters_spaces',
+            'tipo_muestra_cultivo' => 'required|only_numbers',
+            'procedimiento_invasivo' => 'required|only_numbers',
+            'medidas_tomar' => 'required|letters_dash_spaces_dot',
+            'aislamiento' => 'required|letters_spaces',
+            'seguimiento' => 'required|letters_dash_spaces_dot',
+            'observacion' => 'required|letters_dash_spaces_dot',
             'informacion_bacterias_input' => 'required',
             'infecciones_seleccionadas'=> 'required',
         ],
@@ -272,7 +270,7 @@ class FormularioNotificacionPacienteController extends Controller
 
         if ($request->estado === 'baja') {
             $request->validate([
-                'motivos_baja' => 'required',
+                'motivos_baja' => 'required|letters_dash_spaces_dot',
             ],
             [
                 'motivos_baja.required'=> 'Debe dar un motivo de baja',
@@ -304,7 +302,7 @@ class FormularioNotificacionPacienteController extends Controller
     {
         $formulario = FormularioNotificacionPaciente::find($codigoFormulario);
         if (!$formulario) {
-            // El formulario no existe, puedes mostrar un mensaje de error o redirigir a otra página
+            // El formulario no existe
             return redirect()->back()->with('error', 'No se encontró el formulario solicitado.');
         }
         $cod_formulario = $formulario->cod_form_notificacion_p;
@@ -312,7 +310,6 @@ class FormularioNotificacionPacienteController extends Controller
         $codigosTiposInfeccion = SeleccionTipoInfeccion::where('cod_formulario', $cod_formulario)
             ->pluck('cod_tipo_inf')
             ->toArray();
-        // Consultar los nombres de los tipos de infección usando los códigos
         $nombresTiposInfeccion = [];
         foreach ($codigosTiposInfeccion as $codTipoInf) {
             $tipoInfeccion = TipoInfeccion::find($codTipoInf);
@@ -326,7 +323,6 @@ class FormularioNotificacionPacienteController extends Controller
         $codigosTipoHongo = SeleccionHongos::where('cod_formulario', $cod_formulario)
             ->pluck('id_hongos')
             ->toArray();
-        // Consultar los nombres de los tipos de Hongos usando los códigos
         $nombresTipoHongos = [];
         foreach ($codigosTipoHongo as $idH) {
             $hongos = Hongo::find($idH);
@@ -368,8 +364,9 @@ class FormularioNotificacionPacienteController extends Controller
         $aislamiento = $formulario->aislamiento;
         $seguimiento = $formulario->seguimiento;
         $observacion = $formulario->observacion;
+        $usuarioCreador = $formulario->usuarioCreador();
+        $nombreUsuarioCreador = $usuarioCreador->persona->nombres . ' ' . $usuarioCreador->persona->apellidos;
 
-        // Obtener la fecha y hora actual en horario de Bolivia
         $fechaHoraActual = Carbon::now('America/La_Paz')->format('d/m/Y H:i:s');
         $fechaActual = Carbon::now('America/La_Paz')->format('d/m/Y ');
         $data = [
@@ -394,9 +391,9 @@ class FormularioNotificacionPacienteController extends Controller
             'seguimiento' => $seguimiento,
             'observacion' => $observacion,
             'fechaHoraActual'  => $fechaHoraActual,
+            'NombreFormSave' => $nombreUsuarioCreador,
+            'cargo' => User::where('id',$formulario->pk_usuario)->first(),
         ];
-
-            // Generar el contenido del PDF a partir de la vista del formulario
         $pdf = PDF::loadView('Form_IAAS.PDF.form_IAAS', $data);
         $footerPath = base_path('resources/views/pdf/footer.html');
         $headerPath = base_path('resources/views/pdf/header_form.html');

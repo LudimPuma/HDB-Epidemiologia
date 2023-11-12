@@ -1,13 +1,12 @@
 @extends('layout')
+@section('title', 'Reporte | Trimestral por Servicios')
 @section('content')
-<div class="container mt-4">
-    <form id="miFormulario" action="#" method="POST">
+<div class="tables-wrapper">
+    <form id="miFormulario" action="#" method="POST" target="_blank">
         @csrf
-        <div class="card custom-card">
-            <div class="card-body custom-body">
-                <div class="text-center">
-                    <h1>Reporte Trimestral por Servicio</h1>
-                </div>
+        <div class="card-style mb-30">
+            <h1 class="text-center">Reporte Trimestral por Servicio</h1>
+            <br>
                 <div class="row">
                     <div class="col-md-4">
                         <div class="form-group">
@@ -33,7 +32,7 @@
                         <div class="form-group">
                             <label for="rango">Trimestre:</label>
                             <select name="rango" id="rango" class="form-control custom-select">
-                                <option value="">Seleccione</option>
+                                <option value="" disabled selected>Seleccionar</option>
                                 <option value="primer_trimestre">Primer trimestre</option>
                                 <option value="segundo_trimestre">Segundo trimestre</option>
                                 <option value="tercer_trimestre">Tercer trimestre</option>
@@ -42,65 +41,59 @@
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="text-center custom-footer mb-4">
-                <button type="button" id="generar-btn" class="btn btn-primary custom-button">Generar</button>
-            </div>
+                <br>
+                <div class="text-center">
+                    <button type="button" id="generar-btn" class="btn btn-success custom-button">Generar</button>
+                </div>
         </div>
     </form>
 </div>
-<meta name="csrf-token" content="{{ csrf_token() }}">
+{{-- <meta name="csrf-token" content="{{ csrf_token() }}">
 
 <script>
     document.getElementById("generar-btn").addEventListener("click", function (event) {
-      var seleccion = document.getElementById("seleccion").value;
-      var year = document.getElementById("a").value;
-      var trimestre = document.getElementById("rango").value;
+        var seleccion = document.getElementById("seleccion").value;
+        var year = document.getElementById("a").value;
+        var trimestre = document.getElementById("rango").value;
 
-      if (seleccion === "") {
-        Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: 'Seleccione una opción en el campo "servicio"',
-        });
-        return;
-      }
-      if (trimestre === "") {
-        Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: 'Seleccione una opción en el campo "trimestre"',
-        });
-        return;
-      }
-      if (isNaN(year) || year === "") {
-        Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: 'Ingrese un año válido en el campo "Año"',
-        });
-        return;
-      }
-      if (seleccion === "IAAS") {
-        document.getElementById("miFormulario").action = "{{ route('reporte.trimestral.semestral.por.servicio.IAAS') }}";
-      } else if (seleccion === "Enf_Not_Inm") {
-        document.getElementById("miFormulario").action = "{{ route('reporte.trimestre.semestre.por.servicio.E_N_I') }}";
-        console.log("prueba");
-      }
+        if (seleccion === "") {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Seleccione una opción en el campo "servicio"',
+            });
+            return;
+        }
+        if (trimestre === "") {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Seleccione una opción en el campo "trimestre"',
+            });
+            return;
+        }
+        if (isNaN(year) || year === "") {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Ingrese un año válido en el campo "Año"',
+            });
+            return;
+        }
+        if (seleccion === "IAAS") {
+            var pdfUrl = "{{ route('reporte.trimestral.semestral.por.servicio.IAAS') }}";
+            window.open(pdfUrl, "_blank", "width=800,height=600");
+        } else if (seleccion === "Enf_Not_Inm") {
+            var pdfUrl = "{{ route('reporte.trimestre.semestre.por.servicio.E_N_I') }}";
+            window.open(pdfUrl, "_blank", "width=800,height=600");
+        }
 
-      // Abre una nueva ventana con el formulario
-      var pdfUrl = document.getElementById("miFormulario").action;
-      window.open(pdfUrl, "_blank", "width=800,height=600");
-
-      // Evita el envío del formulario
-      event.preventDefault();
+        // Evita el envío del formulario
+        event.preventDefault();
     });
-  </script>
+</script> --}}
 
-
-
-
-{{-- <script>
+<script>
     document.getElementById("generar-btn").addEventListener("click", function (event) {
         var seleccion = document.getElementById("seleccion").value;
         var year = document.getElementById("a").value;
@@ -137,9 +130,7 @@
         }
         document.getElementById("miFormulario").submit();
 
-        var pdfUrl = document.getElementById("miFormulario").action;
-        window.open(pdfUrl, "_blank", "width=800,height=600");
     });
-</script> --}}
+</script>
 @endsection
 

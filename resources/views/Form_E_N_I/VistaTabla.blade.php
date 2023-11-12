@@ -1,4 +1,5 @@
 @extends('layout')
+@section('title', 'Tabla | Enf. Notificación Inmediata')
 @section('content')
 
 <div class="container">

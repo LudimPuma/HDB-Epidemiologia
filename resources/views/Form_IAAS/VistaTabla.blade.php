@@ -1,4 +1,5 @@
 @extends('layout')
+@section('title', 'Tabla | IAAS')
 @section('content')
 
 <div class="container">

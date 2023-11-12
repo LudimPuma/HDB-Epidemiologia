@@ -1,4 +1,5 @@
 @extends('layout')
+{{-- @section('title', 'Principal') --}}
 @section('content')
 @php
   date_default_timezone_set('America/La_Paz');

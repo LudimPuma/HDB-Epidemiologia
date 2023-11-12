@@ -3,7 +3,7 @@
 @section('content')
 <div class="container">
     <h2 class="text-center">Editar Usuario y Persona</h2>
-    <form method="POST" action="{{ route('usuarios.update', $user->id) }}">
+    <form method="POST" action="{{ route('usuarios.update', $user->id) }}" enctype="multipart/form-data">
         @csrf
         @method('PUT')
 
@@ -118,8 +118,25 @@
                         <option value="Bachiller" {{ $user->profesion == 'Bachiller' ? 'selected' : '' }}>Bachiller</option>
                         <option value="Licenciatura" {{ $user->profesion == 'Licenciatura' ? 'selected' : '' }}>Licenciado(a)</option>
                         <option value="Ingenieria" {{ $user->profesion == 'Ingenieria' ? 'selected' : '' }}>Ingeniero(a)</option>
-                        <option value="Técnico Medio" {{ $user->profesion == 'Técnico Medio' ? 'selected' : '' }}>Técnico Medio en Enfermería</option>
-                        <!-- Agrega más opciones aquí -->
+                        <option value="Técnico Medio en Enfermería" {{ $user->profesion == 'Técnico Medio en Enfermería' ? 'selected' : '' }}>Técnico Medio en Enfermería</option>
+                        <option value="Doctor(a)" {{ $user->profesion == '"Doctor(a)' ? 'selected' : '' }}>Doctor(a)</option>
+                        <option value="Enfermero(a)" {{ $user->profesion == 'Enfermero(a)' ? 'selected' : '' }}>Enfermero(a)</option>
+                        <option value="Terapeuta" {{ $user->profesion == 'Terapeuta' ? 'selected' : '' }}>Terapeuta</option>
+                        <option value="Radiólogo(a)" {{ $user->profesion == 'Radiólogo(a)' ? 'selected' : '' }}>Radiólogo(a)</option>
+                        <option value="Farmacéutico(a)" {{ $user->profesion == 'Farmacéutico(a)' ? 'selected' : '' }}>Farmacéutico(a)</option>
+                        <option value="Nutricionista" {{ $user->profesion == 'Nutricionista' ? 'selected' : '' }}>Nutricionista</option>
+                        <option value="Psicólogo(a)" {{ $user->profesion == 'Psicólogo(a)' ? 'selected' : '' }}>Psicólogo(a)</option>
+                        <option value="Trabajador(a) Social" {{ $user->profesion == 'Trabajador(a) Social' ? 'selected' : '' }}>Trabajador(a) Social</option>
+                        <option value="Técnico de Laboratorio" {{ $user->profesion == 'Técnico de Laboratorio' ? 'selected' : '' }}>Técnico de Laboratorio</option>
+                        <option value="Administrador(a) de Salud" {{ $user->profesion == 'Administrador(a) de Salud' ? 'selected' : '' }}>Administrador(a) de Salud</option>
+                        <option value="Fisioterapeuta" {{ $user->profesion == 'Fisioterapeuta' ? 'selected' : '' }}>Fisioterapeuta</option>
+                        <option value="Terapeuta Ocupacional" {{ $user->profesion == 'Terapeuta Ocupacional' ? 'selected' : '' }}>Terapeuta Ocupacional</option>
+                        <option value="Dentista" {{ $user->profesion == 'Dentista' ? 'selected' : '' }}>Dentista</option>
+                        <option value="Asistente Médico" {{ $user->profesion == 'Asistente Médico' ? 'selected' : '' }}>Asistente Médico</option>
+                        <option value="Optometrista" {{ $user->profesion == 'Optometrista' ? 'selected' : '' }}>Optometrista</option>
+                        <option value="Logopeda" {{ $user->profesion == 'Logopeda' ? 'selected' : '' }}>Logopeda</option>
+                        <option value="Técnico en Imagenología" {{ $user->profesion == 'Técnico en Imagenología' ? 'selected' : '' }}>Técnico en Imagenología</option>
+                        <option value="Paramédico(a)" {{ $user->profesion == 'Paramédico(a)' ? 'selected' : '' }}>Paramédico(a)</option>
                     </select>
                 </div>
             </div>
@@ -143,8 +160,11 @@
                     <select class="form-select" id="cargo" name="cargo" required>
                         <option value="Responsable" {{ $user->cargo == 'Responsable' ? 'selected' : '' }}>Responsable</option>
                         <option value="Medico" {{ $user->cargo == 'Medico' ? 'selected' : '' }}>Medico</option>
-                        <option value="Asesor Legal" {{ $user->cargo == 'Asesor Legal' ? 'selected' : '' }}>Asesor(a) Legal</option>
-                        <!-- Agrega más opciones aquí -->
+                        <option value="Asesor(a) Legal" {{ $user->cargo == 'Asesor(a) Legal' ? 'selected' : '' }}>Asesor(a) Legal</option>
+                        <option value="Enfermero(a)" {{ $user->cargo == 'Enfermero(a)' ? 'selected' : '' }}>Enfermero(a)</option>
+                        <option value="Asesor(a) Adjunto" {{ $user->cargo == 'Asesor(a) Adjunto' ? 'selected' : '' }}>Asesor(a) Adjunto</option>
+                        <option value="Auxiliar Administrativo" {{ $user->cargo == 'Auxiliar Administrativo' ? 'selected' : '' }}>Auxiliar Administrativo</option>
+                        <option value="Personal" {{ $user->cargo == 'Personal' ? 'selected' : '' }}>Personal</option>
                     </select>
                 </div>
             </div>
@@ -164,6 +184,12 @@
                             <option value="{{ $role->name }}" {{ $user->hasRole($role->name) ? 'selected' : '' }}>{{ $role->name }}</option>
                         @endforeach
                     </select>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="nuevaimagen">Subir imagen</label>
+                    <input type="file" name="nuevaimagen" class="form-control-file" accept="image/*">
                 </div>
             </div>
         </div>
