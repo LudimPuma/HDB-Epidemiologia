@@ -1,5 +1,6 @@
 @extends('layout')
 @section('title', 'Enf. Notificación Inmediata')
+@section('guide', 'Formularios / Enf. de Notificación Inmediata')
 @section('content')
 
 <section class="tab-components">

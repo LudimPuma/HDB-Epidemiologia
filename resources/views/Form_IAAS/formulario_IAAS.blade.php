@@ -1,5 +1,6 @@
 @extends('layout')
-@section('title', 'IAAS')
+@section('title', 'Formularios | IAAS')
+@section('guide', 'Formularios / IAAS')
 @section('content')
 
 <section class="tab-components">
@@ -70,13 +71,13 @@
 
                         <div class="row">
                             <div class="col-4">
-                                <a class="list-group-item list-group-item-action list-group-item-dark active text-center" id="list-home-list" data-bs-toggle="list" href="#list-home" role="tab" aria-controls="list-home">Datos Generales</a>
+                                <a class="list-group-item list-group-item-action list-group-item-light active text-center" id="list-home-list" data-bs-toggle="list" href="#list-home" role="tab" aria-controls="list-home">Datos Generales</a>
                             </div>
                             <div class="col-4">
-                                <a class="list-group-item list-group-item-action list-group-item-dark text-center" id="list-profile-list" data-bs-toggle="list" href="#list-profile" role="tab" aria-controls="list-profile">Datos Laboratorio</a>
+                                <a class="list-group-item list-group-item-action list-group-item-light text-center" id="list-profile-list" data-bs-toggle="list" href="#list-profile" role="tab" aria-controls="list-profile">Datos Laboratorio</a>
                             </div>
                             <div class="col-4">
-                                <a class="list-group-item list-group-item-action list-group-item-dark text-center" id="list-messages-list" data-bs-toggle="list" href="#list-messages" role="tab" aria-controls="list-messages">Datos Epideilogico</a>
+                                <a class="list-group-item list-group-item-action list-group-item-light text-center" id="list-messages-list" data-bs-toggle="list" href="#list-messages" role="tab" aria-controls="list-messages">Datos Epidemiologicos</a>
                             </div>
                         </div>
                     </div>
@@ -447,7 +448,6 @@
 </div>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        // Verificar si hay un mensaje de éxito en la sesión
         let successMessage = '{{ session('success') }}';
 
         if (successMessage) {

@@ -15,16 +15,18 @@
   }
 @endphp
 
-<h1 style="text-align: center">
+{{-- <h1 style="text-align: center">
   {{ $mensaje }} {{ Auth::user()->persona->nombres }}
-</h1>
+</h1> --}}
+{{-- <div class="title mb-30 text-center">
+    <h2>{{ $mensaje }} {{ Auth::user()->persona->nombres }}</h2>
+</div> --}}
 
 
 
-
-<div class="row">
+<div class="row align-items-stretch">
     {{-- GRAFICA PATOLOGIA--}}
-    <div class="col-lg-7">
+    <div class="col-lg-7 d-flex">
       <div class="card-style mb-30">
         <div class="title d-flex flex-wrap align-items-center justify-content-between">
             <div class="left">
@@ -58,56 +60,53 @@
         </div>
       </div>
     </div>
+    <div class="col-lg-5 d-flex">
+        <div class="card-style mb-30">
+            <div
+                class="
+                title
+                d-flex
+                flex-wrap
+                align-items-center
+                justify-content-between
+                "
+            >
+                <div class="left">
+                <h6 class="text-medium mb-30">Sales/Revenue</h6>
+                </div>
+                <div class="right">
+                <div class="select-style-1">
+                    <div class="select-position select-sm">
+                    <select class="light-bg">
+                        <option value="">Yearly</option>
+                        <option value="">Monthly</option>
+                        <option value="">Weekly</option>
+                    </select>
+                    </div>
+                </div>
+                <!-- end select -->
+                </div>
+            </div>
+            <!-- End Title -->
+            <div class="chart">
+                <canvas
+                id="Chart2"
+                style="width: 100%; height: 400px"
+                ></canvas>
+            </div>
+          <!-- End Chart -->
+        </div>
+    </div>
     {{-- CALENDARIO --}}
-    <div class="col-lg-5">
+    {{-- <div class="col-lg-5">
         <div class="card-style calendar-card mb-30">
           <div id="calendar-mini"></div>
         </div>
-    </div>
+    </div> --}}
 </div>
-    {{-- GRAFICA prueba--}}
-{{-- <div class="row">
-
-    <div class="col-lg-7">
-        <div class="card-style mb-30">
-            <div class="">
-                <canvas id="miGrafico" width="400" height="400"></canvas>
-            </div>
-        </div>
-    </div>
-</div> --}}
-
 
 <script src="assets/js/Chart.min.js"></script>
-{{-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> --}}
 
-{{-- <script>
-// Obtiene el elemento canvas por su id
-const canvas = document.getElementById('miGrafico');
-
-// Define los datos y etiquetas para el gráfico
-const data = {
-  labels: ['Manzanas', 'Plátanos', 'Naranjas'],
-  datasets: [{
-    data: [10, 5, 8], // Valores correspondientes a cada etiqueta
-    backgroundColor: ['#FF5733', '#FFC300', '#33FF57'] // Colores de fondo para las secciones del gráfico
-  }]
-};
-
-// Configura el gráfico
-const ctx = canvas.getContext('2d');
-const myDoughnutChart = new Chart(ctx, {
-  type: 'doughnut', // Tipo de gráfico (puedes usar 'pie' para un gráfico de pastel)
-  data: data,
-  options: {
-    // Opciones adicionales, como el título, leyenda, etc.
-    title: {
-      display: true,
-      text: 'Mi Gráfico de Rosquilla'
-    }
-  }
-});
-</script> --}}
 
 <script>
 // Los datos reales que vienen desde el controlador
@@ -186,8 +185,8 @@ const chart3 = new Chart(ctx3, {
                 ticks: {
                     padding: 35,
                     suggestedMin: 0, // Inicio del eje Y en 0
-                    suggestedMax: 50, // Extensión máxima del eje Y hasta 100
-                    stepSize: 10, // Tamaño del paso entre los valores del eje Y
+                    suggestedMax: 100, // Extensión máxima del eje Y hasta 100
+                    stepSize: 20, // Tamaño del paso entre los valores del eje Y
                 },
             }],
             xAxes: [{
@@ -204,18 +203,18 @@ const chart3 = new Chart(ctx3, {
     },
 });
 
-// ====== calendar activation
-document.addEventListener("DOMContentLoaded", function () {
-    var calendarMiniEl = document.getElementById("calendar-mini");
-    var calendarMini = new FullCalendar.Calendar(calendarMiniEl, {
-        initialView: "dayGridMonth",
-        headerToolbar: {
-            end: "today prev,next",
-        },
-        locale: 'es',
-        });
-        calendarMini.render();
-});
+// // ====== calendar activation
+// document.addEventListener("DOMContentLoaded", function () {
+//     var calendarMiniEl = document.getElementById("calendar-mini");
+//     var calendarMini = new FullCalendar.Calendar(calendarMiniEl, {
+//         initialView: "dayGridMonth",
+//         headerToolbar: {
+//             end: "today prev,next",
+//         },
+//         locale: 'es',
+//         });
+//         calendarMini.render();
+// });
 
 </script>
 @endsection

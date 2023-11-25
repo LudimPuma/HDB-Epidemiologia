@@ -41,28 +41,97 @@ class FormularioNotificacionPacienteController extends Controller
         $this->middleware('can:button-form-informe-iaas')->only('informeAnual');
         $this->middleware('can:button-form-informe-iaas')->only('informeTrimestralSemestralIAASEspecifico');
     }
+    private function Servidor()
+    {
+        $serverName = "DESKTOP-NP5BU8U";
+        // $serverName = "193.168.0.7\\SIAF";
+        $connectionInfo = array("Database" => "BDEstadistica", "UID" => "sa", "PWD" => "S1af");
+
+        $conn = sqlsrv_connect($serverName, $connectionInfo);
+
+        if (!$conn) {
+            throw new \Exception("Error de conexión: " . print_r(sqlsrv_errors(), true));
+        }
+
+        return $conn;
+    }
     public function showViewForm()
     {
         return view('Form_IAAS.view_form_1');
     }
     public function searchHistorial(Request $request)
     {
-        $patientId = $request->input('patientId');
+        try {
+            $patientId = $request->input('patientId');
+            $conn = $this->Servidor();
 
-        $patient = DatoPaciente::where('n_h_clinico', $patientId)->first();
-        // $patient = DatoPaciente::where('HCL_CODIGO', $patientId)->first();
-        if ($patient) {
+            $sql = "SELECT
+                    HCL_APPAT,
+                    HCL_APMAT,
+                    HCL_NOMBRE,
+                    HCL_SEXO,
+                    HCL_FECNAC,
+                    YEAR(HCL_FECNAC) as yearOfBirth,
+                    MONTH(HCL_FECNAC) as monthOfBirth,
+                    DAY(HCL_FECNAC) as dayOfBirth,
+                    DATEDIFF(YEAR, HCL_FECNAC, GETDATE()) as age
+                FROM
+                    SE_HC
+                WHERE
+                    HCL_CODIGO= $patientId";
+
+            $res = sqlsrv_query($conn, $sql);
+
+            if ($res === false) {
+                throw new \Exception("Error de consulta: " . print_r(sqlsrv_errors(), true));
+            }
+
+            $patients = [];
+
+            while ($row = sqlsrv_fetch_array($res)) {
+                $sexo = ($row['HCL_SEXO'] == 1) ? 'Masculino' : 'Femenino';
+                $fechaNacimiento = $row['HCL_FECNAC'];
+                $patient = [
+                    'nombre' => $row['HCL_NOMBRE'],
+                    'ap_paterno' => $row['HCL_APPAT'],
+                    'ap_materno' => $row['HCL_APMAT'],
+                    'edad' => $row['age'],
+                    'sexo' => ($row['HCL_SEXO'] == 1) ? 'Masculino' : 'Femenino',
+                ];
+                $patients[] = $patient;
+            }
+
+            sqlsrv_close($conn);
+
             return response()->json([
-                'found' => true,
-                'patientData' => $patient
+                'found' => !empty($patients),
+                'patientData' => $patients,
             ]);
-        } else {
+        } catch (\Exception $e) {
             return response()->json([
-                'found' => false,
-                'patientData' => null
+                'error' => true,
+                'message' => $e->getMessage(),
             ]);
         }
     }
+    // public function searchHistorial(Request $request)
+    // {
+    //     $patientId = $request->input('patientId');
+
+    //     $patient = DatoPaciente::where('n_h_clinico', $patientId)->first();
+    //     // $patient = DatoPaciente::where('HCL_CODIGO', $patientId)->first();
+    //     if ($patient) {
+    //         return response()->json([
+    //             'found' => true,
+    //             'patientData' => $patient
+    //         ]);
+    //     } else {
+    //         return response()->json([
+    //             'found' => false,
+    //             'patientData' => null
+    //         ]);
+    //     }
+    // }
     public function mostrarFormulario(Request $request)
     {
         $id = $request->query('patientId');
@@ -274,8 +343,7 @@ class FormularioNotificacionPacienteController extends Controller
             ],
             [
                 'motivos_baja.required'=> 'Debe dar un motivo de baja',
-            ]
-        );
+            ]);
             $data['motivos_baja'] = $request->motivos_baja;
         } else {
             $data['motivos_baja'] = null;
@@ -284,19 +352,126 @@ class FormularioNotificacionPacienteController extends Controller
         if ($formulario->update($data)) {
             $request->session()->flash('success', 'Estado actualizado exitosamente');
         }
-        $formularios = FormularioNotificacionPaciente::with('datopaciente')
-        ->orderBy('cod_form_notificacion_p', 'desc')
-        ->get();
+        try {
+            $hClinicos = FormularioNotificacionPaciente::pluck('h_clinico')->toArray();
+            $conn = $this->Servidor();
 
-        return view('Form_IAAS.VistaTabla', ['formularios' => $formularios]);
+            $hClinicosCondition = implode(',', $hClinicos);
+            $sql = "SELECT
+                HCL_CODIGO,
+                HCL_NOMBRE,
+                HCL_APPAT,
+                HCL_APMAT
+            FROM
+                SE_HC
+            WHERE
+                HCL_CODIGO IN ($hClinicosCondition)";
+
+            $res = sqlsrv_query($conn, $sql);
+
+            if ($res === false) {
+                throw new \Exception("Error de consulta: " . print_r(sqlsrv_errors(), true));
+            }
+            $patients = [];
+
+            while ($row = sqlsrv_fetch_array($res, SQLSRV_FETCH_ASSOC)) {
+                $formularios = FormularioNotificacionPaciente::where('h_clinico', $row['HCL_CODIGO'])
+                    ->orderBy('cod_form_notificacion_p', 'desc')
+                    ->get();
+                foreach ($formularios as $formulario) {
+                    $patient = [
+                        'h_clinico' => $row['HCL_CODIGO'],
+                        'nombre' => $row['HCL_NOMBRE'],
+                        'ap_paterno' => $row['HCL_APPAT'],
+                        'ap_materno' => $row['HCL_APMAT'],
+                        'cod_form_notificacion_p' => null,
+                        'fecha' => null,
+                        'estado' => null,
+                        'motivos_baja' => null,
+                    ];
+
+                    $patient['cod_form_notificacion_p'] = $formulario->cod_form_notificacion_p;
+                    $patient['fecha'] = $formulario->fecha_llenado;
+                    $patient['estado'] = $formulario->estado;
+                    $patient['motivos_baja'] = $formulario->motivos_baja;
+
+                    $patients[] = $patient;
+                }
+
+            }
+            array_multisort(array_column($patients, 'cod_form_notificacion_p'), SORT_DESC, $patients);
+            sqlsrv_close($conn);
+
+            return view('Form_IAAS.VistaTabla', compact('patients'));
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => true,
+                'message' => $e->getMessage(),
+            ]);
+        }
     }
     public function tabla()
     {
-        $formularios = FormularioNotificacionPaciente::with('datopaciente')
-        ->orderBy('cod_form_notificacion_p', 'desc')
-        ->get();
-        return view('Form_IAAS.VistaTabla', compact('formularios'));
+        try {
+            $hClinicos = FormularioNotificacionPaciente::pluck('h_clinico')->toArray();
+            $conn = $this->Servidor();
+
+            $hClinicosCondition = implode(',', $hClinicos);
+            $sql = "SELECT
+                HCL_CODIGO,
+                HCL_NOMBRE,
+                HCL_APPAT,
+                HCL_APMAT
+            FROM
+                SE_HC
+            WHERE
+                HCL_CODIGO IN ($hClinicosCondition)";
+
+            $res = sqlsrv_query($conn, $sql);
+
+            if ($res === false) {
+                throw new \Exception("Error de consulta: " . print_r(sqlsrv_errors(), true));
+            }
+            $patients = [];
+
+            while ($row = sqlsrv_fetch_array($res, SQLSRV_FETCH_ASSOC)) {
+                $formularios = FormularioNotificacionPaciente::where('h_clinico', $row['HCL_CODIGO'])
+                    ->orderBy('cod_form_notificacion_p', 'desc')
+                    ->get();
+                foreach ($formularios as $formulario) {
+                    $patient = [
+                        'h_clinico' => $row['HCL_CODIGO'],
+                        'nombre' => $row['HCL_NOMBRE'],
+                        'ap_paterno' => $row['HCL_APPAT'],
+                        'ap_materno' => $row['HCL_APMAT'],
+                        'cod_form_notificacion_p' => null,
+                        'fecha' => null,
+                        'estado' => null,
+                        'motivos_baja' => null,
+                    ];
+
+                    $patient['cod_form_notificacion_p'] = $formulario->cod_form_notificacion_p;
+                    $patient['fecha'] = $formulario->fecha_llenado;
+                    $patient['estado'] = $formulario->estado;
+                    $patient['motivos_baja'] = $formulario->motivos_baja;
+
+                    $patients[] = $patient;
+                }
+
+            }
+            array_multisort(array_column($patients, 'cod_form_notificacion_p'), SORT_DESC, $patients);
+
+            sqlsrv_close($conn);
+
+            return view('Form_IAAS.VistaTabla', compact('patients'));
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => true,
+                'message' => $e->getMessage(),
+            ]);
+        }
     }
+
     // PDF FORMULARIO
     public function generarPDF($codigoFormulario)
     {
@@ -347,6 +522,56 @@ class FormularioNotificacionPacienteController extends Controller
                 'resistencia' => $antibiograma->nivel,
             ];
         }
+
+        try {
+            $conn = $this->Servidor();
+            $sql = "SELECT
+                    HCL_CODIGO,
+                    HCL_APPAT,
+                    HCL_APMAT,
+                    HCL_NOMBRE,
+                    HCL_SEXO,
+                    HCL_FECNAC,
+                    YEAR(HCL_FECNAC) as yearOfBirth,
+                    MONTH(HCL_FECNAC) as monthOfBirth,
+                    DAY(HCL_FECNAC) as dayOfBirth,
+                    DATEDIFF(YEAR, HCL_FECNAC, GETDATE()) as age
+                FROM
+                    SE_HC
+                WHERE
+                    HCL_CODIGO IN ($formulario->h_clinico)";
+
+            $res = sqlsrv_query($conn, $sql);
+
+            if ($res === false) {
+                throw new \Exception("Error de consulta: " . print_r(sqlsrv_errors(), true));
+            }
+            $patients = [];
+            while ($row = sqlsrv_fetch_array($res)) {
+                $sexo = ($row['HCL_SEXO'] == 1) ? 'Masculino' : 'Femenino';
+                $fechaNacimiento = $row['HCL_FECNAC'];
+                $patient = [
+                    'hcl_codigo' => $row['HCL_CODIGO'],
+                    'nombre' => $row['HCL_NOMBRE'],
+                    'ap_paterno' => $row['HCL_APPAT'],
+                    'ap_materno' => $row['HCL_APMAT'],
+                    'edad' => $row['age'],
+                    'sexo' => ($row['HCL_SEXO'] == 1) ? 'Masculino' : 'Femenino',
+                ];
+                $patients[] = $patient;
+                // dd($patients);
+                // return false;
+            }
+
+            sqlsrv_close($conn);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => true,
+                'message' => $e->getMessage(),
+            ]);
+        }
+        $nombreP = $patients;
+
         // *****************************************************************
         $h_clinico = $formulario->h_clinico;
         $fecha_llenado = $formulario->fecha_llenado;
@@ -371,7 +596,7 @@ class FormularioNotificacionPacienteController extends Controller
         $fechaActual = Carbon::now('America/La_Paz')->format('d/m/Y ');
         $data = [
             'h_clinico' => $h_clinico,
-            'nombreP' => DatoPaciente::where('n_h_clinico',$h_clinico)->first(),
+            'nombreP' => $nombreP,
             'fecha_llenado' => $fecha_llenado,
             'fecha_ingreso' => $fecha_ingreso,
             'dias_internacion' => $dias_internacion,
@@ -507,7 +732,6 @@ class FormularioNotificacionPacienteController extends Controller
     {
         $fechaSeleccionada = $request->a;
         $nombre = "Anual";
-        // Obtener la lista de servicios disponibles
         $servicios = DB::table('epidemiologia.servicio')->get();
         $informePorServicio = [];
         foreach ($servicios as $servicio) {
@@ -539,7 +763,7 @@ class FormularioNotificacionPacienteController extends Controller
             foreach ($informeServicio as $informe) {
                 if ($informe->casos_resistentes > 0) {
                     if ($currentBacteria !== $informe->bacteria) {
-                        // Nueva bacteria encontrada, guardamos el total y reiniciamos el contador
+
                         if ($currentBacteria !== null) {
                             $totalCasosResistentesPorBacteria[$currentBacteria] = $currentTotalCasosResistentes;
                         }
@@ -549,7 +773,7 @@ class FormularioNotificacionPacienteController extends Controller
                     $currentTotalCasosResistentes += $informe->casos_resistentes;
                 }
             }
-            // Agregar información de la bacteria y el total de casos resistentes por bacteria
+
             if ($currentBacteria !== null) {
                 $totalCasosResistentesPorBacteria[$currentBacteria] = $currentTotalCasosResistentes;
             }

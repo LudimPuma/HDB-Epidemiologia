@@ -1,51 +1,76 @@
 @extends('layout')
-@section('title', 'Reporte | Semestral por Servicios')
+@section('title', 'Reportes | Por Semestre')
+@section('guide','Reportes / Por Semestre')
 @section('content')
-<div class="tables-wrapper">
-    <form id="miFormulario" action="#" method="POST" target="_blank">
-        @csrf
-        <div class="card-style mb-30">
-            <h1 class="text-center">Reporte por Sermestreee</h1>
-            <br>
-                <div class="row">
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <label for="seleccion">Seleccione un servicio:</label>
-                            <select id="seleccion" name="seleccion" class="form-control custom-select">
-                                <option value="" disabled selected>Seleccionar</option>
-                                @can('button-form-reports-iaas')
-                                    <option value="IAAS">IAAS</option>
-                                @endcan
-                                @can('button-form-reports-eni')
-                                    <option value="Enf_Not_Inm">Enfermedades de Notificación Inmediata</option>
-                                @endcan
-                            </select>
+<style>
+    .card-style{
+        background-image: url("img/logohdb.png");
+        background-size: 20%;
+        background-repeat: no-repeat;
+        background-position: center;
+        padding: 100px;
+    }
+</style>
+<div class="row ">
+    <div class="col-12">
+        <div class="container bg-white rounded p-4 shadow-lg" >
+            <div class="container bg-light rounded p-4 shadow-lg">
+                <div class="tables-wrapper">
+                    <form id="miFormulario" action="#" method="POST" target="_blank">
+                        @csrf
+                        <div class="card-style mb-30 bg-dark p-4 bg-opacity- text-light shadow-lg">
+                            <div class="title-wrapper">
+                                <div class="row align-items-center">
+                                    <div class="col-md-10 mb-15 ml-30">
+                                        <div class="title text-muted">
+                                            <h2 class="text-light">Semestral por Servicio</h2>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                                <div class="row">
+                                    <div class="col-md-5">
+                                        <div class="form-group">
+                                            <label for="seleccion"><em>Seleccione un servicio:</em></label>
+                                            <select id="seleccion" name="seleccion" class="form-control custom-select">
+                                                <option value="" disabled selected>Seleccionar</option>
+                                                @can('button-form-reports-iaas')
+                                                    <option value="IAAS">IAAS</option>
+                                                @endcan
+                                                @can('button-form-reports-eni')
+                                                    <option value="Enf_Not_Inm">Enfermedades de Notificación Inmediata</option>
+                                                @endcan
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label for="a"><em>Año:</em></label>
+                                            <input type="number" id="a" name="a" value="{{ date("Y") }}" class="form-control" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="rango"><em>Semestre:</em></label>
+                                            <select name="rango" id="rango" class="form-control custom-select">
+                                                <option value="" disabled selected>Seleccionar</option>
+                                                <option value="primer_semestre"> primer semestre</option>
+                                                <option value="segundo_semestre"> segundo semestre</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <br>
+                                <div class="text-center">
+                                    <button type="button" id="generar-btn" class="btn btn-outline-light custom-button"><strong>Generar</strong></button>
+                                </div>
                         </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <label for="a">Año:</label>
-                            <input type="number" id="a" name="a" value="{{ date("Y") }}" class="form-control" required>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <label for="rango">Semestre:</label>
-                            <select name="rango" id="rango" class="form-control custom-select">
-                                <option value="" disabled selected>Seleccionar</option>
-                                <option value="primer_semestre"> primer semestre</option>
-                                <option value="segundo_semestre"> segundo semestre</option>
-                            </select>
-                        </div>
-                    </div>
+                    </form>
                 </div>
-                <br>
-                <div class="text-center">
-                    <button type="button" id="generar-btn" class="btn btn-success">Generar</button>
-                </div>
+            </div>
         </div>
-    </form>
-</div>
+    </div>
+ </div>
 
 <script>
     document.getElementById("generar-btn").addEventListener("click", function (event) {

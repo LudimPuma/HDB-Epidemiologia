@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Patologia;
 use Illuminate\Http\Request;
-
+use Illuminate\Database\QueryException;
 class PatologiaController extends Controller
 {
     public function __construct()
@@ -20,34 +20,59 @@ class PatologiaController extends Controller
     }
     public function store(Request $request)
     {
-        $request->validate([
-            'nombre' => 'required|letters_spaces',
-        ]);
-        Patologia::create($request->all());
-        return redirect()->route('patologia.index')->with('success', 'Patologia creado exitosamente');
+        try {
+            $request->validate([
+                'nombre' => 'required|letters_spaces',
+            ],
+            [
+                'nombre.required' => 'El nombre obigatorio',
+                'nombre.letters_spaces' => 'Problemas en la validación, solo se permite letras',
+            ]
+        );
+
+            Patologia::create($request->all());
+
+            return redirect()->route('patologia.index')->with('success', 'Patologia creado exitosamente');
+        } catch (QueryException $e) {
+            return redirect()->back()->withErrors(['El nombre ya existe en la tabla patologia.']);
+        }
     }
     public function update(Request $request, Patologia $patologia)
     {
-        $request->validate([
-            'nombre' => 'required|letters_spaces',
-            'estado' => 'required|only_zero_one',
-        ]);
-        $data = [
-            'nombre' => $request->nombre,
-            'estado' => $request->estado,
-        ];
-        if (!$request->estado) {
+        try {
             $request->validate([
-                'motivos_baja' => 'required|letters_dash_spaces_dot',
+                'nombre' => 'required|letters_spaces',
+                'estado' => 'required|only_zero_one',
+                'motivos_baja' =>'letters_dash_spaces_dot'
             ],
             [
-                'motivos_baja.required' => 'Debe proporcionar un motivo de baja',
-            ]);
-            $data['motivos_baja'] = $request->motivos_baja;
-        } else {
-            $data['motivos_baja'] = null;
+                'nombre.required' => 'El nombre obigatorio',
+                'nombre.letters_spaces' => 'Problemas en la validación, solo se permite letras',
+                'estado.required' => 'El estado es obligatorio',
+                'estado.only_zero_one' => 'El estado debe ser 0 o 1',
+                'motivos_baja.letters_dash_spaces_dot' =>'Problemas en la validación, solo se permite letras, digitos y -/./()'
+            ]
+        );
+            $data = [
+                'nombre' => $request->nombre,
+                'estado' => $request->estado,
+            ];
+            if (!$request->estado) {
+                $request->validate([
+                    'motivos_baja' => 'required|letters_dash_spaces_dot',
+                ],
+                [
+                    'motivos_baja.required' => 'El motivo de baja es obligatorio si se deshabilita',
+                    'motivos_baja.letters_dash_spaces_dot' =>'Problemas en la validación, solo se permite letras, digitos y -/./()'
+                ]);
+                $data['motivos_baja'] = $request->motivos_baja;
+            } else {
+                $data['motivos_baja'] = null;
+            }
+            $patologia->update($data);
+            return redirect()->route('patologia.index')->with('success', 'Patologia actualizado exitosamente');
+        } catch (QueryException $e) {
+            return redirect()->back()->withErrors(['El nombre ya existe en la tabla patologia.']);
         }
-        $patologia->update($data);
-        return redirect()->route('patologia.index')->with('success', 'Patologia actualizado exitosamente');
     }
 }

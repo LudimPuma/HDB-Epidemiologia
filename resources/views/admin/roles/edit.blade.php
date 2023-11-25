@@ -1,5 +1,6 @@
 @extends('layout')
-
+@section('title', 'Administración | Roles | Editar')
+@section('guide', 'Administración / Roles / Editar')
 @section('content')
     {{-- <div class="container">
         <div class="row">

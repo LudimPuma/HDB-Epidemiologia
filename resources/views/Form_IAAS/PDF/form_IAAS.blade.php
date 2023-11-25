@@ -63,7 +63,11 @@
                     <th>Nro de Historia Clinica:</th>
                     <td >{{ $h_clinico }}</td>
                     <th>Nombre Paciente:</th>
-                    <td colspan="3">{{ $nombreP->nombre_paciente }} {{ $nombreP->ap_paterno }} {{ $nombreP->ap_materno }}</td>
+                    <td colspan="3">
+                        @foreach ($nombreP as $nombrePa)
+                            {{ $nombrePa['nombre'] }} {{ $nombrePa['ap_paterno'] }} {{ $nombrePa['ap_materno'] }}
+                        @endforeach
+                    </td>
                 </tr>
                 <tr>
                     <th>Fecha de Llenado:</th>

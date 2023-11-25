@@ -2,14 +2,19 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link
+    {{-- <link
       rel="shortcut icon"
       href="{{asset('assets/images/favicon.svg')}}"
       type="image/x-icon"
+    /> --}}
+    <link
+      rel="shortcut icon"
+      href="{{asset('img/logo.png')}}"
+      type="image/x-icon"
     />
-
     <title>@yield('title', 'Principal')</title>
 
     <!-- ========== All CSS files linkup ========= -->
@@ -36,85 +41,139 @@
     <!-- ======== main-wrapper start =========== -->
     <main class="main-wrapper">
       <!-- ========== header start ========== -->
-      <header class="header">
-        <div class="container-fluid">
-          <div class="row">
-            <div class="col-lg-5 col-md-5 col-6">
-              <div class="header-left d-flex align-items-center">
-                <div class="menu-toggle-btn mr-20">
-                    {{-- <button class="btn rounded-fill"><i class="bi bi-moon-fill"></i></button> --}}
-                  <button
-                    id="menu-toggle"
-                    class="main-btn primary-btn btn-hover"
-                  >
-                    <i class="lni lni-chevron-left me-2"></i> Menu
-                  </button>
+        <header class="header shadow-lg">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-lg-5 col-md-5 col-6">
+                    <div class="header-left d-flex align-items-center">
+                        <div class="menu-toggle-btn mr-20">
+                        <button
+                            id="menu-toggle"
+                            {{-- class="main-btn success-btn btn-hover" --}}
+                            class="main-btn btn btn-success"
+                        >
+                            <i class="lni lni-chevron-left me-2"></i> Menu
+                        </button>
 
-                </div>
-              </div>
-            </div>
-            <div class="col-lg-7 col-md-7 col-6">
-              <div class="header-right">
-                <!-- profile start -->
-                <div class="profile-box ml-15">
-                  <button
-                    class="dropdown-toggle bg-transparent border-0"
-                    type="button"
-                    id="profile"
-                    data-bs-toggle="dropdown"
-                    aria-expanded="false"
-                  >
-                    <div class="profile-info">
-                      <div class="info">
-                        <h6>{{ Auth::user()->persona->nombres}} {{ Auth::user()->persona->apellidos}}</h6>
-                        <div class="image">
-                          {{-- <img
-                            src="assets/images/profile/profile.jpg"
-                            alt=""
-                          /> --}}
-                          <img src="{{ asset('storage/' . Auth::user()->imagen) }}" alt="Foto de perfil" >
-                          <span class="status"></span>
                         </div>
-                      </div>
                     </div>
-                    {{-- <i class="lni lni-chevron-down"></i> --}}
-                  </button>
-                  <ul
-                    class="dropdown-menu dropdown-menu-end"
-                    aria-labelledby="profile"
-                  >
-                    <li>
-                      <a href="#" data-bs-toggle="modal" data-bs-target="#modalPerfil">
-                        <i class="lni lni-user"></i> Perfil
-                      </a>
-                    </li>
+                    </div>
+                    {{-- <div class="col-lg-7 col-md-7 col-6">
+                    <div class="header-right">
+                        <div class="profile-box ml-15">
+                        <button
+                            class="dropdown-toggle bg-transparent border-0"
+                            type="button"
+                            id="profile"
+                            data-bs-toggle="dropdown"
+                            aria-expanded="false"
+                        >
+                            <div class="profile-info">
+                            <div class="info">
+                                <div style="display: flex; flex-direction: column; align-items: center;">
+                                    <p class="text-muted"><strong>{{ Auth::user()->persona->nombres}} {{ Auth::user()->persona->apellidos}}</strong></p>
+                                    <h6 class="text-muted"> <small><em>({{ Auth::user()->roles->first()->name }})</em></small></strong></h6>
+                                </div>
+                                <div class="image">
+                                <img src="{{ asset('storage/' . Auth::user()->imagen) }}" alt="Foto de perfil" >
+                                <span class="status"></span>
+                                </div>
+                            </div>
+                            </div>
+                        </button>
+                        <ul
+                            class="dropdown-menu dropdown-menu-end"
+                            aria-labelledby="profile"
+                        >
+                            <li>
+                            <a href="#" data-bs-toggle="modal" data-bs-target="#modalPerfil">
+                                <i class="lni lni-user"></i> Perfil
+                            </a>
+                            </li>
 
-                    <li>
-                      <a href="{{route('logout')}}"> <i class="lni lni-exit"></i> Cerrar Sesion </a>
-                    </li>
-                  </ul>
+                            <li>
+                            <a href="{{route('logout')}}"> <i class="lni lni-exit"></i> Cerrar Sesion </a>
+                            </li>
+                        </ul>
+                        </div>
+                    </div>
+                    </div> --}}
+                    <div class="col-lg-7 col-md-7 col-6">
+                        <div class="header-right">
+                        <!-- profile start -->
+                        <div class="profile-box ml-15">
+                            <button
+                            class="dropdown-toggle bg-transparent border-0"
+                            type="button"
+                            id="profile"
+                            data-bs-toggle="dropdown"
+                            aria-expanded="false"
+                            >
+                            <div class="profile-info">
+                                <div class="info">
+                                <div style="display: flex; flex-direction: column; align-items: center;">
+                                    <!-- Nombre y apellido para pantallas grandes -->
+                                    <p class="text-muted d-none d-md-block"><strong>{{ Auth::user()->persona->nombres}} {{ Auth::user()->persona->apellidos}}</strong></p>
+                                    <!-- Rol para pantallas grandes -->
+                                    <h6 class="text-muted d-none d-md-block"> <small><em>({{ Auth::user()->roles->first()->name }})</em></small></h6>
+                                </div>
+                                <div class="image">
+                                    <img src="{{ asset('storage/' . Auth::user()->imagen) }}" alt="Foto de perfil">
+                                    <span class="status"></span>
+                                </div>
+                                </div>
+                            </div>
+                            </button>
+                            <ul
+                            class="dropdown-menu dropdown-menu-end"
+                            aria-labelledby="profile"
+                            >
+                            <li>
+                                <a href="#" data-bs-toggle="modal" data-bs-target="#modalPerfil">
+                                <i class="lni lni-user"></i> Perfil
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{{route('logout')}}"> <i class="lni lni-exit"></i> Cerrar Sesión </a>
+                            </li>
+                            </ul>
+                        </div>
+                        <!-- profile end -->
+                        </div>
+                    </div>
+
+
                 </div>
-                <!-- profile end -->
-              </div>
             </div>
-          </div>
-        </div>
-      </header>
+        </header>
       <!-- ========== header end ========== -->
 
       <!-- ========== section start ========== -->
-      <section class="section">
-        <div class="container-fluid">
-          <!-- ========== title-wrapper start ========== -->
-          <div class="title-wrapper pt-30">
-            <div class="row align-items-center">
-                {{-- <h2 style="text-align: center">Bienvenido: {{ Auth::user()->persona->nombres }}</h2> --}}
-              <!-- end col -->
+      <section class="section ">
+        <div class="container-fluid ">
+            <!-- ========== title-wrapper start ========== -->
+            <div class="row">
+                <div class="title-wrapper pt-30">
+                    <div class="row align-items-center">
+                        <div class="col-md-6">
+                            <div class="title mb-20">
+
+                                <h4 class="text-muted d-none d-md-block">@yield('guide', 'Principal/')</h4>
+                            </div>
+                        </div>
+                        <div class="col-md-6 ">
+                            <div class="breadcrumb-wrapper mb-20">
+                                <nav aria-label="breadcrumb">
+                                    <input type="date" value="{{ date('Y-m-d') }}" class="form-control bg-success ml-3">
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <!-- end row -->
-          </div>
+
           <!-- ========== title-wrapper end ========== -->
-          <div class="row">
+          <div class="row ">
             @yield('content')
           </div>
           <!-- End Row -->
@@ -240,6 +299,7 @@
     <script src="{{asset('assets/js/datatables.net/dataTables.bootstrap4.min.js')}}"> </script>
 
     <script src="{{ asset('js/select2.min.js') }}"></script>
+    {{-- DATA TABLE CONFIG --}}
     <script>
         $(document).ready(function () {
             $('#dataTable').DataTable({
@@ -251,7 +311,8 @@
             });
         });
     </script>
-    <script>
+    {{-- VALIDACIONES --}}
+    {{-- <script>
         $(document).ready(function() {
             var errorMessage = "Caracteres no permitidos.";
             var patternRegex = /^[A-Za-zÀ-ÖØ-öø-ÿ\s.\-()\d]+$/;
@@ -273,7 +334,36 @@
                 }
             });
         });
-    </script>
+    </script> --}}
+    {{-- MENU --}}
+
+    {{-- <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Recuperar el estado del menú desde la cookie
+            var menuState = getCookie("menuState");
+
+            // Si hay un estado en la cookie, aplicarlo al menú
+            if (menuState) {
+                $(menuState).collapse("show");
+            }
+
+            // Manejar eventos de clic para guardar el estado en la cookie
+            $(".collapsed").on("click", function () {
+                var menuId = $(this).data("bs-target");
+                setCookie("menuState", menuId);
+            });
+        });
+
+        // Funciones para gestionar cookies
+        function setCookie(name, value) {
+            document.cookie = name + "=" + value + "; path=/";
+        }
+
+        function getCookie(name) {
+            var match = document.cookie.match(new RegExp(name + "=([^;]+)"));
+            return match ? match[1] : null;
+        }
+    </script> --}}
 
     @stack('script')
   </body>

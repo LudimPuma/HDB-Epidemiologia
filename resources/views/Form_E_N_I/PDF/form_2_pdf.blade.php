@@ -22,6 +22,7 @@
             padding: 5px;
             border: 1px solid #ccc;
             font-size: 15px;
+            text-align:
         }
 
         th {
@@ -41,19 +42,31 @@
                 <tr>
                     <th>Nro. Formulario</th>
                     <td>{{ $formulario->id_f_notificacion_inmediata }}</td>
-                    <th>Fecha</th>
+                    <th>Fecha llenado</th>
                     <td>{{ $formulario->fecha }}</td>
                 </tr>
                 <tr>
                     <th>Paciente</th>
-                    <td colspan="3">{{ $paciente->nombre_paciente }} {{ $paciente->ap_paterno }} {{ $paciente->ap_materno }}</td>
-
+                    <td colspan="3">
+                        @foreach ($paciente as $pacienteInfo)
+                            {{ $pacienteInfo['nombre'] }} {{ $pacienteInfo['ap_paterno'] }} {{ $pacienteInfo['ap_materno'] }}<br>
+                        @endforeach
+                    </td>
                 </tr>
                 <tr>
                     <th>Edad</th>
-                    <td>{{ $paciente->edad }}</td>
+                    <td>
+                        @foreach ($paciente as $pacienteInfo)
+                            {{ $pacienteInfo['edad'] }}<br>
+                        @endforeach
+                    </td>
                     <th>Sexo</th>
-                    <td>{{ $paciente->sexo }}</td>
+                    <td>
+                        @foreach ($paciente as $pacienteInfo)
+                            {{ $pacienteInfo['sexo'] }}<br>
+                        @endforeach
+                    </td>
+
                 </tr>
             </table>
         </div>

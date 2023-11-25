@@ -1,5 +1,6 @@
 @extends('layout')
-
+@section('title', 'Administración | Roles | Agregar')
+@section('guide', 'Administración / Roles / Agregar')
 @section('content')
     <div class="container">
         <div class="row">

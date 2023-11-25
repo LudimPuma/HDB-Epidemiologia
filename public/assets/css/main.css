@@ -16,15 +16,26 @@
 html {
   scroll-behavior: smooth;
 }
-
 body {
+  font-family: "Inter", sans-serif !important;
+  font-weight: normal;
+  font-style: normal;
+  /* color: #5d657b; */
+  color: #5d657b;
+  overflow-x: hidden;
+  /* background: #3d3d4115; */
+  background: #dbead5;
+  /* background: #6c757d44; */
+}
+
+/* body {
   font-family: "Inter", sans-serif !important;
   font-weight: normal;
   font-style: normal;
   color: #5d657b;
   overflow-x: hidden;
   background: #f1f5f9;
-}
+} */
 
 * {
   margin: 0;
@@ -328,6 +339,21 @@ h6,
   display: flex;
   justify-content: flex-end;
 }
+.breadcrumb-wrapper input {
+    margin-left: -22px;
+    margin-right: 10px;
+    padding: 10px;
+    color: white;
+    border: 1px solid #28a745;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+.breadcrumb-wrapper input::-webkit-calendar-picker-indicator {
+    background-color: #fafbfd;
+    padding: 5px;
+    cursor: pointer;
+    border-radius: 3px;
+}
 @media (max-width: 767px) {
   .breadcrumb-wrapper {
     justify-content: flex-start;
@@ -367,7 +393,7 @@ h6,
   overflow: hidden;
 }
 .main-btn:hover {
-  color: inherit;
+  color: white;
 }
 
 .btn-sm {
@@ -1923,8 +1949,8 @@ h6,
 
 /* ========== header css ========== */
 .header {
-  padding: 30px 0;
-  background: #fff;
+  padding: 25px 0;
+  background: #ffffff;
 }
 .header .header-left .menu-toggle-btn .main-btn {
   padding: 0px 15px;
@@ -2657,12 +2683,13 @@ h6,
 
 /* =========== Sidebar css =========== */
 .sidebar-nav-wrapper {
-  background: #fff;
+  /* background: #fff; */
+  background: #fafbfd;
   width: 250px;
-  padding: 20px 0px;
+  padding: 8px 0px;
   height: 100vh;
   position: fixed;
-  overflow-y: scroll;
+  /* overflow-y: scroll; */
   overflow-x: hidden;
   top: 0;
   left: 0;
@@ -2707,7 +2734,7 @@ h6,
 .sidebar-nav-wrapper .navbar-logo {
   text-align: center;
   padding: 0 25px;
-  margin-bottom: 30px;
+  /* margin-bottom: 30px; main-btn */
 }
 .sidebar-nav-wrapper .sidebar-nav .divider {
   padding: 5px 25px;
@@ -2778,10 +2805,11 @@ h6,
   align-items: center;
   border: 1px solid transparent;
 }
+/* COLOR BOTONES MENU */
 .sidebar-nav-wrapper .sidebar-nav ul .nav-item.nav-item-has-children ul li a.active, .sidebar-nav-wrapper .sidebar-nav ul .nav-item.nav-item-has-children ul li a:hover {
-  color: #4a6cf7;
-  border-color: rgba(74, 108, 247, 0.15);
-  background: rgba(74, 108, 247, 0.1);
+  color: green;
+  border-color: rgba(74, 247, 89, 0.1);
+  background: rgba(74, 247, 89, 0.1);
 }
 .sidebar-nav-wrapper .sidebar-nav ul .nav-item.nav-item-has-children ul li a i {
   font-size: 16px;
@@ -2812,6 +2840,7 @@ h6,
   z-index: 1;
   padding: 10px 25px;
 }
+/* Menu */
 .sidebar-nav-wrapper .sidebar-nav ul .nav-item a::before {
   content: "";
   position: absolute;
@@ -2819,7 +2848,7 @@ h6,
   top: 0;
   height: 100%;
   width: 4px;
-  background: #4a6cf7;
+  background: #aa0000;
   border-radius: 0 3px 3px 0px;
   opacity: 0;
   visibility: hidden;
@@ -2947,6 +2976,9 @@ h6,
 .main-wrapper .footer .terms a {
   color: #5d657b;
 }
+/* .main-wrapper .footer .terms a {
+  color: #5d657b;
+} */
 .main-wrapper .footer .terms a:hover {
   color: #4a6cf7;
 }
@@ -4899,3 +4931,4 @@ h6,
 .fw-900 {
   font-weight: 900;
 }
+/*header*/

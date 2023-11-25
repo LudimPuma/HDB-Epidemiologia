@@ -3,9 +3,9 @@
       <a href="{{route('principal')}}">
         {{-- <img src="assets/images/logo/logo.svg" alt="logo" /> --}}
         {{-- <img src="{{ asset('img/prueba.png')}}" alt="" height="50"> --}}
-        <p>EPIDEMIOLOGÍA - HDB</p>
+        <img src="{{ asset('img/logohdb.png')}}" alt="" height="90">
+        {{-- <p ><strong class="text-danger">EPIDEMIOLOGÍA - HDB</strong></p> --}}
       </a>
-
     </div>
     <nav class="sidebar-nav">
       <ul>
@@ -16,28 +16,32 @@
                 href="#0"
                 class="collapsed"
                 data-bs-toggle="collapse"
-                data-bs-target="#ddmenu_8"
-                aria-controls="ddmenu_8"
+                data-bs-target="#ddmenu_1"
+                aria-controls="ddmenu_1"
                 aria-expanded="false"
                 aria-label="Toggle navigation"
                 >
-
                 <span class="icon">
-                    <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M12.8334 1.83325H5.50008C5.01385 1.83325 4.54754 2.02641 4.20372 2.37022C3.8599 2.71404 3.66675 3.18036 3.66675 3.66659V18.3333C3.66675 18.8195 3.8599 19.2858 4.20372 19.6296C4.54754 19.9734 5.01385 20.1666 5.50008 20.1666H16.5001C16.9863 20.1666 17.4526 19.9734 17.7964 19.6296C18.1403 19.2858 18.3334 18.8195 18.3334 18.3333V7.33325L12.8334 1.83325ZM16.5001 18.3333H5.50008V3.66659H11.9167V8.24992H16.5001V18.3333Z"></path>
+                    <svg width="22" height="22" viewBox="0 0 22 22">
+                      <path
+                        d="M17.4167 4.58333V6.41667H13.75V4.58333H17.4167ZM8.25 4.58333V10.0833H4.58333V4.58333H8.25ZM17.4167 11.9167V17.4167H13.75V11.9167H17.4167ZM8.25 15.5833V17.4167H4.58333V15.5833H8.25ZM19.25 2.75H11.9167V8.25H19.25V2.75ZM10.0833 2.75H2.75V11.9167H10.0833V2.75ZM19.25 10.0833H11.9167V19.25H19.25V10.0833ZM10.0833 13.75H2.75V19.25H10.0833V13.75Z"
+                      />
                     </svg>
                 </span>
                 <span class="text"> Administracion </span>
                 </a>
-                <ul id="ddmenu_8" class="collapse dropdown-nav">
+                <ul id="ddmenu_1" class="collapse dropdown-nav">
                     <li>
-                        <a class="nav-link" href="{{route('usuarios.index')}}">Users</a>
+                        <a class="nav-link {{ request()->is('usuarios*') ? 'active' : '' }}" href="{{ route('usuarios.index') }}">Users</a>
+                        {{-- <a class="nav-link" href="{{route('usuarios.index')}}">Users</a> --}}
                     </li>
                     <li>
-                        <a class="nav-link" href="{{route('roles.index')}}">Rol</a>
+                        <a class="nav-link {{ request()->is('roles*') ? 'active' : '' }}" href="{{ route('roles.index') }}">Rol</a>
+                        {{-- <a class="nav-link" href="{{route('roles.index')}}">Rol</a> --}}
                     </li>
                     <li>
-                        <a class="nav-link" href="{{route('permissions.index')}}">Permissions</a>
+                        {{-- <a class="nav-link" href="{{route('permissions.index')}}">Permissions</a> --}}
+                        <a class="nav-link {{ request()->is('permissions*') ? 'active' : '' }}" href="{{ route('permissions.index') }}">Permissions</a>
                     </li>
                 </ul>
             </li>
@@ -45,7 +49,7 @@
         {{-- FORMULARIOS --}}
         @can('button-forms')
             <li class="nav-item nav-item-has-children">
-                <a href="#0" class="collapsed" data-bs-toggle="collapse" data-bs-target="#ddmenu_55" aria-controls="ddmenu_55" aria-expanded="false" aria-label="Toggle navigation">
+                <a href="#0" class="collapsed" data-bs-toggle="collapse" data-bs-target="#ddmenu_2" aria-controls="ddmenu_2" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="icon">
                         <svg
                             width="22"
@@ -59,7 +63,7 @@
                     </span>
                         <span class="text">Formularios</span>
                 </a>
-                    <ul id="ddmenu_55" class="collapse dropdown-nav">
+                    <ul id="ddmenu_2" class="collapse dropdown-nav">
                         @can('create-form-iaas')
                             <li>
                                 <a href="{{ route('view_form_1') }}"> IAAS </a>
@@ -80,8 +84,8 @@
                 href="#0"
                 class="collapsed"
                 data-bs-toggle="collapse"
-                data-bs-target="#ddmenu_5"
-                aria-controls="ddmenu_5"
+                data-bs-target="#ddmenu_3"
+                aria-controls="ddmenu_3"
                 aria-expanded="false"
                 aria-label="Toggle navigation"
                 >
@@ -100,43 +104,42 @@
                 </span>
                 <span class="text"> Tablas </span>
                 </a>
-                <ul id="ddmenu_5" class="collapse dropdown-nav">
-                @can('crud-index-tipoInfeccion')
-                    <li>
-                        <a href="{{ route('tipoInfeccion.index') }}"> Tipos de infeccion</a>
-                    </li>
-                @endcan
-                @can('crud-index-bacteria')
-                    <li>
-                        <a href="{{ route('bacteria.index') }}"> Bacterias</a>
-                    </li>
-                @endcan
-                @can('crud-index-medicamento')
-                    <li>
-                        <a href="{{ route('medicamento.index') }}"> Medicamentos</a>
-                    </li>
-                @endcan
-                @can('crud-index-hongo')
-                    <li>
-                        <a href="{{ route('hongo.index') }}"> Hongos</a>
-                    </li>
-                @endcan
-                @can('crud-index-patologia')
-                    <li>
-                        <a href="{{ route('patologia.index') }}"> Patología</a>
-                    </li>
-                @endcan
-                @can('button-form-iaas-table')
-                    <li>
-                        <a href="{{ route('TablaIAAS') }}"> Formulario IAAS</a>
-                    </li>
-                @endcan
-                @can('button-form-eni-table')
-                    <li>
-                        <a href="{{ route('TablaE_N_I') }}"> Formulario Enf. Not. Inm.</a>
-                    </li>
-                @endcan
-
+                <ul id="ddmenu_3" class="collapse dropdown-nav">
+                    @can('crud-index-tipoInfeccion')
+                        <li>
+                            <a href="{{ route('tipoInfeccion.index') }}"> Tipos de infeccion</a>
+                        </li>
+                    @endcan
+                    @can('crud-index-bacteria')
+                        <li>
+                            <a href="{{ route('bacteria.index') }}"> Bacterias</a>
+                        </li>
+                    @endcan
+                    @can('crud-index-medicamento')
+                        <li>
+                            <a href="{{ route('medicamento.index') }}"> Antibioticos</a>
+                        </li>
+                    @endcan
+                    @can('crud-index-hongo')
+                        <li>
+                            <a href="{{ route('hongo.index') }}"> Hongos</a>
+                        </li>
+                    @endcan
+                    @can('crud-index-patologia')
+                        <li>
+                            <a href="{{ route('patologia.index') }}"> Patologías</a>
+                        </li>
+                    @endcan
+                    @can('button-form-iaas-table')
+                        <li>
+                            <a href="{{ route('TablaIAAS') }}"> Formulario IAAS</a>
+                        </li>
+                    @endcan
+                    @can('button-form-eni-table')
+                        <li>
+                            <a href="{{ route('TablaE_N_I') }}"> Formulario Enf. Not. Inm.</a>
+                        </li>
+                    @endcan
                 </ul>
             </li>
         @endcan
@@ -147,8 +150,8 @@
                 href="#0"
                 class="collapsed"
                 data-bs-toggle="collapse"
-                data-bs-target="#ddmenu_6"
-                aria-controls="ddmenu_6"
+                data-bs-target="#ddmenu_4"
+                aria-controls="ddmenu_4"
                 aria-expanded="false"
                 aria-label="Toggle navigation"
                 >
@@ -159,9 +162,9 @@
                 </span>
                 <span class="text"> Reportes </span>
                 </a>
-                <ul id="ddmenu_6" class="collapse dropdown-nav">
+                <ul id="ddmenu_4" class="collapse dropdown-nav">
                     <li>
-                        <a href="{{ route('Por.Servicio') }}"> Por Servcio</a>
+                        <a href="{{ route('Por.Servicio') }}"> Por Servcios</a>
                     </li>
                     <li>
                         <a href="{{ route('Por.Gestion') }}"> Por Gestión </a>
@@ -188,39 +191,48 @@
                     href="#0"
                     class="collapsed"
                     data-bs-toggle="collapse"
-                    data-bs-target="#ddmenu_7"
-                    aria-controls="ddmenu_7"
+                    data-bs-target="#ddmenu_5"
+                    aria-controls="ddmenu_5"
                     aria-expanded="false"
                     aria-label="Toggle navigation"
                     >
-
                     <span class="icon">
-                        <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M12.8334 1.83325H5.50008C5.01385 1.83325 4.54754 2.02641 4.20372 2.37022C3.8599 2.71404 3.66675 3.18036 3.66675 3.66659V18.3333C3.66675 18.8195 3.8599 19.2858 4.20372 19.6296C4.54754 19.9734 5.01385 20.1666 5.50008 20.1666H16.5001C16.9863 20.1666 17.4526 19.9734 17.7964 19.6296C18.1403 19.2858 18.3334 18.8195 18.3334 18.3333V7.33325L12.8334 1.83325ZM16.5001 18.3333H5.50008V3.66659H11.9167V8.24992H16.5001V18.3333Z"></path>
+                        <svg
+                          width="22"
+                          height="22"
+                          viewBox="0 0 22 22"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M3.66675 4.58325V16.4999H19.2501V4.58325H3.66675ZM5.50008 14.6666V6.41659H8.25008V14.6666H5.50008ZM10.0834 14.6666V11.4583H12.8334V14.6666H10.0834ZM17.4167 14.6666H14.6667V11.4583H17.4167V14.6666ZM10.0834 9.62492V6.41659H17.4167V9.62492H10.0834Z"
+                          />
                         </svg>
-                    </span>
+                      </span>
                     <span class="text"> Informes </span>
                     </a>
-                    <ul id="ddmenu_7" class="collapse dropdown-nav">
+                    <ul id="ddmenu_5" class="collapse dropdown-nav">
                         <li>
-                            <a href="{{ route('Inf.Informe_Gestion')}}"> Gestión</a>
+                            <a href="{{ route('Inf.Informe_Gestion')}}">Por Gestión</a>
                         </li>
                         <li>
-                            <a href="{{ route('Inf.Informe_Semestral') }}"> Semestral</a>
+                            <a href="{{ route('Inf.Informe_Semestral') }}">Por Semestre</a>
                         </li>
                         <li>
-                            <a href="{{ route('Inf.Informe_Trimestral') }}"> Trimestral</a>
+                            <a href="{{ route('Inf.Informe_Trimestral') }}">Por Trimestre</a>
                         </li>
+
+
                     </ul>
             </li>
         @endcan
-        <span class="divider"><hr /></span>
+        {{-- <span class="divider"><hr /></span> --}}
 
       </ul>
     </nav>
   </aside>
 
-  <script>
+  {{-- <script>
     // Obtener la ruta actual del navegador
     const currentPath = window.location.pathname;
 
@@ -238,7 +250,7 @@
         }
       }
     });
-  </script>
+  </script> --}}
 
 <style>
     /* Estilos para el enlace activo en el menú */

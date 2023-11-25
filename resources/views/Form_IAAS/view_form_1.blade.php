@@ -1,61 +1,68 @@
 @extends('layout')
-@section('title', 'H. Clinico | IAAS')
+@section('title', 'Formularios | IAAS')
+@section('guide', 'Formularios / IAAS')
 @section('content')
-<div class="tables-wrapper">
-    <div class="card-style mb-30">
-        <h2 class="text-center">Historial Clínico</h2>
-        <div class="row">
-            <div class="col-md-4">
-                <div class="form-group">
-                    <label for="n_historial">Nro. Historial</label>
-                    <div class="input-group">
-                        <input type="number" id="n_historial" name="n_historial" class="form-control" required onkeydown="if (event.keyCode === 13) searchPatient();">
-                        <div class="input-group-append">
-                            <button onclick="searchPatient()" class="btn btn-primary">Buscar</button>
+<div class="row">
+    <div class="col-12">
+        <div class="container bg-light bg-opacity-70 rounded p-5">
+            <div class="tables-wrapper">
+                <div class="card-style mb-30">
+                    <h2 class="text-center">Historial Clínico</h2>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="n_historial">Nro. Historial</label>
+                                <div class="input-group">
+                                    <input type="number" id="n_historial" name="n_historial" class="form-control" required onkeydown="if (event.keyCode === 13) searchPatient();">
+                                    <div class="input-group-append">
+                                        <button onclick="searchPatient()" class="btn btn-primary">Buscar</button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-4">
-                <div class="form-group">
-                    <label for="nombre">Nombre(s)</label>
-                    <input type="text" id="nombre" name="nombre" class="form-control" disabled>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="form-group">
-                    <label for="ap_paterno">Apellido Paterno</label>
-                    <input type="text" id="ap_paterno" name="ap_paterno" class="form-control" disabled>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="form-group">
-                    <label for="ap_materno">Apellido Materno</label>
-                    <input type="text" id="ap_materno" name="ap_materno" class="form-control" disabled>
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-4">
-                <div class="form-group">
-                    <label for="edad">Edad</label>
-                    <input type="number" id="edad" name="edad" class="form-control" disabled>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="form-group">
-                    <label for="sexo">Sexo</label>
-                    <input type="text" id="sexo" name="sexo" class="form-control" disabled>
-                </div>
-            </div>
-        </div>
-        <div class="row text-center">
-            <div class="">
-                <div class="form-group">
-                    <br>
-                    <button type="submit" form="form-generar" id="generarFormularioBtn" class="btn btn-primary" onclick="redirectToForm()" disabled>Generar formulario</button>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="nombre">Nombre(s)</label>
+                                <input type="text" id="nombre" name="nombre" class="form-control" disabled>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="ap_paterno">Apellido Paterno</label>
+                                <input type="text" id="ap_paterno" name="ap_paterno" class="form-control" disabled>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="ap_materno">Apellido Materno</label>
+                                <input type="text" id="ap_materno" name="ap_materno" class="form-control" disabled>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="edad">Edad</label>
+                                <input type="number" id="edad" name="edad" class="form-control" disabled>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="sexo">Sexo</label>
+                                <input type="text" id="sexo" name="sexo" class="form-control" disabled>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row text-center">
+                        <div class="">
+                            <div class="form-group">
+                                <br>
+                                <button type="submit" form="form-generar" id="generarFormularioBtn" class="btn btn-primary" onclick="redirectToForm()" disabled>Generar formulario</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -189,24 +196,34 @@ function enableGenerateButton(enabled) {
 function searchPatient() {
     var patientId = document.getElementById('n_historial').value;
     $.ajax({
-        url: '{{ route("buscar-paciente_form_1") }}',
+        url: '{{ route("buscar-paciente_form_2") }}',
         type: 'GET',
         data: { patientId: patientId },
         success: function(response) {
+            // La solicitud se completó correctamente
+            console.log(response);
+            // return false;
             if (response.found) {
+                console.log('ok');
+                // El paciente fue encontrado, mostrar los datos del paciente en el modal
                 var patientData = response.patientData;
 
-                document.getElementById('nombre').value = patientData.nombre_paciente;
-                document.getElementById('ap_paterno').value = patientData.ap_paterno;
-                document.getElementById('ap_materno').value = patientData.ap_materno;
-                document.getElementById('edad').value = patientData.edad;
-                document.getElementById('sexo').value = patientData.sexo;
+                // document.getElementById('nombre').value = patientData.nombre_paciente;
+                // document.getElementById('ap_paterno').value = patientData.ap_paterno;
+                // document.getElementById('ap_materno').value = patientData.ap_materno;
+                // document.getElementById('edad').value = patientData.edad;
+                // document.getElementById('sexo').value = patientData.sexo;
+                // console.log(response.patientData[0].nombre);
+                // document.getElementById('nombre').value = response.patientData.nombre;
                 //SQL SERVER
-                // document.getElementById('nombre').value = patientData.HCL_NOMBRE;
-                // document.getElementById('ap_paterno').value = patientData.HCL_APPAT;
-                // document.getElementById('ap_materno').value = patientData.HCL_APMAT;
-                // document.getElementById('edad').value = patientData.HCL_FECNAC;
-                // document.getElementById('sexo').value = patientData.HCL_SEXO;
+                document.getElementById('nombre').value = `${patientData[0].nombre[0].toUpperCase()}${patientData[0].nombre.slice(1).toLowerCase()}`;
+                document.getElementById('ap_paterno').value = `${patientData[0].ap_paterno[0].toUpperCase()}${patientData[0].ap_paterno.slice(1).toLowerCase()}`;
+                document.getElementById('ap_materno').value =patientData[0].ap_materno[0] ? `${patientData[0].ap_materno[0].toUpperCase()}${patientData[0].ap_materno.slice(1).toLowerCase()}`:'';
+                // document.getElementById('nombre').value = patientData[0].nombre.toLowerCase();
+                // document.getElementById('ap_paterno').value = patientData[0].ap_paterno;
+                // document.getElementById('ap_materno').value = patientData[0].ap_materno;
+                document.getElementById('edad').value = patientData[0].edad;
+                document.getElementById('sexo').value = patientData[0].sexo;
 
 
                 // Reiniciar el contenido del elemento 'patientData' si existe

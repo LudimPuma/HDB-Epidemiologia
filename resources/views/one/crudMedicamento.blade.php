@@ -1,52 +1,62 @@
 @extends('layout')
-@section('title', 'Medicamentos')
+@section('title', 'Tablas | Antibioticos')
+@section('guide','Tablas / Antibioticos')
 @section('content')
-<div class="container">
-    <div class="row">
-        <div class="col-md-12 offset-md">
-            <div class="card">
-                <br>
-                <h2 class="text-center">Medicamentos</h2>
-                <br>
-                @can('crud-create-medicamento')
-                    <div class="text-center">
-                        <button class="btn btn-primary btn-insertar">Crear Medicamento</button>
+<div class="row">
+    <div class="col-12">
+        <div class="container rounded p-4"  style="background-color: #a2231d">
+            <div class="title-wrapper">
+                <div class="row align-items-center">
+                    <div class="mb-20">
+                        @can('crud-create-medicamento')
+                            <button class="btn btn-success btn-insertar" style="padding: 1%;">
+                                <svg width="18" height="18" fill="#fff" class="bi bi-plus-circle me-2" viewBox="0 0 16 16" style="margin-top: -3px; ">
+                                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+                                    <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
+                                </svg>
+                                <strong>Agregar Antibiotico</strong>
+                            </button>
+                        @endcan
                     </div>
-                @endcan
+                </div>
+            </div>
+            <div class="card-style mb-30  p-4  text-black shadow-lg">
                 <div class="card-body">
-                    <table id="dataTable"  class="table text-center mt-3 table-hover table-bordered table-striped">
-                        <thead class="table-primary">
-                        <tr>
-                            <th>Nombre</th>
-                            <th>Estado</th>
-                            <th>Acciones</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($medicamentos as $medicamento)
-                            <tr>
-                                <td>{{ $medicamento->nombre }}</td>
-                                <td >
-                                    @if ($medicamento->estado)
-                                        <div class="badge bg-success text-wrap" style="width: 7rem;">Habilitado</div>
-                                    @else
-                                        <div class="badge bg-danger text-wrap" style="width: 7rem;">Deshabilitado</div>
-                                    @endif
-                                </td>
-                                <td>
-                                    @can('crud-edit-medicamento')
-                                        <button class="btn-editar" data-id="{{ $medicamento->cod_medicamento }}" data-nombre="{{ $medicamento->nombre }}" data-estado="{{ $medicamento->estado ? true : false }}" data-motivos="{{ $medicamento->motivos_baja }}" style="background: none; border: none;">
-                                            <svg width="20" height="20" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16" style="color: #FFC107; fill: #FFC107;" onmouseover="this.style.fill='#000';" onmouseout="this.style.fill='#FFC107';">
-                                                <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
-                                                <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/>
-                                            </svg>
-                                        </button>
-                                    @endcan
-                                </td>
-                            </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+                    <div class="table-responsive">
+                        <table id="dataTable" class="table  mt-3  table-hover  ">
+                            <thead class="text-white text-center" style="background-color: #198754;">
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-muted">
+                                @foreach($medicamentos as $medicamento)
+                                <tr>
+                                    <td>{{ $medicamento->nombre }}</td>
+                                    <td class="d-none d-md-table-cell text-center">
+                                        @if ($medicamento->estado)
+                                            <div class="badge bg-success bg-opacity-25 text-wrap text-success" style="width: 6rem;"><strong><em>Habilitado</em></strong></div>
+                                        @else
+                                            <div class="badge bg-danger bg-opacity-25 text-wrap text-danger" style="width: 7rem;"><strong><em>Deshabilitado</em></strong></div>
+                                        @endif
+                                    </td>
+                                    <td class="text-center">
+                                        @can('crud-edit-medicamento')
+                                            <button class="btn-editar text-muted" style="background: none; border: none; text-decoration: none;" data-id="{{ $medicamento->cod_medicamento }}" data-nombre="{{ $medicamento->nombre }}" data-estado="{{ $medicamento->estado ? true : false }}" data-motivos="{{ $medicamento->motivos_baja }}">
+                                                <svg width="17" height="17" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16" onmouseover="this.style.fill='#000';" onmouseout="this.style.fill='currentColor';" style="stroke-width: 1; font-weight: lighter;">
+                                                    <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+                                                    <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/>
+                                                </svg>
+                                            </button>
+                                        @endcan
+                                    </td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
@@ -57,7 +67,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="modalModificarLabel">Modificar Agente</h5>
+                <h5 class="modal-title" id="modalModificarLabel">Modificar Antibiotico</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -93,7 +103,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-              <h5 class="modal-title" id="modalInsertarLabel">Insertar Agente</h5>
+              <h5 class="modal-title" id="modalInsertarLabel">Insertar Antibiotico</h5>
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">

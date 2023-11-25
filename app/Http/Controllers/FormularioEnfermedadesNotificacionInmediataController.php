@@ -30,26 +30,76 @@ class FormularioEnfermedadesNotificacionInmediataController extends Controller
         $this->middleware('can:button-form-informe-eni')->only('informeTuberculosis');
         $this->middleware('can:button-form-informe-eni')->only('informeTrimestralSemestralTuberculosis');
     }
+    private function Servidor()
+    {
+        $serverName = "DESKTOP-NP5BU8U";
+        // $serverName = "193.168.0.7\\SIAF";
+        $connectionInfo = array("Database" => "BDEstadistica", "UID" => "sa", "PWD" => "S1af");
 
+        $conn = sqlsrv_connect($serverName, $connectionInfo);
+
+        if (!$conn) {
+            throw new \Exception("Error de conexión: " . print_r(sqlsrv_errors(), true));
+        }
+
+        return $conn;
+    }
     public function showViewForm()
     {
         return view('Form_E_N_I.view_form_2');
     }
     public function searchHistorial(Request $request)
     {
-        $patientId = $request->input('patientId');
+        try {
+            $patientId = $request->input('patientId');
+            $conn = $this->Servidor();
 
-        $patient = DatoPaciente::where('n_h_clinico', $patientId)->first();
-        // $patient = DatoPaciente::where('HCL_CODIGO', $patientId)->first();
-        if ($patient) {
+            $sql = "SELECT
+                    HCL_APPAT,
+                    HCL_APMAT,
+                    HCL_NOMBRE,
+                    HCL_SEXO,
+                    HCL_FECNAC,
+                    YEAR(HCL_FECNAC) as yearOfBirth,
+                    MONTH(HCL_FECNAC) as monthOfBirth,
+                    DAY(HCL_FECNAC) as dayOfBirth,
+                    DATEDIFF(YEAR, HCL_FECNAC, GETDATE()) as age
+                FROM
+                    SE_HC
+                WHERE
+                    HCL_CODIGO= $patientId";
+
+            $res = sqlsrv_query($conn, $sql);
+
+            if ($res === false) {
+                throw new \Exception("Error de consulta: " . print_r(sqlsrv_errors(), true));
+            }
+
+            $patients = [];
+
+            while ($row = sqlsrv_fetch_array($res)) {
+                $sexo = ($row['HCL_SEXO'] == 1) ? 'Masculino' : 'Femenino';
+                $fechaNacimiento = $row['HCL_FECNAC'];
+                $patient = [
+                    'nombre' => $row['HCL_NOMBRE'],
+                    'ap_paterno' => $row['HCL_APPAT'],
+                    'ap_materno' => $row['HCL_APMAT'],
+                    'edad' => $row['age'],
+                    'sexo' => ($row['HCL_SEXO'] == 1) ? 'Masculino' : 'Femenino',
+                ];
+                $patients[] = $patient;
+            }
+
+            sqlsrv_close($conn);
+
             return response()->json([
-                'found' => true,
-                'patientData' => $patient
+                'found' => !empty($patients),
+                'patientData' => $patients,
             ]);
-        } else {
+        } catch (\Exception $e) {
             return response()->json([
-                'found' => false,
-                'patientData' => null
+                'error' => true,
+                'message' => $e->getMessage(),
             ]);
         }
     }
@@ -123,8 +173,7 @@ class FormularioEnfermedadesNotificacionInmediataController extends Controller
             ],
             [
                 'motivos_baja.required'=> 'Debe dar un motivo de baja',
-            ]
-        );
+            ]);
             $data['motivos_baja'] = $request->motivos_baja;
         } else {
             $data['motivos_baja'] = null;
@@ -133,11 +182,62 @@ class FormularioEnfermedadesNotificacionInmediataController extends Controller
         if ($formulario->update($data)) {
             $request->session()->flash('success', 'Estado actualizado exitosamente');
         }
-        $formularios = FormularioEnfermedadesNotificacionInmediata::with('datopaciente')
-        ->orderBy('id_f_notificacion_inmediata', 'desc')
-        ->get();
+        try {
+            $hClinicos = FormularioEnfermedadesNotificacionInmediata::pluck('h_clinico')->toArray();
+            $conn = $this->Servidor();
 
-        return view('Form_E_N_I.VistaTabla', ['formularios' => $formularios]);
+            $hClinicosCondition = implode(',', $hClinicos);
+            $sql = "SELECT
+                HCL_CODIGO,
+                HCL_NOMBRE,
+                HCL_APPAT,
+                HCL_APMAT
+            FROM
+                SE_HC
+            WHERE
+                HCL_CODIGO IN ($hClinicosCondition)";
+
+            $res = sqlsrv_query($conn, $sql);
+
+            if ($res === false) {
+                throw new \Exception("Error de consulta: " . print_r(sqlsrv_errors(), true));
+            }
+            $patients = [];
+
+            while ($row = sqlsrv_fetch_array($res, SQLSRV_FETCH_ASSOC)) {
+                $formulario = FormularioEnfermedadesNotificacionInmediata::where('h_clinico', $row['HCL_CODIGO'])
+                    ->orderBy('id_f_notificacion_inmediata', 'desc')
+                    ->get();
+                foreach ($formulario as $formularios) {
+                    $patient = [
+                        'h_clinico' => $row['HCL_CODIGO'],
+                        'nombre' => $row['HCL_NOMBRE'],
+                        'ap_paterno' => $row['HCL_APPAT'],
+                        'ap_materno' => $row['HCL_APMAT'],
+                        'id_f_notificacion_inmediata' => null,
+                        'fecha' => null,
+                        'estado' => null,
+                        'motivos_baja' => null,
+                    ];
+
+                    $patient['id_f_notificacion_inmediata'] = $formularios->id_f_notificacion_inmediata;
+                    $patient['fecha'] = $formularios->fecha;
+                    $patient['estado'] = $formularios->estado;
+                    $patient['motivos_baja'] = $formularios->motivos_baja;
+
+                    $patients[] = $patient;
+                }
+            }
+            array_multisort(array_column($patients, 'id_f_notificacion_inmediata'), SORT_DESC, $patients);
+            sqlsrv_close($conn);
+
+            return view('Form_E_N_I.VistaTabla', compact('patients'));
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => true,
+                'message' => $e->getMessage(),
+            ]);
+        }
     }
 
     //PDF FORMULARIO
@@ -146,11 +246,63 @@ class FormularioEnfermedadesNotificacionInmediataController extends Controller
 
         $formulario = FormularioEnfermedadesNotificacionInmediata::find($id);
         if (!$formulario) {
-
             return redirect()->back()->with('error', 'No se encontró el formulario solicitado.');
         }
-        $paciente = $formulario->datoPaciente;
-        // $patologia = $formulario->patologia;
+        // dd($formulario->h_clinico);
+        // return false;
+        try {
+            $hClinicos = FormularioEnfermedadesNotificacionInmediata::pluck('h_clinico')->toArray();
+            $conn = $this->Servidor();
+            $hClinicosCondition = implode(',', $hClinicos);
+            $sql = "SELECT
+                    HCL_CODIGO,
+                    HCL_APPAT,
+                    HCL_APMAT,
+                    HCL_NOMBRE,
+                    HCL_SEXO,
+                    HCL_FECNAC,
+                    YEAR(HCL_FECNAC) as yearOfBirth,
+                    MONTH(HCL_FECNAC) as monthOfBirth,
+                    DAY(HCL_FECNAC) as dayOfBirth,
+                    DATEDIFF(YEAR, HCL_FECNAC, GETDATE()) as age
+                FROM
+                    SE_HC
+                WHERE
+                    HCL_CODIGO IN ($formulario->h_clinico)";
+
+            $res = sqlsrv_query($conn, $sql);
+
+            if ($res === false) {
+                throw new \Exception("Error de consulta: " . print_r(sqlsrv_errors(), true));
+            }
+            $patients = [];
+            while ($row = sqlsrv_fetch_array($res)) {
+                $sexo = ($row['HCL_SEXO'] == 1) ? 'Masculino' : 'Femenino';
+                $fechaNacimiento = $row['HCL_FECNAC'];
+                $patient = [
+                    'hcl_codigo' => $row['HCL_CODIGO'],
+                    'nombre' => $row['HCL_NOMBRE'],
+                    'ap_paterno' => $row['HCL_APPAT'],
+                    'ap_materno' => $row['HCL_APMAT'],
+                    'edad' => $row['age'],
+                    'sexo' => ($row['HCL_SEXO'] == 1) ? 'Masculino' : 'Femenino',
+                ];
+                $patients[] = $patient;
+                // dd($patients);
+                // return false;
+            }
+
+            sqlsrv_close($conn);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => true,
+                'message' => $e->getMessage(),
+            ]);
+        }
+                // dd($patients);
+                // return false;
+        $paciente = $patients;
+
         $servicio = $formulario->servicio;
         $patologias = SeleccionPatologia::select('p.nombre')
             ->join('epidemiologia.patologia as p', 'p.cod_patologia', '=', 'seleccion_patologia.cod_pato')
@@ -161,7 +313,6 @@ class FormularioEnfermedadesNotificacionInmediataController extends Controller
         $nombreUsuarioCreador = $usuarioCreador->persona->nombres . ' ' . $usuarioCreador->persona->apellidos;
         $fechaHoraActual = Carbon::now('America/La_Paz')->format('d/m/Y H:i:s');
         $fechaActual = Carbon::now('America/La_Paz')->format('d/m/Y ');
-
 
         $data = [
             'formulario' => $formulario,
@@ -204,10 +355,8 @@ class FormularioEnfermedadesNotificacionInmediataController extends Controller
         $nombreMesSeleccionado = Carbon::parse($fechaSeleccionada)->locale('es')->monthName;
         $anioSeleccionado = Carbon::parse($fechaSeleccionada)->year;
 
-        // Obtener todas las patologías disponibles
         $todasLasPatologias = Patologia::select('nombre')->get();
 
-        // Consulta para obtener el conteo por patología
         $conteoPorPatologia = SeleccionPatologia::select(
             'p.nombre as patologia',
             DB::raw('COUNT(*) as total_casos')
@@ -220,7 +369,6 @@ class FormularioEnfermedadesNotificacionInmediataController extends Controller
         ->groupBy('p.nombre')
         ->get();
 
-        // Combinar el conteo con todas las patologías para mostrar las que tienen 0 casos
         $conteoCombinado = collect([]);
         foreach ($todasLasPatologias as $patologia) {
             $conteo = $conteoPorPatologia->firstWhere('patologia', $patologia->nombre);
@@ -235,8 +383,6 @@ class FormularioEnfermedadesNotificacionInmediataController extends Controller
         }
 
         $fechaHoraActual = Carbon::now('America/La_Paz')->format('d/m/Y H:i:s');
-
-
 
         $data = compact('fechaHoraActual','conteoCombinado', 'nombreMesSeleccionado', 'anioSeleccionado');
         $pdf = PDF::loadView('Form_E_N_I.PDF.reporte_form2_pdf', $data);
@@ -253,14 +399,6 @@ class FormularioEnfermedadesNotificacionInmediataController extends Controller
             'footer-html' => $footerPath,
             'header-html' => $headerPath,
         ]);
-        // Renderiza la vista sin generar el PDF aún
-        // $html = View::make('Form_E_N_I.PDF.reporte_form2_pdf', $data)->render();
-
-        // Crea el PDF con DomPDF
-        // $pdf = PDF::loadHTML($html);
-
-        // Envía el PDF con la marca de agua como respuesta HTTP
-        // return $pdf->stream();
         $nombreArchivo = 'Reporte_MENSUAL_' . $fechaSeleccionada . '.pdf';
 
         return response($pdf->output(), 200, [
@@ -270,125 +408,191 @@ class FormularioEnfermedadesNotificacionInmediataController extends Controller
     }
 
     public function mostrarGrafica()
-{
-    // Obtener el año actual
-    $year = Carbon::now()->year;
+    {
+        // Obtener el año actual
+        $year = Carbon::now()->year;
 
-    // La cantidad de casos registrados por patología en cada mes del año actual
-    $datosGrafica = DB::table('epidemiologia.seleccion_patologia')
-        ->join('epidemiologia.patologia', 'seleccion_patologia.cod_pato', '=', 'patologia.cod_patologia')
-        ->join('epidemiologia.formulario_enfermedades_notificacion_inmediata', 'seleccion_patologia.cod_form_n_i', '=', 'formulario_enfermedades_notificacion_inmediata.id_f_notificacion_inmediata')
-        ->select(DB::raw('extract(month from formulario_enfermedades_notificacion_inmediata.fecha) as mes, patologia.nombre as patologia, count(*) as total_casos, patologia.estado'))
-        ->whereYear('formulario_enfermedades_notificacion_inmediata.fecha', $year)
-        ->where('formulario_enfermedades_notificacion_inmediata.estado', 'alta')
-        ->groupBy('mes', 'patologia', 'patologia.estado')
-        ->get();
+        // La cantidad de casos registrados por patología en cada mes del año actual
+        $datosGrafica = DB::table('epidemiologia.seleccion_patologia')
+            ->join('epidemiologia.patologia', 'seleccion_patologia.cod_pato', '=', 'patologia.cod_patologia')
+            ->join('epidemiologia.formulario_enfermedades_notificacion_inmediata', 'seleccion_patologia.cod_form_n_i', '=', 'formulario_enfermedades_notificacion_inmediata.id_f_notificacion_inmediata')
+            ->select(DB::raw('extract(month from formulario_enfermedades_notificacion_inmediata.fecha) as mes, patologia.nombre as patologia, count(*) as total_casos, patologia.estado'))
+            ->whereYear('formulario_enfermedades_notificacion_inmediata.fecha', $year)
+            ->where('formulario_enfermedades_notificacion_inmediata.estado', 'alta')
+            ->groupBy('mes', 'patologia', 'patologia.estado')
+            ->get();
 
-    $labels = [
-        "Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"
-    ];
-    $datasets = [];
+        $labels = [
+            "Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"
+        ];
+        $datasets = [];
 
-    // Un array para almacenar colores únicos para patologías activas
-    $activeColors = [];
+        // Un array para almacenar colores únicos para patologías activas
+        $activeColors = [];
 
-    foreach ($datosGrafica as $index => $dato) {
-        $mes = (int) $dato->mes;
-        $patologia = $dato->patologia;
-        $totalCasos = $dato->total_casos;
-        $estadoPatologia = $dato->estado;
+        foreach ($datosGrafica as $index => $dato) {
+            $mes = (int) $dato->mes;
+            $patologia = $dato->patologia;
+            $totalCasos = $dato->total_casos;
+            $estadoPatologia = $dato->estado;
 
-        // Asignar colores únicos a patologías activas
-        if ($estadoPatologia == true) {
-            if (!isset($activeColors[$patologia])) {
-                $activeColors[$patologia] = '#' . substr(str_shuffle('ABCDEF0123456789'), 0, 6);
+            // Asignar colores únicos a patologías activas
+            if ($estadoPatologia == true) {
+                if (!isset($activeColors[$patologia])) {
+                    $activeColors[$patologia] = '#' . substr(str_shuffle('ABCDEF0123456789'), 0, 6);
+                }
+            }
+
+            // Solo agregar patologías activas a los datasets
+            if ($estadoPatologia == true) {
+                $color = $activeColors[$patologia];
+
+                if (!isset($datasets[$patologia])) {
+                    $datasets[$patologia] = [
+                        'label' => $patologia,
+                        'backgroundColor' => 'transparent',
+                        'borderColor' => $color,
+                        'pointStyle' => 'circle',
+                        'pointBackgroundColor' => $color,
+                        'data' => array_fill(0, 12, 0),
+                    ];
+                }
+
+                $datasets[$patologia]['data'][$mes - 1] = $totalCasos;
             }
         }
 
-        // Solo agregar patologías activas a los datasets
-        if ($estadoPatologia == true) {
-            $color = $activeColors[$patologia];
+        $datasets = array_values($datasets);
 
-            if (!isset($datasets[$patologia])) {
-                $datasets[$patologia] = [
-                    'label' => $patologia,
-                    'backgroundColor' => 'transparent',
-                    'borderColor' => $color,
-                    'pointStyle' => 'circle',
-                    'pointBackgroundColor' => $color,
-                    'data' => array_fill(0, 12, 0),
-                ];
-            }
-
-            $datasets[$patologia]['data'][$mes - 1] = $totalCasos;
-        }
+        return view('principal', compact('labels', 'datasets'));
     }
-
-    $datasets = array_values($datasets);
-
-    return view('principal', compact('labels', 'datasets'));
-}
-
-    // public function mostrarGrafica()
-    // {
-    //     // Obtener el año actual
-    //     $year = Carbon::now()->year;
-
-    //     // La cantidad de casos registrados por patología en cada mes del año actual
-    //     $datosGrafica = DB::table('epidemiologia.seleccion_patologia')
-    //         ->join('epidemiologia.patologia', 'seleccion_patologia.cod_pato', '=', 'patologia.cod_patologia')
-    //         ->join('epidemiologia.formulario_enfermedades_notificacion_inmediata', 'seleccion_patologia.cod_form_n_i', '=', 'formulario_enfermedades_notificacion_inmediata.id_f_notificacion_inmediata')
-    //         ->select(DB::raw('extract(month from formulario_enfermedades_notificacion_inmediata.fecha) as mes, patologia.nombre as patologia, count(*) as total_casos'))
-    //         ->whereYear('formulario_enfermedades_notificacion_inmediata.fecha', $year)
-    //         ->where('formulario_enfermedades_notificacion_inmediata.estado','alta')
-    //         ->groupBy('mes', 'patologia')
-    //         ->get();
-    //     $labels = [
-    //         "Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"
-    //     ];
-    //     $datasets = [];
-    //     $colorPalette = [
-    //         'Meningitis' => '#1f77b4', // Azul
-    //         'Viruela Simica' => '#ff7f0e', // Naranja
-    //         'Leptospirosis' => '#2ca02c', // Verde
-    //         'Tosferna' => '#d62728', // Rojo
-    //         'Virus rábico' => '#9467bd', // Púrpura
-    //         'Sarampión - Rubeola' => '#8c564b', // Marrón
-    //         'Dipteria' => '#e377c2', // Rosa
-    //         'VIH' => '#17becf', // Turquesa
-    //     ];
-
-    //     foreach ($datosGrafica as $index => $dato) {
-    //         $mes = (int) $dato->mes;
-    //         $patologia = $dato->patologia;
-    //         $totalCasos = $dato->total_casos;
-    //         $color = isset($colorPalette[$patologia]) ? $colorPalette[$patologia] : '#7f7f7f';
-
-    //         if (!isset($datasets[$patologia])) {
-    //             $datasets[$patologia] = [
-    //                 'label' => $patologia,
-    //                 'backgroundColor' => 'transparent',
-    //                 'borderColor' => $color,
-    //                 'pointStyle' => 'circle',
-    //                 'pointBackgroundColor' => $color,
-    //                 'data' => array_fill(0, 12, 0),
-    //             ];
-    //         }
-
-    //         $datasets[$patologia]['data'][$mes - 1] = $totalCasos;
-    //     }
-    //     $datasets = array_values($datasets);
-
-    //     return view('principal', compact('labels', 'datasets'));
-    // }
 
     public function tabla()
     {
-        $formularios = FormularioEnfermedadesNotificacionInmediata::with('datopaciente')
-        ->orderBy('id_f_notificacion_inmediata', 'desc')
-        ->get();
-        return view('Form_E_N_I.VistaTabla', compact('formularios'));
+        try {
+            $hClinicos = FormularioEnfermedadesNotificacionInmediata::pluck('h_clinico')->toArray();
+            $conn = $this->Servidor();
+
+            $hClinicosCondition = implode(',', $hClinicos);
+            $sql = "SELECT
+                HCL_CODIGO,
+                HCL_NOMBRE,
+                HCL_APPAT,
+                HCL_APMAT
+            FROM
+                SE_HC
+            WHERE
+                HCL_CODIGO IN ($hClinicosCondition)";
+
+            $res = sqlsrv_query($conn, $sql);
+
+            if ($res === false) {
+                throw new \Exception("Error de consulta: " . print_r(sqlsrv_errors(), true));
+            }
+            $patients = [];
+
+            while ($row = sqlsrv_fetch_array($res, SQLSRV_FETCH_ASSOC)) {
+                $formulario = FormularioEnfermedadesNotificacionInmediata::where('h_clinico', $row['HCL_CODIGO'])
+                    ->orderBy('id_f_notificacion_inmediata', 'desc')
+                    ->get();
+                foreach ($formulario as $formularios) {
+                    $patient = [
+                        'h_clinico' => $row['HCL_CODIGO'],
+                        'nombre' => $row['HCL_NOMBRE'],
+                        'ap_paterno' => $row['HCL_APPAT'],
+                        'ap_materno' => $row['HCL_APMAT'],
+                        'id_f_notificacion_inmediata' => null,
+                        'fecha' => null,
+                        'estado' => null,
+                        'motivos_baja' => null,
+                    ];
+
+                    $patient['id_f_notificacion_inmediata'] = $formularios->id_f_notificacion_inmediata;
+                    $patient['fecha'] = $formularios->fecha;
+                    $patient['estado'] = $formularios->estado;
+                    $patient['motivos_baja'] = $formularios->motivos_baja;
+
+                    $patients[] = $patient;
+                }
+            }
+            array_multisort(array_column($patients, 'id_f_notificacion_inmediata'), SORT_DESC, $patients);
+            sqlsrv_close($conn);
+
+            return view('Form_E_N_I.VistaTabla', compact('patients'));
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => true,
+                'message' => $e->getMessage(),
+            ]);
+        }
     }
+
+    // public function tabla()
+    // {
+    //     try {
+    //         $hClinicos = FormularioEnfermedadesNotificacionInmediata::pluck('h_clinico')->toArray();
+    //         $serverName = "DESKTOP-NP5BU8U";
+    //         // $serverName = "193.168.0.7\\SIAF";
+    //         $connectionInfo = array("Database" => "BDEstadistica", "UID" => "sa", "PWD" => "S1af");
+
+    //         $conn = sqlsrv_connect($serverName, $connectionInfo);
+
+    //         if (!$conn) {
+    //             throw new \Exception("Error de conexión: " . print_r(sqlsrv_errors(), true));
+    //         }
+    //         $hClinicosCondition = implode(',', $hClinicos);
+    //         $sql = "SELECT
+    //             HCL_CODIGO,
+    //             HCL_NOMBRE,
+    //             HCL_APPAT,
+    //             HCL_APMAT
+    //         FROM
+    //             SE_HC
+    //         WHERE
+    //             HCL_CODIGO IN ($hClinicosCondition)";
+
+    //         $res = sqlsrv_query($conn, $sql);
+
+    //         if ($res === false) {
+    //             throw new \Exception("Error de consulta: " . print_r(sqlsrv_errors(), true));
+    //         }
+    //         $patients = [];
+
+    //         while ($row = sqlsrv_fetch_array($res, SQLSRV_FETCH_ASSOC)) {
+    //             $patient = [
+    //                 'h_clinico' => $row['HCL_CODIGO'],
+    //                 'nombre' => $row['HCL_NOMBRE'],
+    //                 'ap_paterno' => $row['HCL_APPAT'],
+    //                 'ap_materno' => $row['HCL_APMAT'],
+    //                 'id_f_notificacion_inmediata' => null,
+    //                 'fecha' => null,
+    //                 'estado' => null,
+    //                 'motivos_baja' =>null,
+    //             ];
+
+    //         $formulario = FormularioEnfermedadesNotificacionInmediata::where('h_clinico', $row['HCL_CODIGO'])->first();
+    //         if ($formulario) {
+    //             $patient['id_f_notificacion_inmediata'] = $formulario->id_f_notificacion_inmediata;
+    //             $patient['fecha'] = $formulario->fecha;
+    //             $patient['estado'] = $formulario->estado;
+    //             $patient['motivos_baja'] = $formulario->motivos_baja;
+    //         }
+
+    //         $patients[] = $patient;
+    //         }
+
+    //         // dd($patients);
+    //         // return false;
+    //         sqlsrv_close($conn);
+
+    //         return view('Form_E_N_I.VistaTabla', compact('patients'));
+    //     } catch (\Exception $e) {
+    //         return response()->json([
+    //             'error' => true,
+    //             'message' => $e->getMessage(),
+    //         ]);
+    //     }
+    // }
 
     //REPORTE ANUAL POR SERVICIOS
     public function repAnual(Request $request)
