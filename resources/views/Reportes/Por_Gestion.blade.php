@@ -20,7 +20,7 @@
                 <div class="tables-wrapper">
                     <form id="miFormulario" action="#" method="POST" target="_blank">
                         @csrf
-                        <div class="card-style mb-30  p-4  text-light shadow-lg" style="background-color: #00796B">
+                        <div class="card-style mb-30  p-4  text-light shadow-lg" style="background-color: #424242">
                             <div class="title-wrapper">
                                 <div class="row align-items-center">
                                     <div class="col-md-10 mb-15 ml-30">

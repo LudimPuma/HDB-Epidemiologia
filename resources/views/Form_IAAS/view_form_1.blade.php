@@ -15,7 +15,7 @@
                                 <div class="input-group">
                                     <input type="number" id="n_historial" name="n_historial" class="form-control" required onkeydown="if (event.keyCode === 13) searchPatient();">
                                     <div class="input-group-append">
-                                        <button onclick="searchPatient()" class="btn btn-primary">Buscar</button>
+                                        <button onclick="searchPatient()" class="btn text-white" style="background-color: #a2231d" >Buscar</button>
                                     </div>
                                 </div>
                             </div>
@@ -57,9 +57,9 @@
                     </div>
                     <div class="row text-center">
                         <div class="">
-                            <div class="form-group">
+                            <div class="mb-2 d-grid gap-2 col-6 mx-auto">
                                 <br>
-                                <button type="submit" form="form-generar" id="generarFormularioBtn" class="btn btn-primary" onclick="redirectToForm()" disabled>Generar formulario</button>
+                                <button type="submit" form="form-generar" id="generarFormularioBtn" class="btn btn-success" onclick="redirectToForm()" disabled>Generar formulario</button>
                             </div>
                         </div>
                     </div>

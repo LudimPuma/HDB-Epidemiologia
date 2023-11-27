@@ -32,16 +32,19 @@
                 </a>
                 <ul id="ddmenu_1" class="collapse dropdown-nav">
                     <li>
-                        <a class="nav-link {{ request()->is('usuarios*') ? 'active' : '' }}" href="{{ route('usuarios.index') }}">Users</a>
-                        {{-- <a class="nav-link" href="{{route('usuarios.index')}}">Users</a> --}}
+                        {{-- <a class="nav-link {{ request()->is('usuarios*') ? 'active' : '' }}" href="{{ route('usuarios.index') }}">Users</a> --}}
+                        <a class="nav-link" href="{{route('usuarios.index')}}">Users</a>
                     </li>
                     <li>
-                        <a class="nav-link {{ request()->is('roles*') ? 'active' : '' }}" href="{{ route('roles.index') }}">Rol</a>
-                        {{-- <a class="nav-link" href="{{route('roles.index')}}">Rol</a> --}}
+                        {{-- <a class="nav-link {{ request()->is('roles*') ? 'active' : '' }}" href="{{ route('roles.index') }}">Rol</a> --}}
+                        <a class="nav-link" href="{{route('roles.index')}}">Rol</a>
                     </li>
                     <li>
-                        {{-- <a class="nav-link" href="{{route('permissions.index')}}">Permissions</a> --}}
-                        <a class="nav-link {{ request()->is('permissions*') ? 'active' : '' }}" href="{{ route('permissions.index') }}">Permissions</a>
+                        <a class="nav-link" href="{{route('permissions.index')}}">Permissions</a>
+                        {{-- <a class="nav-link {{ request()->is('permissions*') ? 'active' : '' }}" href="{{ route('permissions.index') }}">Permissions</a> --}}
+                    </li>
+                    <li>
+                        <a href="{{ route('generar.backup') }}" class="nav-link">Generar Backup</a>
                     </li>
                 </ul>
             </li>

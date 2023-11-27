@@ -103,4 +103,5 @@ Route::middleware('auth')->group(function () {
     Route::view('/Informe-Trimestral', 'Informes.Informe_Trimestral')->name('Inf.Informe_Trimestral')->middleware('can:button-informes');
     Route::view('/Informe-Gestion', 'Informes.Informe_Gestion')->name('Inf.Informe_Gestion')->middleware('can:button-informes');
     //-----------------------------------------------------------------
+    Route::get('/generar-backup', 'BackupController@generarBackup')->name('generar.backup');
 });
