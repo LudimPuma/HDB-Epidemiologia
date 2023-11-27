@@ -1,31 +1,46 @@
 @extends('layout')
-@section('title', 'Administración | Roles | Vista')
-@section('guide', 'Administración / Roles / Vista')
+@section('title', 'Administración | Roles | Detalles')
+@section('guide', 'Administración / Roles / Detalles')
 @section('content')
-    <div class="container">
-        <div class="row">
-            <div class="col-md-8 offset-md-2">
-                <div class="card">
-                    <div class="card-header">Detalles del Rol</div>
-                    <div class="card-body">
-                        <h4>Nombre del Rol: {{ $rol->name }}</h4>
-                        <h4>Detalles: {{$rol->details}}</h4>
-                        <h4>Permisos Asignados:</h4>
-                        <ul>
-                            @foreach ($permissions as $permission)
-                                <li>
-                                    {{ $permission->details }}
-                                    @if ($rol->permissions->contains($permission))
-                                        <span class="badge badge-success">Asignado</span>
-                                    @else
-                                        <span class="badge badge-danger">No asignado</span>
-                                    @endif
-                                </li>
-                            @endforeach
-                        </ul>
+<div class="row">
+    <div class="col-12">
+        <div class="container bg-white rounded p-4 shadow-lg">
+            <div class="container bg-light rounded p-4 shadow-lg">
+                <div class="card-style mb-30  p-4  text-dark shadow-lg" style="background-color: #9ad0a8" >
+                    <h5 class="text-muted">Nombre del Rol: <strong><em><small>{{ $rol->name }}</small></em></strong>   </h5>
+                    <h5 class="text-muted">Detalles: <strong><em><small>{{$rol->details}}</small></em></strong></h5>
+                    <h5 class="text-muted">Permisos Asignados:</h5>
+                    {{-- <ul>
+                        @foreach ($rol->permissions as $permission)
+                            <li>
+                                {{ $permission->details }}
+                            </li>
+                        @endforeach
+
+                    </ul> --}}
+                    <div class="row">
+                        @php
+                            $permissionsCount = $rol->permissions->count();
+                            $columnSize = ceil($permissionsCount / 2);
+                        @endphp
+
+                        @foreach ($rol->permissions->chunk($columnSize) as $chunk)
+                            <div class="col-md-6">
+                                <ul>
+                                    @foreach ($chunk as $permission)
+                                        <li>
+                                            {{ $permission->details }}
+
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endforeach
                     </div>
                 </div>
             </div>
         </div>
     </div>
+</div>
+
 @endsection

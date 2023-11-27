@@ -18,6 +18,13 @@
                     </div>
                 </div>
                 <div class="card-style mb-30  p-4  text-black shadow-lg">
+                    @if (session('success'))
+                        <script src="{{asset('assets/js/sweetalert2/dist/sweetalert2.min.js')}}"></script>
+                        <script>
+                            var successMessage = '{{ Session::get('success') }}';
+                            Swal.fire('Éxito', successMessage, 'success');
+                        </script>
+                    @endif
                     <div class="card-body">
                         <div class="table-responsive">
                             <table id="dataTable" class="table  mt-3  table-hover  ">

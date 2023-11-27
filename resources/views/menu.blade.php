@@ -1,4 +1,4 @@
-<aside class="sidebar-nav-wrapper">
+<aside class="sidebar-nav-wrapper ">
     <div class="navbar-logo">
       <a href="{{route('principal')}}">
         {{-- <img src="assets/images/logo/logo.svg" alt="logo" /> --}}

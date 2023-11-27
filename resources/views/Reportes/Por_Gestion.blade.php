@@ -5,6 +5,7 @@
 @section('content')
 <style>
     .card-style{
+
         background-image: url("img/logohdb.png");
         background-size: 20%;
         background-repeat: no-repeat;
@@ -59,7 +60,6 @@
                                 </div>
                             </div>
                             <br>
-
                         </div>
                     </form>
                 </div>

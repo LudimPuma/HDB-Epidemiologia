@@ -55,6 +55,25 @@ class FormularioNotificacionPacienteController extends Controller
 
         return $conn;
     }
+    public function grafica()
+    {
+        $year = Carbon::now()->year;
+        $bacterias = DB::table('epidemiologia.formulario_notificacion_paciente as f')
+            ->join('epidemiologia.antibiograma as a', 'f.cod_form_notificacion_p', '=', 'a.cod_formulario')
+            ->join('epidemiologia.bacterias_medicamentos as bm', function ($join) {
+                $join->on('a.cod_bacte', '=', 'bm.cod_bacte');
+                $join->on('a.cod_medi', '=', 'bm.cod_medi');
+            })
+            ->join('epidemiologia.bacterias as b', 'bm.cod_bacte', '=', 'b.cod_bacterias')
+            ->join('epidemiologia.medicamentos as m', 'bm.cod_medi', '=', 'm.cod_medicamento')
+            ->select('b.nombre as bacteria', DB::raw('COUNT(*) as total_casos'))
+            ->whereYear('f.fecha_llenado', $year)
+            ->where('f.estado', 'alta')
+            ->groupBy('b.nombre')
+            ->orderByDesc('total_casos')
+            ->get();
+        return view('principal', compact('bacterias'));
+    }
     public function showViewForm()
     {
         return view('Form_IAAS.view_form_1');

@@ -412,7 +412,59 @@ class FormularioEnfermedadesNotificacionInmediataController extends Controller
         // Obtener el año actual
         $year = Carbon::now()->year;
 
-        // La cantidad de casos registrados por patología en cada mes del año actual
+        $labels = [
+            "Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"
+        ];
+
+        //GRAFICA IAAS
+        $bacterias = DB::table('epidemiologia.formulario_notificacion_paciente as f')
+            ->join('epidemiologia.antibiograma as a', 'f.cod_form_notificacion_p', '=', 'a.cod_formulario')
+            ->join('epidemiologia.bacterias_medicamentos as bm', function ($join) {
+                $join->on('a.cod_bacte', '=', 'bm.cod_bacte');
+                $join->on('a.cod_medi', '=', 'bm.cod_medi');
+            })
+            ->join('epidemiologia.bacterias as b', 'bm.cod_bacte', '=', 'b.cod_bacterias')
+            ->join('epidemiologia.medicamentos as m', 'bm.cod_medi', '=', 'm.cod_medicamento')
+            ->select('b.nombre as bacteria', DB::raw('COUNT(DISTINCT f.cod_form_notificacion_p) as total_casos'))
+            ->whereYear('f.fecha_llenado', $year)
+            ->where('f.estado', 'alta')
+            ->groupBy('b.nombre')
+            ->orderByDesc('total_casos')
+            ->get();
+
+        $datosBacteria = [];
+
+        foreach ($bacterias as $bacteria) {
+            $casosPorMes = DB::table('epidemiologia.formulario_notificacion_paciente as f')
+                ->join('epidemiologia.antibiograma as a', 'f.cod_form_notificacion_p', '=', 'a.cod_formulario')
+                ->join('epidemiologia.bacterias_medicamentos as bm', function ($join) {
+                    $join->on('a.cod_bacte', '=', 'bm.cod_bacte');
+                    $join->on('a.cod_medi', '=', 'bm.cod_medi');
+                })
+                ->join('epidemiologia.bacterias as b', 'bm.cod_bacte', '=', 'b.cod_bacterias')
+                ->select(DB::raw('extract(month from f.fecha_llenado) as mes'), DB::raw('COUNT(DISTINCT f.cod_form_notificacion_p) as total_casos'))
+                ->where('f.estado', 'alta')
+                ->where('b.nombre', $bacteria->bacteria)
+                ->groupBy(DB::raw('extract(month from f.fecha_llenado)'))
+                ->pluck('total_casos', 'mes');
+
+            // Inicializar el array de meses con 0 para cada mes
+            $mesesConCasos = array_fill(1, 12, 0);
+
+            // Llenar los valores reales de los meses
+            foreach ($casosPorMes as $mes => $totalCasos) {
+                $mesesConCasos[$mes] = $totalCasos;
+            }
+
+            $datosBacteria[$bacteria->bacteria] = [
+                'label' => $bacteria->bacteria,
+                'data' => array_values($mesesConCasos), // Reindexar el array
+            ];
+        }
+        // dd($datosBacteria);
+        // return false;
+
+        // GRAFICA ENF. NOT. INMEDIATA
         $datosGrafica = DB::table('epidemiologia.seleccion_patologia')
             ->join('epidemiologia.patologia', 'seleccion_patologia.cod_pato', '=', 'patologia.cod_patologia')
             ->join('epidemiologia.formulario_enfermedades_notificacion_inmediata', 'seleccion_patologia.cod_form_n_i', '=', 'formulario_enfermedades_notificacion_inmediata.id_f_notificacion_inmediata')
@@ -422,12 +474,8 @@ class FormularioEnfermedadesNotificacionInmediataController extends Controller
             ->groupBy('mes', 'patologia', 'patologia.estado')
             ->get();
 
-        $labels = [
-            "Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"
-        ];
         $datasets = [];
 
-        // Un array para almacenar colores únicos para patologías activas
         $activeColors = [];
 
         foreach ($datosGrafica as $index => $dato) {
@@ -463,9 +511,11 @@ class FormularioEnfermedadesNotificacionInmediataController extends Controller
         }
 
         $datasets = array_values($datasets);
-
-        return view('principal', compact('labels', 'datasets'));
+        // dd($datasets);
+        // return false;
+        return view('principal', compact('labels', 'datasets', 'bacterias', 'datosBacteria'));
     }
+
 
     public function tabla()
     {

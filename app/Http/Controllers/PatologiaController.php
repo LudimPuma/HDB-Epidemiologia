@@ -29,9 +29,7 @@ class PatologiaController extends Controller
                 'nombre.letters_spaces' => 'Problemas en la validación, solo se permite letras',
             ]
         );
-
             Patologia::create($request->all());
-
             return redirect()->route('patologia.index')->with('success', 'Patologia creado exitosamente');
         } catch (QueryException $e) {
             return redirect()->back()->withErrors(['El nombre ya existe en la tabla patologia.']);

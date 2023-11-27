@@ -46,7 +46,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/guardar-datos-formulario_IAAS', 'FormularioNotificacionPacienteController@guardarDatos')->name('guardar_datos_form_IAAS');
     Route::put('/actualizar-estado-IAAS/{formulario}','FormularioNotificacionPacienteController@update')->name('actualizar-estado.IAAS');
     Route::post('obtener-medicamentos/{id}', [FormularioNotificacionPacienteController::class, 'obtenerMedicamentos']);
-
+    // Route::get('/principal', 'FormularioNotificacionPacienteController@grafica')->name('principal');
 
     //TABLA IAAS
     Route::get('/TablaIAAS', 'FormularioNotificacionPacienteController@tabla')->name('TablaIAAS');
