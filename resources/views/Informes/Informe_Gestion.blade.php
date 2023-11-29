@@ -3,13 +3,14 @@
 @section('guide','Informes / Por Gestión')
 @section('content')
 <style>
-    .card-style{
-        background-image: url("img/logohdb.png");
-        background-size: 20%;
-        background-repeat: no-repeat;
-        background-position: center;
-        padding: 100px;
-    }
+.card-style {
+    background-image: url("img/logohdb.png");
+    background-size: 10%;
+    background-repeat: no-repeat;
+    background-position: calc(100% - 10px) 10px;
+    /* background-position: top right; */
+    padding: 100px;
+}
 </style>
 <div class="row ">
     <div class="col-12">

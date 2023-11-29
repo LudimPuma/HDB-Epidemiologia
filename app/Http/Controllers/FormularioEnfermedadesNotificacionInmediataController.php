@@ -120,41 +120,62 @@ class FormularioEnfermedadesNotificacionInmediataController extends Controller
     //GUARDAR_ENFER_NOTI
     public function guardarDatos(Request $request)
     {
-        $request->validate([
-            'h_clinico' => 'required|only_numbers',
-            'fecha' => 'required|numbers_with_dash',
-            'patologia' => 'required|only_numbers',
-            'servicio_inicio_sintomas' => 'required|only_numbers',
-            'notificador' => 'required|letters_dash_spaces_dot',
-            'acciones' => 'required|letters_dash_spaces_dot',
-            'observaciones' => 'required|letters_dash_spaces_dot',
-        ]);
-        $formulario = new FormularioEnfermedadesNotificacionInmediata();
-        $formulario->h_clinico = $request->input('h_clinico');
-        $formulario->fecha = $request->input('fecha');
-        $formulario->cod_servi = $request->input('servicio_inicio_sintomas');
-        $formulario->notificador = $request->input('notificador');
-        $formulario->acciones = $request->input('acciones');
-        $formulario->observaciones = $request->input('observaciones');
-        $formulario->estado = 'alta';
-        $formulario->pk_usuario = Auth::id();
-        $formulario->save();
+        try{
+            $request->validate([
+                'h_clinico' => 'required|only_numbers',
+                'fecha' => 'required|numbers_with_dash',
+                // 'patologia' => 'required|only_numbers',
+                'servicio_inicio_sintomas' => 'required|only_numbers',
+                'notificador' => 'required|letters_dash_spaces_dot',
+                'acciones' => 'required|letters_dash_spaces_dot',
+                'observaciones' => 'required|letters_dash_spaces_dot',
+            ],
+            [
+                'h_clinico.required' => 'El N° de H. Clinico es obligatorio',
+                'h_clinico.only_numbers' =>'El N° de H. Clinico deben ser unicamente números',
+                'fecha.required' => 'La fecha de llenado es obligatorio',
+                'fecha.numbers_with_dash' => 'No es un formato permitido',
+                'servicio_inicio_sintomas.required' => 'El inicio de sintomas es obligatorio',
+                'servicio_inicio_sintomas.only_numbers' => 'No es un formato permitido',
+                'notificador.required' => 'El notificador es obligatorio',
+                'notificador.letters_dash_spaces_dot' => 'El campo "Notificador" solo puede incluir letras, números, espacios, - y .',
+                'acciones.required' => 'Este campo es obligatorio',
+                'acciones.letters_dash_spaces_dot' => 'El campo "Acciones" solo puede incluir letras, números, espacios, - y .',
+                'observaciones.required' => 'Las observaciones son obligatorias',
+                'observaciones.letters_dash_spaces_dot' => 'El campo "Observaciones" solo puede incluir letras, números, espacios, - y .',
+            ]
+            );
+            $formulario = new FormularioEnfermedadesNotificacionInmediata();
+            $formulario->h_clinico = $request->input('h_clinico');
+            $formulario->fecha = $request->input('fecha');
+            $formulario->cod_servi = $request->input('servicio_inicio_sintomas');
+            $formulario->notificador = $request->input('notificador');
+            $formulario->acciones = $request->input('acciones');
+            $formulario->observaciones = $request->input('observaciones');
+            $formulario->estado = 'alta';
+            $formulario->pk_usuario = Auth::id();
+            $formulario->save();
 
-        $idFormulario = $formulario->id_f_notificacion_inmediata;
+            $idFormulario = $formulario->id_f_notificacion_inmediata;
 
-        $patologiasSeleccionadas = $request->input('patologias_seleccionadas');
+            $patologiasSeleccionadas = $request->input('patologias_seleccionadas');
 
-        $patologiasSeleccionadas = json_decode($patologiasSeleccionadas);
+            $patologiasSeleccionadas = json_decode($patologiasSeleccionadas);
 
-        foreach ($patologiasSeleccionadas as $codTipoPat) {
-            $seleccionPatologia = new SeleccionPatologia();
-            $seleccionPatologia->cod_form_n_i = $idFormulario;
-            $seleccionPatologia->h_cli = $request->input('h_clinico');
-            $seleccionPatologia->cod_pato = $codTipoPat;
-            $seleccionPatologia->save();
+            foreach ($patologiasSeleccionadas as $codTipoPat) {
+                $seleccionPatologia = new SeleccionPatologia();
+                $seleccionPatologia->cod_form_n_i = $idFormulario;
+                $seleccionPatologia->h_cli = $request->input('h_clinico');
+                $seleccionPatologia->cod_pato = $codTipoPat;
+                $seleccionPatologia->save();
+            }
+            // $request->session()->flash('success', 'Exitosamente');
+            // return redirect()->route('principal')->with('success', 'Exitosamente');
+            return view('Form_E_N_I.view_form_2')->with('success','Formulario guardado exitosamente');
+        } catch (QueryException $e) {
+            return redirect()->back()->withErrors(['Error al insertar usuario. Detalles: ' . $e->getMessage()]);
         }
-        // $request->session()->flash('success', 'Exitosamente');
-        return redirect()->route('principal')->with('success', 'Exitosamente');
+
     }
     //MODIFICAR ESTADO
     public function update(Request $request, FormularioEnfermedadesNotificacionInmediata $formulario)

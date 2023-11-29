@@ -282,7 +282,7 @@
                     <div class="col-md-4">
                         <div class="form-group">
                             <label for="imagen"><strong><small>Subir imagen</small></strong></label>
-                            <input type="file" name="imagen" class="form-control-file" accept="image/*"value="{{old('imagen')}}">
+                            <input type="file" name="imagen" class="form-control-file" accept="image/*" value="{{old('imagen')}}">
                             @error('imagen')
                                 <script>
                                     document.addEventListener("DOMContentLoaded", function() {
@@ -434,7 +434,7 @@
                 <input type="hidden" name="model_type" value="App\User">
             </div>
             <div class="mb-2 d-grid gap-2 col-6 mx-auto">
-                <button id="submit-button" type="submit" class="btn btn-success ">Save</button>
+                <button id="submit-button" type="submit" class="btn btn-success ">Registrar</button>
             </div>
         </form>
     </div>

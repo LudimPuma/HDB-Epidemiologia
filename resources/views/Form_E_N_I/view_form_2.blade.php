@@ -4,6 +4,13 @@
 @section('content')
 
 <div class="row">
+    @if (session('success'))
+    <script src="{{asset('assets/js/sweetalert2/dist/sweetalert2.min.js')}}"></script>
+        <script>
+            var successMessage = '{{ Session::get('success') }}';
+            Swal.fire('Éxito', successMessage, 'success');
+        </script>
+    @endif
     <div class="col-12">
         <div class="container bg-light bg-opacity-70 rounded p-5">
             <div class="tables-wrapper">
