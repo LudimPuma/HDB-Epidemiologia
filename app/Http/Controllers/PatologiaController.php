@@ -22,11 +22,11 @@ class PatologiaController extends Controller
     {
         try {
             $request->validate([
-                'nombre' => 'required|letters_spaces',
+                'nombre' => 'required|numbers_dash_letters',
             ],
             [
                 'nombre.required' => 'El nombre obigatorio',
-                'nombre.letters_spaces' => 'Problemas en la validación, solo se permite letras',
+                'nombre.numbers_dash_letters' => 'Caracteres incorrectos',
             ]
         );
             Patologia::create($request->all());
@@ -39,13 +39,15 @@ class PatologiaController extends Controller
     {
         try {
             $request->validate([
-                'nombre' => 'required|letters_spaces',
+                // 'nombre' => 'required|numbers_dash_letters',
+                'nombre' => ['required', 'numbers_dash_letters', 'unique:patologia,nombre'],
                 'estado' => 'required|only_zero_one',
                 'motivos_baja' =>'letters_dash_spaces_dot'
             ],
             [
                 'nombre.required' => 'El nombre obigatorio',
-                'nombre.letters_spaces' => 'Problemas en la validación, solo se permite letras',
+                'nombre.numbers_dash_letters' => 'Caracteres incorrectos',
+                'nombre.unique' => 'Nombre duplicado',
                 'estado.required' => 'El estado es obligatorio',
                 'estado.only_zero_one' => 'El estado debe ser 0 o 1',
                 'motivos_baja.letters_dash_spaces_dot' =>'Problemas en la validación, solo se permite letras, digitos y -/./()'

@@ -4,10 +4,11 @@
 @section('content')
 
 <div class="row">
-    @if (session('success'))
-    <script src="{{asset('assets/js/sweetalert2/dist/sweetalert2.min.js')}}"></script>
+    @if ($success)
+        <script src="{{ asset('assets/js/sweetalert2/dist/sweetalert2.min.js') }}"></script>
         <script>
-            var successMessage = '{{ Session::get('success') }}';
+            console.log('correcto');
+            var successMessage = '{{ $success }}';
             Swal.fire('Éxito', successMessage, 'success');
         </script>
     @endif
@@ -79,6 +80,7 @@
 
 <script src="{{asset('assets/js/jquery-3.6.0.min.js')}}"></script>
 <script>
+    var hClinicoValido = '';
     function enableGenerateButton(enabled) {
         var generarFormularioBtn = document.getElementById('generarFormularioBtn');
         generarFormularioBtn.disabled = !enabled;
@@ -96,6 +98,7 @@
                 // return false;
                 if (response.found) {
                     console.log('ok');
+                    hClinicoValido = document.getElementById('n_historial').value;
                     // El paciente fue encontrado, mostrar los datos del paciente en el modal
                     var patientData = response.patientData;
 
@@ -175,7 +178,7 @@
     }
         // redireccionar al formulario
         function redirectToForm() {
-            var patientId = document.getElementById('n_historial').value;
+            var patientId = hClinicoValido;
             var nombreCompleto = document.getElementById('nombre').value + ' ' + document.getElementById('ap_paterno').value + ' ' + document.getElementById('ap_materno').value;
 
             var url = "{{ route('formulario_Enf_Not_Inmediata') }}?patientId=" + encodeURIComponent(patientId) + "&nombreCompleto=" + encodeURIComponent(nombreCompleto);

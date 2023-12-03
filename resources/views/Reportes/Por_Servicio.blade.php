@@ -3,14 +3,14 @@
 @section('guide','Reportes / Por Servicios')
 @section('content')
 <style>
-.card-style {
-    background-image: url("img/logohdb.png");
-    background-size: 10%;
-    background-repeat: no-repeat;
-    background-position: calc(100% - 10px) 10px;
-    /* background-position: top right; */
-    padding: 100px;
-}
+    .card-style {
+        background-image: url("img/logohdb.png");
+        background-size: 10%;
+        background-repeat: no-repeat;
+        background-position: calc(100% - 10px) 10px;
+        /* background-position: top right; */
+        padding: 100px;
+    }
 </style>
 <div class="row ">
     <div class="col-12">
@@ -36,10 +36,12 @@
                                         <select id="seleccion" name="seleccion" class="form-control">
                                             <option value="" disabled selected>Seleccione una opción</option>
                                             @can('button-form-reports-iaas')
-                                                <option value="IAAS">IAAS</option>
+                                                {{-- <option value="IAAS">IAAS</option> --}}
+                                                <option value="IAAS" {{ old('seleccion') == 'IAAS' ? 'selected' : '' }}>IAAS</option>
                                             @endcan
                                             @can('button-form-reports-eni')
-                                                <option value="Enf_Not_Inm">Enfermedades de Notificación Inmediata</option>
+                                                <option value="Enf_Not_Inm" {{ old('seleccion') == 'Enf_Not_Inm' ? 'selected' : '' }}>Enfermedades de Notificación Inmediata</option>
+                                            {{-- <option value="Enf_Not_Inm">Enfermedades de Notificación Inmediata</option> --}}
                                             @endcan
                                         </select>
                                     </div>
@@ -49,6 +51,16 @@
                                         <label for="a"> <em>Año:</em></label>
                                         {{-- <input type="number" id="a" name="a" value="{{ date("Y") }}" class="form-control" pattern="[0-9]+" title="Ingrese un año válido" required> --}}
                                         <input type="text" id="a" name="a" value="{{ date("Y") }}" class="form-control" required>
+                                        @error('a')
+                                            <script>
+                                                document.addEventListener("DOMContentLoaded", function() {
+                                                    var errorMessage = @json($message);
+                                                    if (errorMessage) {
+                                                        Swal.fire('Error', errorMessage, 'error');
+                                                    }
+                                                });
+                                            </script>
+                                        @enderror
                                     </div>
                                 </div>
                                 <div class="col-md-3">
@@ -91,15 +103,15 @@ document.getElementById("generar-btn").addEventListener("click", function (event
             text: 'Seleccione una opción',
         });
         return;
-    }  else if (!/^\d{4}$/.test(year.trim())) {
-        console.log("Año no válido");
-        Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: 'Ingrese un año válido (formato: YYYY)',
-        });
-        return;
     }
+    if (isNaN(year) || year === "" || year <= '1950') {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Ingrese un año válido en el campo "Año"',
+            });
+            return;
+        }
 
     // Enviar el formulario
     console.log("Enviando formulario");

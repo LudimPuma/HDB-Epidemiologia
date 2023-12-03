@@ -48,12 +48,32 @@
                                     <div class="form-group">
                                         <label for="fecha"><em>Fecha Inicio:</em></label>
                                         <input type="date" id="fecha_e" name="fecha_e" value="" class="form-control" required>
+                                        @error('fecha_e')
+                                            <script>
+                                                document.addEventListener("DOMContentLoaded", function() {
+                                                    var errorMessage = @json($message);
+                                                    if (errorMessage) {
+                                                        Swal.fire('Error', errorMessage, 'error');
+                                                    }
+                                                });
+                                            </script>
+                                        @enderror
                                     </div>
                                 </div>
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="fecha"><em>Fecha Fin:</em></label>
                                         <input type="date" id="fecha_s" name="fecha_s" value="" class="form-control" required>
+                                        @error('fecha_s')
+                                            <script>
+                                                document.addEventListener("DOMContentLoaded", function() {
+                                                    var errorMessage = @json($message);
+                                                    if (errorMessage) {
+                                                        Swal.fire('Error', errorMessage, 'error');
+                                                    }
+                                                });
+                                            </script>
+                                        @enderror
                                     </div>
                                 </div>
                             </div>

@@ -50,21 +50,10 @@
     }
 </style>
 
-{{-- ESTILOS ALERTAS --}}
-<style>
-    .error-field {
-        border-color: red;
-    }
-    .error-message {
-        color: red;
-        font-size: 12px;
-        margin-top: 5px;
-    }
-</style>
 <head>
     <meta name="csrf-token" content="{{ csrf_token() }}">
 </head>
-{{-- {{$errors}} --}}
+
 <div class="row">
     <div class="container-fluid">
         <div class="container bg-light rounded p-4 shadow-lg">
@@ -102,13 +91,17 @@
                                                 <!-- Nro Historial -->
                                                 <div class="form-group input-style-1">
                                                     <label for="h_clinico">N° Historial:</label>
-                                                    <input type="text" class="form-control @error('h_clinico') is-invalid @enderror" id="h_clinico" name="h_clinico" value="{{ $id }}" required>
-                                                    {{-- <input type="text" class="form-control" id="h_clinico" name="h_clinico" value="{{ $HCL_CODIGO }}" required> --}}
-                                                    {{-- @error('h_clinico')
-                                                        <span class="invalid-feedback">
-                                                            <strong>{{$message}}</strong>
-                                                        </span>
-                                                    @enderror --}}
+                                                    <input type="text" class="form-control" id="h_clinico" name="h_clinico" value="{{ $id }}" value="{{old('h_clinico')}}" required>
+                                                    @error('h_clinico')
+                                                        <script>
+                                                            document.addEventListener("DOMContentLoaded", function() {
+                                                                var errorMessage = @json($message);
+                                                                if (errorMessage) {
+                                                                    Swal.fire('Error', errorMessage, 'error');
+                                                                }
+                                                            });
+                                                        </script>
+                                                    @enderror
                                                 </div>
                                             </div>
                                             <div class="col-lg-5">
@@ -118,81 +111,99 @@
                                                     <input type="text" class="form-control" id="dato_paciente" name="dato_paciente" value="{{ $nombre }}" disabled>
                                                 </div>
                                             </div>
+                                            <!-- Campo para fecha_llenado -->
+                                            <input type="hidden" class="form-control" id="fecha_llenado" name="fecha_llenado" value="{{ $fechaActual }}" required>
+                                                @error('fecha_llenado')
+                                                    <script>
+                                                        document.addEventListener("DOMContentLoaded", function() {
+                                                            var errorMessage = @json($message);
+                                                            if (errorMessage) {
+                                                                Swal.fire('Error', errorMessage, 'error');
+                                                            }
+                                                        });
+                                                    </script>
+                                                @enderror
                                             <div class="col-lg-4">
-                                                <!-- Campo para fecha_llenado -->
-                                                {{-- <div class="form-group input-style-1">
-                                                    <label for="fecha_llenado">Fecha de Llenado:</label> --}}
-                                                    <input type="hidden" class="form-control @error('fecha_llenado') is-invalid @enderror" id="fecha_llenado" name="fecha_llenado" value="{{ $fechaActual }}" required>
-                                                    {{-- @error('fecha_llenado')
-                                                        <span class="invalid-feedback">
-                                                            <strong>{{$message}}</strong>
-                                                        </span>
-                                                    @enderror --}}
-                                                {{-- </div> --}}
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-lg-3">
                                                 <!-- Campo para fecha_ingreso -->
                                                 <div class="form-group input-style-1">
                                                     <label for="fecha_ingreso">Fecha de Ingreso:</label>
-                                                    <input type="date" class="form-control @error('fecha_ingreso') is-invalid @enderror" id="fecha_ingreso" name="fecha_ingreso" value="{{old('fecha_ingreso')}}" required>
-                                                    {{-- @error('fecha_ingreso')
-                                                        <span class="invalid-feedback">
-                                                            <strong>{{$message}}</strong>
-                                                        </span>
-                                                    @enderror --}}
+                                                    <input type="date" class="form-control" id="fecha_ingreso" name="fecha_ingreso" value="{{old('fecha_ingreso')}}" required>
+                                                    @error('fecha_ingreso')
+                                                        <script>
+                                                            document.addEventListener("DOMContentLoaded", function() {
+                                                                var errorMessage = @json($message);
+                                                                if (errorMessage) {
+                                                                    Swal.fire('Error', errorMessage, 'error');
+                                                                }
+                                                            });
+                                                        </script>
+                                                    @enderror
                                                 </div>
                                             </div>
-                                            <div class="col-lg-3">
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-lg-4">
                                                 <!-- Campo para dias internacion -->
                                                 <div class="form-group input-style-1">
                                                     <label for="dias_internacion">Días de Internacion:</label>
-                                                    <input type="number" class="form-control @error('dias_internacion') is-invalid @enderror" id="dias_internacion" name="dias_internacion" value="{{old('dias_internacion', 1)}}" required>
-                                                    {{-- @error('dias_internacion')
-                                                        <span class="invalid-feedback">
-                                                            <strong>{{$message}}</strong>
-                                                        </span>
-                                                    @enderror --}}
+                                                    <input type="number" class="form-control" id="dias_internacion" name="dias_internacion" value="{{old('dias_internacion', 1)}}" required>
+                                                    @error('dias_internacion')
+                                                        <script>
+                                                            document.addEventListener("DOMContentLoaded", function() {
+                                                                var errorMessage = @json($message);
+                                                                if (errorMessage) {
+                                                                    Swal.fire('Error', errorMessage, 'error');
+                                                                }
+                                                            });
+                                                        </script>
+                                                    @enderror
                                                 </div>
-
                                             </div>
-                                            <div class="col-lg-3">
+                                            <div class="col-lg-4">
                                                 <!-- Campo para muerte -->
                                                 <div class="form-group select-style-1">
                                                     <label for="muerte">Defunción:</label>
                                                     <div class="select-position">
-                                                        <select class="form-control @error('muerte') is-invalid @enderror" id="muerte" name="muerte" required>
+                                                        <select class="form-control" id="muerte" name="muerte" required>
                                                             <option value="">Seleccionar</option>
                                                             <option value="si" @if(old('muerte') == 'si') selected @endif>Sí</option>
                                                             <option value="no" @if(old('muerte') == 'no') selected @endif>No</option>
                                                         </select>
-                                                        {{-- @error('muerte')
-                                                            <span class="invalid-feedback">
-                                                                <strong>{{$message}}</strong>
-                                                            </span>
-                                                        @enderror --}}
+                                                        @error('muerte')
+                                                            <script>
+                                                                document.addEventListener("DOMContentLoaded", function() {
+                                                                    var errorMessage = @json($message);
+                                                                    if (errorMessage) {
+                                                                        Swal.fire('Error', errorMessage, 'error');
+                                                                    }
+                                                                });
+                                                            </script>
+                                                        @enderror
                                                     </div>
                                                 </div>
 
                                             </div>
-                                            <div class="col-lg-3">
+                                            <div class="col-lg-4">
                                                 <!-- Campo para servicio_inicio_sintomas -->
                                                 <div class="form-group select-style-1">
                                                     <label for="servicio_inicio_sintomas">Servicio de inicio de síntomas:</label>
                                                     <div class="select-position">
-                                                        <select class="form-control @error('servicio_inicio_sintomas') is-invalid @enderror" id="servicio_inicio_sintomas" name="servicio_inicio_sintomas" required>
+                                                        <select class="form-control" id="servicio_inicio_sintomas" name="servicio_inicio_sintomas" required>
                                                             <option value="">Seleccionar</option>
                                                             @foreach ($servicios as $servicio)
-                                                                {{-- <option value="{{ $servicio->cod_servicio }}">{{ $servicio->nombre }}</option> --}}
                                                                 <option value="{{ $servicio->cod_servicio }}" @if(old('servicio_inicio_sintomas') == $servicio->cod_servicio) selected @endif>{{ $servicio->nombre }}</option>
                                                             @endforeach
                                                         </select>
-                                                        {{-- @error('servicio_inicio_sintomas')
-                                                            <span class="invalid-feedback">
-                                                                <strong>{{$message}}</strong>
-                                                            </span>
-                                                        @enderror --}}
+                                                        @error('servicio_inicio_sintomas')
+                                                            <script>
+                                                                document.addEventListener("DOMContentLoaded", function() {
+                                                                    var errorMessage = @json($message);
+                                                                    if (errorMessage) {
+                                                                        Swal.fire('Error', errorMessage, 'error');
+                                                                    }
+                                                                });
+                                                            </script>
+                                                        @enderror
                                                     </div>
                                                 </div>
                                             </div>
@@ -203,52 +214,55 @@
                                                 <div class="form-group select-style-1">
                                                     <label for="servicio_notificador">Servicio notificador:</label>
                                                     <div class="select-position">
-                                                        <select class="form-control @error('servicio_notificador') is-invalid @enderror" id="servicio_notificador" name="servicio_notificador" required>
+                                                        <select class="form-control" id="servicio_notificador" name="servicio_notificador" required>
                                                             <option value="">Seleccionar</option>
                                                             @foreach ($servicios as $servicio)
                                                             <option value="{{ $servicio->cod_servicio }}" @if(old('servicio_notificador') == $servicio->cod_servicio) selected @endif>{{ $servicio->nombre }}</option>
                                                             @endforeach
                                                         </select>
-                                                        {{-- @error('servicio_notificador')
-                                                            <span class="invalid-feedback">
-                                                                <strong>{{$message}}</strong>
-                                                            </span>
-                                                        @enderror --}}
+                                                        @error('servicio_notificador')
+                                                            <script>
+                                                                document.addEventListener("DOMContentLoaded", function() {
+                                                                    var errorMessage = @json($message);
+                                                                    if (errorMessage) {
+                                                                        Swal.fire('Error', errorMessage, 'error');
+                                                                    }
+                                                                });
+                                                            </script>
+                                                        @enderror
                                                     </div>
                                                 </div>
                                             </div>
                                             <div class="col-lg-4">
-                                                <!-- Campo para diagnostico_ingreso -->
-                                                {{-- <div class="form-group input-style-1">
-                                                    <label for="diagnostico_ingreso">Diagnóstico de ingreso:</label>
-                                                    <textarea class="form-control" id="diagnostico_ingreso" name="diagnostico_ingreso" ></textarea>
-                                                </div> --}}
-
                                                 <div class="form-group input-style-1">
                                                     <label for="diagnostico_ingreso">Diagnóstico de ingreso:</label>
-                                                    <textarea class="form-control @error('diagnostico_ingreso') is-invalid @enderror " id="diagnostico_ingreso" name="diagnostico_ingreso" required>{{old('diagnostico_ingreso')}}</textarea>
-                                                    {{-- @error('diagnostico_ingreso')
-                                                        <span class="invalid-feedback">
-                                                            <strong>{{$message}}</strong>
-                                                        </span>
-                                                    @enderror --}}
+                                                    <textarea class="form-control" id="diagnostico_ingreso" name="diagnostico_ingreso" required>{{old('diagnostico_ingreso')}}</textarea>
+                                                    @error('diagnostico_ingreso')
+                                                        <script>
+                                                            document.addEventListener("DOMContentLoaded", function() {
+                                                                var errorMessage = @json($message);
+                                                                if (errorMessage) {
+                                                                    Swal.fire('Error', errorMessage, 'error');
+                                                                }
+                                                            });
+                                                        </script>
+                                                    @enderror
                                                 </div>
                                             </div>
                                             <div class="col-lg-4">
-                                                <!-- Campo para diagnostico_sala -->
-                                                {{-- <div class="form-group input-style-1">
-                                                    <label for="diagnostico_sala">Diagnóstico de sala:</label>
-                                                    <textarea class="form-control" id="diagnostico_sala" name="diagnostico_sala" ></textarea>
-                                                </div> --}}
-
                                                 <div class="form-group input-style-1">
                                                     <label for="diagnostico_sala">Diagnóstico de sala:</label>
-                                                    <textarea class="form-control @error('diagnostico_sala') is-invalid @enderror " id="diagnostico_sala" name="diagnostico_sala" required>{{old('diagnostico_sala')}}</textarea>
-                                                    {{-- @error('diagnostico_sala')
-                                                        <span class="invalid-feedback">
-                                                            <strong>{{$message}}</strong>
-                                                        </span>
-                                                    @enderror --}}
+                                                    <textarea class="form-control" id="diagnostico_sala" name="diagnostico_sala" required>{{old('diagnostico_sala')}}</textarea>
+                                                    @error('diagnostico_sala')
+                                                        <script>
+                                                            document.addEventListener("DOMContentLoaded", function() {
+                                                                var errorMessage = @json($message);
+                                                                if (errorMessage) {
+                                                                    Swal.fire('Error', errorMessage, 'error');
+                                                                }
+                                                            });
+                                                        </script>
+                                                    @enderror
                                                 </div>
                                             </div>
                                         </div>
@@ -278,16 +292,21 @@
                                                 <div class="form-group select-style-1">
                                                     <label for="tipo_muestra_cultivo">Tipo de muestra para cultivo:</label>
                                                     <div class="select-position">
-                                                        <select class="form-control @error('tipo_muestra_cultivo') is-invalid @enderror" id="tipo_muestra_cultivo" name="tipo_muestra_cultivo" required>
+                                                        <select class="form-control" id="tipo_muestra_cultivo" name="tipo_muestra_cultivo" required>
                                                             <option value="">Seleccionar</option>
                                                             @foreach ($tiposMuestra as $tipoMuestra)
                                                                 <option value="{{ $tipoMuestra->cod_tipo_muestra }}" @if(old('tipo_muestra_cultivo') == $tipoMuestra->cod_tipo_muestra) selected @endif>{{ $tipoMuestra->nombre }}</option>
                                                             @endforeach
                                                         </select>
                                                         @error('tipo_muestra_cultivo')
-                                                            <span class="invalid-feedback">
-                                                                <strong>{{$message}}</strong>
-                                                            </span>
+                                                            <script>
+                                                                document.addEventListener("DOMContentLoaded", function() {
+                                                                    var errorMessage = @json($message);
+                                                                    if (errorMessage) {
+                                                                        Swal.fire('Error', errorMessage, 'error');
+                                                                    }
+                                                                });
+                                                            </script>
                                                         @enderror
                                                     </div>
                                                 </div>
@@ -297,16 +316,21 @@
                                                 <div class="form-group select-style-1">
                                                     <label for="procedimiento_invasivo">Procedimiento invasivo:</label>
                                                     <div class="select-position">
-                                                        <select class="form-control @error('procedimiento_invasivo') is-invalid @enderror" id="procedimiento_invasivo" name="procedimiento_invasivo" required>
+                                                        <select class="form-control" id="procedimiento_invasivo" name="procedimiento_invasivo" required>
                                                             <option value="">Seleccionar</option>
                                                             @foreach ($procedimientosInmasivos as $procedimientoInvasivo)
                                                                 <option value="{{ $procedimientoInvasivo->cod_procedimiento_invasivo }}" @if(old('procedimiento_invasivo') == $procedimientoInvasivo->cod_procedimiento_invasivo) selected @endif>{{ $procedimientoInvasivo->nombre }}</option>
                                                             @endforeach
                                                         </select>
                                                         @error('procedimiento_invasivo')
-                                                            <span class="invalid-feedback">
-                                                                <strong>{{$message}}</strong>
-                                                            </span>
+                                                            <script>
+                                                                document.addEventListener("DOMContentLoaded", function() {
+                                                                    var errorMessage = @json($message);
+                                                                    if (errorMessage) {
+                                                                        Swal.fire('Error', errorMessage, 'error');
+                                                                    }
+                                                                });
+                                                            </script>
                                                         @enderror
                                                     </div>
                                                 </div>
@@ -323,16 +347,21 @@
                                                 <div class="form-group select-style-1">
                                                     <label for="uso_antimicrobanos">Uso de antimicrobianos:</label>
                                                     <div class="select-position">
-                                                        <select class="form-control @error('uso_antimicrobanos') is-invalid @enderror" id="uso_antimicrobanos" name="uso_antimicrobanos" required>
+                                                        <select class="form-control" id="uso_antimicrobanos" name="uso_antimicrobanos" required>
                                                             <option value="">Seleccionar</option>
                                                             <option value="si" @if(old('uso_antimicrobanos') == 'si') selected @endif>Sí</option>
                                                             <option value="no" @if(old('uso_antimicrobanos') == 'no') selected @endif>No</option>
                                                         </select>
-                                                        {{-- @error('uso_antimicrobanos')
-                                                            <span class="invalid-feedback">
-                                                                <strong>{{$message}}</strong>
-                                                            </span>
-                                                        @enderror --}}
+                                                        @error('uso_antimicrobanos')
+                                                            <script>
+                                                                document.addEventListener("DOMContentLoaded", function() {
+                                                                    var errorMessage = @json($message);
+                                                                    if (errorMessage) {
+                                                                        Swal.fire('Error', errorMessage, 'error');
+                                                                    }
+                                                                });
+                                                            </script>
+                                                        @enderror
                                                     </div>
                                                 </div>
                                             </div>
@@ -389,12 +418,17 @@
                                                 <!-- Campo para medidas_tomar -->
                                                 <div class="form-group input-style-1">
                                                     <label for="medidas_tomar">Medidas a tomar:</label>
-                                                    <textarea class="form-control @error('medidas_tomar') is-invalid @enderror" id="medidas_tomar" name="medidas_tomar" required>{{old('diagnostico_sala')}}</textarea>
-                                                    {{-- @error('medidas_tomar')
-                                                        <span class="invalid-feedback">
-                                                            <strong>{{$message}}</strong>
-                                                        </span>
-                                                    @enderror --}}
+                                                    <textarea class="form-control" id="medidas_tomar" name="medidas_tomar" required>{{old('diagnostico_sala')}}</textarea>
+                                                    @error('medidas_tomar')
+                                                        <script>
+                                                            document.addEventListener("DOMContentLoaded", function() {
+                                                                var errorMessage = @json($message);
+                                                                if (errorMessage) {
+                                                                    Swal.fire('Error', errorMessage, 'error');
+                                                                }
+                                                            });
+                                                        </script>
+                                                    @enderror
                                                 </div>
                                             </div>
                                             <div class="col-lg-4">
@@ -402,16 +436,21 @@
                                                 <div class="form-group select-style-1">
                                                     <label for="aislamiento">Aislamiento:</label>
                                                     <div class="select-position">
-                                                        <select class="form-control  @error('aislamiento') is-invalid @enderror" id="aislamiento" name="aislamiento" required>
+                                                        <select class="form-control" id="aislamiento" name="aislamiento" required>
                                                             <option value="">Seleccionar</option>
                                                             <option value="si" @if(old('aislamiento') == 'si') selected @endif>Sí</option>
                                                             <option value="no" @if(old('aislamiento') == 'no') selected @endif>No</option>
                                                         </select>
-                                                        {{-- @error('aislamiento')
-                                                            <span class="invalid-feedback">
-                                                                <strong>{{$message}}</strong>
-                                                            </span>
-                                                        @enderror --}}
+                                                        @error('aislamiento')
+                                                            <script>
+                                                                document.addEventListener("DOMContentLoaded", function() {
+                                                                    var errorMessage = @json($message);
+                                                                    if (errorMessage) {
+                                                                        Swal.fire('Error', errorMessage, 'error');
+                                                                    }
+                                                                });
+                                                            </script>
+                                                        @enderror
                                                     </div>
                                                 </div>
                                             </div>
@@ -419,12 +458,17 @@
                                                 <!-- Campo para seguimiento -->
                                                 <div class="form-group input-style-1">
                                                     <label for="seguimiento">Seguimiento:</label>
-                                                    <textarea class="form-control @error('seguimiento') is-invalid @enderror" id="seguimiento" name="seguimiento" required>{{old('seguimiento')}}</textarea>
-                                                    {{-- @error('seguimiento')
-                                                        <span class="invalid-feedback">
-                                                            <strong>{{$message}}</strong>
-                                                        </span>
-                                                    @enderror --}}
+                                                    <textarea class="form-control" id="seguimiento" name="seguimiento" required>{{old('seguimiento')}}</textarea>
+                                                    @error('seguimiento')
+                                                        <script>
+                                                            document.addEventListener("DOMContentLoaded", function() {
+                                                                var errorMessage = @json($message);
+                                                                if (errorMessage) {
+                                                                    Swal.fire('Error', errorMessage, 'error');
+                                                                }
+                                                            });
+                                                        </script>
+                                                    @enderror
                                                 </div>
                                             </div>
                                         </div>
@@ -433,12 +477,17 @@
                                                 <!-- Campo para observacion -->
                                                 <div class="form-group input-style-1">
                                                     <label for="observacion">Observación:</label>
-                                                    <textarea class="form-control @error('observacion') is-invalid @enderror" id="observacion" name="observacion" required>{{old('observacion')}}</textarea>
-                                                    {{-- @error('observacion')
-                                                        <span class="invalid-feedback">
-                                                            <strong>{{$message}}</strong>
-                                                        </span>
-                                                    @enderror --}}
+                                                    <textarea class="form-control" id="observacion" name="observacion" required>{{old('observacion')}}</textarea>
+                                                    @error('observacion')
+                                                        <script>
+                                                            document.addEventListener("DOMContentLoaded", function() {
+                                                                var errorMessage = @json($message);
+                                                                if (errorMessage) {
+                                                                    Swal.fire('Error', errorMessage, 'error');
+                                                                }
+                                                            });
+                                                        </script>
+                                                    @enderror
                                                 </div>
                                             </div>
                                         </div>

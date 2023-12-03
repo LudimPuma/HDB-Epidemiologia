@@ -48,6 +48,16 @@
                                     <div class="form-group">
                                         <label for="fecha"><em>Fecha:</em></label>
                                         <input type="month" id="fecha" name="fecha" value="{{date("Y-m")}}" class="form-control" required>
+                                        @error('fecha')
+                                            <script>
+                                                document.addEventListener("DOMContentLoaded", function() {
+                                                    var errorMessage = @json($message);
+                                                    if (errorMessage) {
+                                                        Swal.fire('Error', errorMessage, 'error');
+                                                    }
+                                                });
+                                            </script>
+                                        @enderror
                                     </div>
                                 </div>
                                 <div class="col-md-3">
@@ -58,9 +68,6 @@
                                 </div>
                             </div>
                             <br>
-                            {{-- <div class="text-center">
-                                <button type="button" id="generar-btn" class="btn btn-outline-dark"><strong>Generar</strong></button>
-                            </div> --}}
                         </div>
                     </form>
                 </div>

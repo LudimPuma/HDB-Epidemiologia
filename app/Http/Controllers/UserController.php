@@ -104,7 +104,6 @@ class UserController extends Controller
             $persona->estado_civil = $request->input('estado_civil');
             $persona->resgister = Auth::id();
             $persona->save();
-
             // imagen
             $imagenPath = null;
             if ($request->hasFile('imagen')) {

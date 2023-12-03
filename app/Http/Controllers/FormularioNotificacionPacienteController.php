@@ -55,28 +55,9 @@ class FormularioNotificacionPacienteController extends Controller
 
         return $conn;
     }
-    public function grafica()
-    {
-        $year = Carbon::now()->year;
-        $bacterias = DB::table('epidemiologia.formulario_notificacion_paciente as f')
-            ->join('epidemiologia.antibiograma as a', 'f.cod_form_notificacion_p', '=', 'a.cod_formulario')
-            ->join('epidemiologia.bacterias_medicamentos as bm', function ($join) {
-                $join->on('a.cod_bacte', '=', 'bm.cod_bacte');
-                $join->on('a.cod_medi', '=', 'bm.cod_medi');
-            })
-            ->join('epidemiologia.bacterias as b', 'bm.cod_bacte', '=', 'b.cod_bacterias')
-            ->join('epidemiologia.medicamentos as m', 'bm.cod_medi', '=', 'm.cod_medicamento')
-            ->select('b.nombre as bacteria', DB::raw('COUNT(*) as total_casos'))
-            ->whereYear('f.fecha_llenado', $year)
-            ->where('f.estado', 'alta')
-            ->groupBy('b.nombre')
-            ->orderByDesc('total_casos')
-            ->get();
-        return view('principal', compact('bacterias'));
-    }
     public function showViewForm()
     {
-        return view('Form_IAAS.view_form_1');
+        return view('Form_IAAS.view_form_1')->with('success', session('success'));
     }
     public function searchHistorial(Request $request)
     {
@@ -133,24 +114,6 @@ class FormularioNotificacionPacienteController extends Controller
             ]);
         }
     }
-    // public function searchHistorial(Request $request)
-    // {
-    //     $patientId = $request->input('patientId');
-
-    //     $patient = DatoPaciente::where('n_h_clinico', $patientId)->first();
-    //     // $patient = DatoPaciente::where('HCL_CODIGO', $patientId)->first();
-    //     if ($patient) {
-    //         return response()->json([
-    //             'found' => true,
-    //             'patientData' => $patient
-    //         ]);
-    //     } else {
-    //         return response()->json([
-    //             'found' => false,
-    //             'patientData' => null
-    //         ]);
-    //     }
-    // }
     public function mostrarFormulario(Request $request)
     {
         $id = $request->query('patientId');
@@ -187,163 +150,182 @@ class FormularioNotificacionPacienteController extends Controller
     }
     public function guardarDatos(Request $request)
     {
-        // Validar los datos del formulario
-        $request->validate([
-            'h_clinico' => 'required|only_numbers',
-            'fecha_llenado' => 'required|numbers_with_dash',
-            'fecha_ingreso' => 'required|numbers_with_dash',
-            'dias_internacion' => 'required|only_numbers|min:1',
-            'muerte' => 'required|letters_spaces',
-            'servicio_inicio_sintomas' => 'required|only_numbers',
-            'servicio_notificador' => 'required|only_numbers',
-            'diagnostico_ingreso' => 'required|letters_dash_spaces_dot',
-            'diagnostico_sala' => 'required|letters_dash_spaces_dot',
-            'uso_antimicrobanos' => 'required|letters_spaces',
-            'tipo_muestra_cultivo' => 'required|only_numbers',
-            'procedimiento_invasivo' => 'required|only_numbers',
-            'medidas_tomar' => 'required|letters_dash_spaces_dot',
-            'aislamiento' => 'required|letters_spaces',
-            'seguimiento' => 'required|letters_dash_spaces_dot',
-            'observacion' => 'required|letters_dash_spaces_dot',
-            'informacion_bacterias_input' => 'required',
-            'infecciones_seleccionadas'=> 'required',
-        ],
-        [
-            'h_clinico.required'=> 'El Nro. Clinico no puede estar vacio',
-            'fecha_llenado.required'=> 'La fecha de llenado no puede estar vacio',
-            'fecha_ingreso.required'=> 'La fecha de ingreso del paciente no puede estar vacio',
-            'dias_internacion' => 'El campo es obligatorio',
-            'muerte' => 'El campo es obligatorio',
-            'servicio_inicio_sintomas.required'=> 'El servicio de inicio de sintomas no puede estar vacio',
-            'servicio_notificador.required'=> 'El servicio notificador no puede estar vacio',
-            'diagnostico_ingreso.required' => 'El diagnostico de ingreso no puede estar vacio',
-            'diagnostico_sala.required' => 'El diagnostico de sala no puede estar vacio',
-            'uso_antimicrobanos.required'=> 'Este campo no puede estar vacio',
-            'tipo_muestra_cultivo.required'=> 'Tipo de muestra cultivo no puede estar vacio',
-            'procedimiento_invasivo.required'=> 'Procedimiento invasivo no puede estar vacio',
-            'medidas_tomar.required'=> 'Medidas a tomar no puede estar vacio',
-            'aislamiento.required'=> 'No puede estar vacio',
-            'seguimiento.required'=> 'El seguimiento no puede estar vacio',
-            'observacion.required'=> 'La observacion no puede estar vacio',
+        try{
+            $request->validate([
+                'h_clinico' => 'required|only_numbers',
+                'fecha_llenado' => 'required|numbers_with_dash',
+                'fecha_ingreso' => 'required|numbers_with_dash',
+                'dias_internacion' => ['required','only_numbers','min:1'],
+                'muerte' => 'required|in:si,no',
+                'servicio_inicio_sintomas' => 'required|only_numbers',
+                'servicio_notificador' => 'required|only_numbers',
+                'diagnostico_ingreso' => 'required|letters_dash_spaces_dot',
+                'diagnostico_sala' => 'required|letters_dash_spaces_dot',
+                'uso_antimicrobanos' => 'required|in:si,no',
+                'tipo_muestra_cultivo' => 'required|only_numbers',
+                'procedimiento_invasivo' => 'required|only_numbers',
+                'medidas_tomar' => 'required|letters_dash_spaces_dot',
+                'aislamiento' => 'required|in:si,no',
+                'seguimiento' => 'required|letters_dash_spaces_dot',
+                'observacion' => 'required|letters_dash_spaces_dot',
+                'informacion_bacterias_input' => 'required',
+                'infecciones_seleccionadas'=> 'required',
+            ],
+            [
+                'h_clinico.required'=> 'El Nro. Clinico no puede estar vacio',
+                'h_clinico.only_numbers'=> 'El Nro. Clinico solo incluye numeros',
+                'fecha_llenado.required'=> 'La fecha de llenado no puede estar vacio',
+                'fecha_llenado.numbers_with_dash'=> 'No es un formato de fecha',
+                'fecha_ingreso.required'=> 'La fecha de ingreso del paciente no puede estar vacio',
+                'fecha_ingreso.numbers_with_dash'=> 'No es un formato de fecha',
+                'dias_internacion.required' => 'El campo es obligatorio',
+                'dias_internacion.only_numbers' => 'Solo es permitido números.',
+                'dias_internacion.min' => 'El valor mínimo permitido es 1.',
+                'muerte.required' => 'El campo es obligatorio',
+                'muerte.in' => 'El valor debe ser "si" o "no".',
+                'servicio_inicio_sintomas.required'=> 'El servicio de inicio de sintomas no puede estar vacio',
+                'servicio_inicio_sintomas.only_numbers'=> 'No se permiten esos caracteres',
+                'servicio_notificador.required'=> 'El servicio notificador no puede estar vacio',
+                'servicio_notificador.only_numbers'=> 'No se permiten esos caracteres',
+                'diagnostico_ingreso.required' => 'El diagnostico de ingreso no puede estar vacio',
+                'diagnostico_ingreso.letters_dash_spaces_dot' => 'El diagnostico de ingreso solo puede incluir letras, números, espacios, - y .',
+                'diagnostico_sala.required' => 'El diagnostico de sala no puede estar vacio',
+                'diagnostico_sala.letters_dash_spaces_dot' => 'El diagnostico de sala solo puede incluir letras, números, espacios, - y .',
+                'uso_antimicrobanos.required'=> 'Este campo no puede estar vacio',
+                'uso_antimicrobanos.in' => 'El valor debe ser "si" o "no".',
+                'tipo_muestra_cultivo.required'=> 'Tipo de muestra cultivo no puede estar vacio',
+                'tipo_muestra_cultivo.only_numbers'=> 'Caracteres no permitidos',
+                'procedimiento_invasivo.required'=> 'Procedimiento invasivo no puede estar vacio',
+                'procedimiento_invasivo.only_numbers'=> 'Caracteres no permitidos',
+                'medidas_tomar.required'=> 'Medidas a tomar no puede estar vacio',
+                'medidas_tomar.letters_dash_spaces_dot'=> 'Medidas a tomar solo puede incluir letras, números, espacios, - y .',
+                'aislamiento.required'=> 'No puede estar vacio',
+                'aislamiento.in' => 'El valor debe ser "si" o "no".',
+                'seguimiento.required' => 'No puede estar vacio',
+                'seguimiento.letters_dash_spaces_dot' => 'El seguimineto solo puede incluir letras, números, espacios, - y .',
+                'observacion.required'=> 'La observacion no puede estar vacio',
+                'observacion.letters_dash_spaces_dot'=> 'La observacion solo puede incluir letras, números, espacios, - y .',
+            ]
+            );
+            // Crear una nueva instancia del modelo FormularioNotificacionPaciente
+            $formulario = new FormularioNotificacionPaciente();
+            // Asignar los valores de los campos del formulario al modelo
+            $formulario->h_clinico = $request->input('h_clinico');
+            $formulario->fecha_llenado = $request->input('fecha_llenado');
+            $formulario->fecha_ingreso = $request->input('fecha_ingreso');
+            $formulario->dias_internacion = $request->input('dias_internacion');
+            $formulario->muerte = $request->input('muerte');
+            $formulario->servicio_inicio_sintomas = $request->input('servicio_inicio_sintomas');
+            $formulario->servicio_notificador = $request->input('servicio_notificador');
+            $formulario->diagnostico_ingreso = $request->input('diagnostico_ingreso');
+            $formulario->diagnostico_sala = $request->input('diagnostico_sala');
+            $formulario->uso_antimicrobanos = $request->input('uso_antimicrobanos');
+            $formulario->tipo_muestra_cultivo = $request->input('tipo_muestra_cultivo');
+            $formulario->procedimiento_invasivo = $request->input('procedimiento_invasivo');
+            $formulario->medidas_tomar = $request->input('medidas_tomar');
+            $formulario->aislamiento = $request->input('aislamiento');
+            $formulario->seguimiento = $request->input('seguimiento');
+            $formulario->observacion = $request->input('observacion');
+            $formulario->estado = 'alta';
+            $formulario->pk_usuario = Auth::id();
 
-        ]
-        );
+            // Guardar el formulario en la base de datos
+            $formulario->save();
 
-        // Crear una nueva instancia del modelo FormularioNotificacionPaciente
-        $formulario = new FormularioNotificacionPaciente();
-        // Asignar los valores de los campos del formulario al modelo
-        $formulario->h_clinico = $request->input('h_clinico');
-        $formulario->fecha_llenado = $request->input('fecha_llenado');
-        $formulario->fecha_ingreso = $request->input('fecha_ingreso');
-        $formulario->dias_internacion = $request->input('dias_internacion');
-        $formulario->muerte = $request->input('muerte');
-        $formulario->servicio_inicio_sintomas = $request->input('servicio_inicio_sintomas');
-        $formulario->servicio_notificador = $request->input('servicio_notificador');
-        $formulario->diagnostico_ingreso = $request->input('diagnostico_ingreso');
-        $formulario->diagnostico_sala = $request->input('diagnostico_sala');
-        $formulario->uso_antimicrobanos = $request->input('uso_antimicrobanos');
-        $formulario->tipo_muestra_cultivo = $request->input('tipo_muestra_cultivo');
-        $formulario->procedimiento_invasivo = $request->input('procedimiento_invasivo');
-        $formulario->medidas_tomar = $request->input('medidas_tomar');
-        $formulario->aislamiento = $request->input('aislamiento');
-        $formulario->seguimiento = $request->input('seguimiento');
-        $formulario->observacion = $request->input('observacion');
-        $formulario->estado = 'alta';
-        $formulario->pk_usuario = Auth::id();
+            // Obtener el código del formulario recién guardado
+            $codigoFormulario = $formulario->cod_form_notificacion_p ;
 
-        // Guardar el formulario en la base de datos
-        $formulario->save();
+            //TABLA TIPO INFECCION
+            // Obtener las infecciones seleccionadas del campo oculto
+            $infeccionesSeleccionadas = $request->input('infecciones_seleccionadas');
 
-        // Obtener el código del formulario recién guardado
-        $codigoFormulario = $formulario->cod_form_notificacion_p ;
+            // Decodificar el JSON y procesar las infecciones seleccionadas
+            $infeccionesSeleccionadas = json_decode($infeccionesSeleccionadas);
 
-        //TABLA TIPO INFECCION
-        // Obtener las infecciones seleccionadas del campo oculto
-        $infeccionesSeleccionadas = $request->input('infecciones_seleccionadas');
-
-        // Decodificar el JSON y procesar las infecciones seleccionadas
-        $infeccionesSeleccionadas = json_decode($infeccionesSeleccionadas);
-
-        // Crear una instancia de SeleccionTipoInfeccion para cada infección seleccionada
-        foreach ($infeccionesSeleccionadas as $codTipoInf) {
-            $seleccionTipoInfeccion = new SeleccionTipoInfeccion();
-            $seleccionTipoInfeccion->cod_formulario = $codigoFormulario;
-            $seleccionTipoInfeccion->h_cli = $request->input('h_clinico');
-            $seleccionTipoInfeccion->cod_tipo_inf = $codTipoInf;
-            $seleccionTipoInfeccion->save();
-        }
-
-        //TABLA TIPO HONGO
-        // Obtener las infecciones seleccionadas del campo oculto
-        $hongosSeleccionados = $request->input('hongos_seleccionados');
-
-        // Decodificar el JSON y procesar las infecciones seleccionadas
-        $hongosSeleccionados = json_decode($hongosSeleccionados);
-
-        // Crear una instancia de seleccionHongo para cada infección seleccionada
-        foreach ($hongosSeleccionados as $idH) {
-            $seleccionHongo = new SeleccionHongos();
-            $seleccionHongo->cod_formulario = $codigoFormulario;
-            $seleccionHongo->h_cli = $request->input('h_clinico');
-            $seleccionHongo->id_hongos = $idH;
-            $seleccionHongo->save();
-        }
-
-
-        // TABLA ANTOIBIOGRAMA
-        // Obtener la información de antibiograma desde el input oculto
-        $informacionAntibiograma = $request->input('informacion_bacterias_input');
-        //dd($informacionAntibiograma); // Agregar esta línea
-        // Convertir la cadena en un array de líneas
-        $lineasAntibiograma = explode("\n", $informacionAntibiograma);
-        //dd($lineasAntibiograma);
-
-        //PRUEBA
-        // Arreglos para almacenar los nombres de bacterias y medicamentos
-        $nombresBacterias = [];
-        $nombresMedicamentos = [];
-        $datosAntibiograma = [];
-
-        // Recorrer las líneas y almacenar los datos en la base de datos
-        foreach ($lineasAntibiograma as $linea) {
-            $lineaLimpia = str_replace("\r", "", $linea);
-            // Si la línea está vacía, continuar con la siguiente iteración
-            if (empty($lineaLimpia)) {
-                continue;
+            // Crear una instancia de SeleccionTipoInfeccion para cada infección seleccionada
+            foreach ($infeccionesSeleccionadas as $codTipoInf) {
+                $seleccionTipoInfeccion = new SeleccionTipoInfeccion();
+                $seleccionTipoInfeccion->cod_formulario = $codigoFormulario;
+                $seleccionTipoInfeccion->h_cli = $request->input('h_clinico');
+                $seleccionTipoInfeccion->cod_tipo_inf = $codTipoInf;
+                $seleccionTipoInfeccion->save();
             }
 
-            //dd($linea);
-            // Separar los datos limpios
-            $datos = explode(",", $lineaLimpia);
-            $codBacte = $datos[0];
-            $codMedi = $datos[1];
-            $nivel = $datos[2];
+            //TABLA TIPO HONGO
+            // Obtener las infecciones seleccionadas del campo oculto
+            $hongosSeleccionados = $request->input('hongos_seleccionados');
 
-        //*---------------------------------prueba pdf------------------------------------------------
-            // Consultar nombres de bacterias y medicamentos
-            $bacteria = Bacteria::where('cod_bacterias', $codBacte)->first();
-            $medicamento = Medicamento::where('cod_medicamento', $codMedi)->first();
-            if ($bacteria && $medicamento) {
-                $datosAntibiograma[] = [
-                    'bacteria' => $bacteria->nombre,
-                    'medicamento' => $medicamento->nombre,
-                    'resistencia' => $nivel,
-                ];
+            // Decodificar el JSON y procesar las infecciones seleccionadas
+            $hongosSeleccionados = json_decode($hongosSeleccionados);
+
+            // Crear una instancia de seleccionHongo para cada infección seleccionada
+            foreach ($hongosSeleccionados as $idH) {
+                $seleccionHongo = new SeleccionHongos();
+                $seleccionHongo->cod_formulario = $codigoFormulario;
+                $seleccionHongo->h_cli = $request->input('h_clinico');
+                $seleccionHongo->id_hongos = $idH;
+                $seleccionHongo->save();
             }
-        //*---------------------------------prueba pdf------------------------------------------------
 
-            // Crear y guardar una nueva entrada de antibiograma
-            $antibiograma = new Antibiograma();
-            $antibiograma->cod_formulario = $codigoFormulario;
-            $antibiograma->h_cli = $request->input('h_clinico');
-            $antibiograma->cod_bacte = $codBacte;
-            $antibiograma->cod_medi = $codMedi;
-            $antibiograma->nivel = $nivel;
-            // dd($antibiograma);
-            $antibiograma->save();
+
+            // TABLA ANTOIBIOGRAMA
+            // Obtener la información de antibiograma desde el input oculto
+            $informacionAntibiograma = $request->input('informacion_bacterias_input');
+            //dd($informacionAntibiograma); // Agregar esta línea
+            // Convertir la cadena en un array de líneas
+            $lineasAntibiograma = explode("\n", $informacionAntibiograma);
+            //dd($lineasAntibiograma);
+
+            //PRUEBA
+            // Arreglos para almacenar los nombres de bacterias y medicamentos
+            $nombresBacterias = [];
+            $nombresMedicamentos = [];
+            $datosAntibiograma = [];
+
+            // Recorrer las líneas y almacenar los datos en la base de datos
+            foreach ($lineasAntibiograma as $linea) {
+                $lineaLimpia = str_replace("\r", "", $linea);
+                // Si la línea está vacía, continuar con la siguiente iteración
+                if (empty($lineaLimpia)) {
+                    continue;
+                }
+
+                //dd($linea);
+                // Separar los datos limpios
+                $datos = explode(",", $lineaLimpia);
+                $codBacte = $datos[0];
+                $codMedi = $datos[1];
+                $nivel = $datos[2];
+
+            //*---------------------------------prueba pdf------------------------------------------------
+                // Consultar nombres de bacterias y medicamentos
+                $bacteria = Bacteria::where('cod_bacterias', $codBacte)->first();
+                $medicamento = Medicamento::where('cod_medicamento', $codMedi)->first();
+                if ($bacteria && $medicamento) {
+                    $datosAntibiograma[] = [
+                        'bacteria' => $bacteria->nombre,
+                        'medicamento' => $medicamento->nombre,
+                        'resistencia' => $nivel,
+                    ];
+                }
+            //*---------------------------------prueba pdf------------------------------------------------
+
+                // Crear y guardar una nueva entrada de antibiograma
+                $antibiograma = new Antibiograma();
+                $antibiograma->cod_formulario = $codigoFormulario;
+                $antibiograma->h_cli = $request->input('h_clinico');
+                $antibiograma->cod_bacte = $codBacte;
+                $antibiograma->cod_medi = $codMedi;
+                $antibiograma->nivel = $nivel;
+                // dd($antibiograma);
+                $antibiograma->save();
+            }
+
+            return view('Form_IAAS.view_form_1')->with('success', 'Los datos han sido guardados exitosamente.');
+        } catch (QueryException $e) {
+            return redirect()->back()->withErrors(['Error al insertar usuario. Detalles: ' . $e->getMessage()]);
         }
 
-        return redirect()->route('principal')->with('success', 'Los datos han sido guardados exitosamente.');
     }
      //MODIFICAR ESTADO
     public function update(Request $request, FormularioNotificacionPaciente $formulario)
@@ -1040,81 +1022,98 @@ class FormularioNotificacionPacienteController extends Controller
     //REPORTE POR RANGO DE FECHAS
     public function reporteRango(Request $request)
     {
-        // Obtener las fechas de entrada y salida proporcionadas por el usuario
-        $fechaEntrada = $request->input('fecha_e');
-        $fechaSalida = $request->input('fecha_s');
+        try{
+            $request->validate([
+                'fecha_e' => ['required','numbers_with_dash'],
+                'fecha_s' => ['required','numbers_with_dash','after_or_equal:fecha_e'],
+            ],
+            [
+                'fecha_e.required' =>'El fecha de entrada no puede estar vacio',
+                'fecha_e.numbers_with_dash' => 'No es un formato de fecha',
+                'fecha_s.required' =>'El fecha de salida no puede estar vacio',
+                'fecha_s.numbers_with_dash' => 'No es un formato de fecha',
+                'fecha_s.after_or_equal' => 'La fecha de salida debe ser posterior o igual a la fecha de entrada',
+            ]
+            );
 
-        //fecha de entrada
-        $yearEntrada = date('Y', strtotime($fechaEntrada));
-        $monthEntrada = date('m', strtotime($fechaEntrada));
-        $dayEntrada = date('d', strtotime($fechaEntrada));
-
-        //fecha de salida
-        $yearSalida = date('Y', strtotime($fechaSalida));
-        $monthSalida = date('m', strtotime($fechaSalida));
-        $daySalida = date('d', strtotime($fechaSalida));
-
-        $añoSeleccionado = date('Y', strtotime($fechaEntrada)); // Obtener el año del rango de fechas
-        $fechaActual = now();
-        $mesActual = $fechaActual->month;
+            $fechaEntrada = $request->input('fecha_e');
+            $fechaSalida = $request->input('fecha_s');
 
 
-        $informe = DB::table('epidemiologia.formulario_notificacion_paciente as f')
-            ->join('epidemiologia.antibiograma as a', 'f.cod_form_notificacion_p', '=', 'a.cod_formulario')
-            ->join('epidemiologia.bacterias_medicamentos as bm', function ($join) {
-                $join->on('a.cod_bacte', '=', 'bm.cod_bacte');
-                $join->on('a.cod_medi', '=', 'bm.cod_medi');
-            })
-            ->join('epidemiologia.bacterias as b', 'bm.cod_bacte', '=', 'b.cod_bacterias')
-            ->join('epidemiologia.medicamentos as m', 'bm.cod_medi', '=', 'm.cod_medicamento')
-            ->whereDate('f.fecha_llenado', '>=', $fechaEntrada)
-            ->whereDate('f.fecha_llenado', '<=', $fechaSalida)
-            ->where('f.estado', 'alta')
-            ->select(
-                'b.nombre as bacteria',
-                'm.nombre as medicamento',
-                DB::raw('SUM(CASE WHEN a.nivel = \'Resistente\' THEN 1 ELSE 0 END) as casos_resistentes')
-            )
-            ->groupBy('b.nombre', 'm.nombre')
-            ->havingRaw('SUM(CASE WHEN a.nivel = \'Resistente\' THEN 1 ELSE 0 END) > 0') // Filtrar casos resistentes
-            ->orderBy('b.nombre', 'desc')
-            ->get();
+            $yearEntrada = date('Y', strtotime($fechaEntrada));
+            $monthEntrada = date('m', strtotime($fechaEntrada));
+            $dayEntrada = date('d', strtotime($fechaEntrada));
 
-            $totalCasosResistentes = $informe->sum('casos_resistentes');
-            $totalCasosPorBacteria = $informe->groupBy('bacteria')->map(function ($item) {
-                return $item->sum('casos_resistentes');
-        });
 
-        $fechaHoraActual = Carbon::now('America/La_Paz')->format('d/m/Y H:i:s');
-        $data = [
+            $yearSalida = date('Y', strtotime($fechaSalida));
+            $monthSalida = date('m', strtotime($fechaSalida));
+            $daySalida = date('d', strtotime($fechaSalida));
 
-            'fechaHoraActual' => $fechaHoraActual,
-            'informe' => $informe,
-            'fechaEntrada' => $fechaEntrada,
-            'fechaSalida' => $fechaSalida,
-            'totalCasosResistentes' =>$totalCasosResistentes,
-            'totalCasosPorBacteria' => $totalCasosPorBacteria,
-        ];
+            $añoSeleccionado = date('Y', strtotime($fechaEntrada));
+            $fechaActual = now();
+            $mesActual = $fechaActual->month;
 
-        $pdf = PDF::loadView('Form_IAAS.PDF.reporte_rango_IAAS', $data);
-        $footerPath = base_path('resources/views/pdf/footer.html');
-        $headerPath = base_path('resources/views/pdf/header.html');
 
-        $pdf->setOptions([
-            'orientation' => 'portrait',
-            'footer-spacing' => 10,
-            'margin-top' => 30,
-            'header-spacing' => 10,
-            'margin-bottom' => 20,
-            'footer-font-size'=> 12,
-            'footer-html' => $footerPath,
-            'header-html' => $headerPath,
-        ]);
-        $nombreArchivo = 'Reporte_Rango:'. $fechaEntrada.'_a_' . $fechaSalida .'.pdf';
-        return response($pdf->output(), 200, [
-            'Content-Type' => 'application/pdf',
-            'Content-Disposition' => 'inline; filename="' . $nombreArchivo . '"'
-        ]);
+            $informe = DB::table('epidemiologia.formulario_notificacion_paciente as f')
+                ->join('epidemiologia.antibiograma as a', 'f.cod_form_notificacion_p', '=', 'a.cod_formulario')
+                ->join('epidemiologia.bacterias_medicamentos as bm', function ($join) {
+                    $join->on('a.cod_bacte', '=', 'bm.cod_bacte');
+                    $join->on('a.cod_medi', '=', 'bm.cod_medi');
+                })
+                ->join('epidemiologia.bacterias as b', 'bm.cod_bacte', '=', 'b.cod_bacterias')
+                ->join('epidemiologia.medicamentos as m', 'bm.cod_medi', '=', 'm.cod_medicamento')
+                ->whereDate('f.fecha_llenado', '>=', $fechaEntrada)
+                ->whereDate('f.fecha_llenado', '<=', $fechaSalida)
+                ->where('f.estado', 'alta')
+                ->select(
+                    'b.nombre as bacteria',
+                    'm.nombre as medicamento',
+                    DB::raw('SUM(CASE WHEN a.nivel = \'Resistente\' THEN 1 ELSE 0 END) as casos_resistentes')
+                )
+                ->groupBy('b.nombre', 'm.nombre')
+                ->havingRaw('SUM(CASE WHEN a.nivel = \'Resistente\' THEN 1 ELSE 0 END) > 0') // Filtrar casos resistentes
+                ->orderBy('b.nombre', 'desc')
+                ->get();
+
+                $totalCasosResistentes = $informe->sum('casos_resistentes');
+                $totalCasosPorBacteria = $informe->groupBy('bacteria')->map(function ($item) {
+                    return $item->sum('casos_resistentes');
+            });
+
+            $fechaHoraActual = Carbon::now('America/La_Paz')->format('d/m/Y H:i:s');
+            $data = [
+
+                'fechaHoraActual' => $fechaHoraActual,
+                'informe' => $informe,
+                'fechaEntrada' => $fechaEntrada,
+                'fechaSalida' => $fechaSalida,
+                'totalCasosResistentes' =>$totalCasosResistentes,
+                'totalCasosPorBacteria' => $totalCasosPorBacteria,
+            ];
+
+            $pdf = PDF::loadView('Form_IAAS.PDF.reporte_rango_IAAS', $data);
+            $footerPath = base_path('resources/views/pdf/footer.html');
+            $headerPath = base_path('resources/views/pdf/header.html');
+
+            $pdf->setOptions([
+                'orientation' => 'portrait',
+                'footer-spacing' => 10,
+                'margin-top' => 30,
+                'header-spacing' => 10,
+                'margin-bottom' => 20,
+                'footer-font-size'=> 12,
+                'footer-html' => $footerPath,
+                'header-html' => $headerPath,
+            ]);
+            $nombreArchivo = 'Reporte_Rango:'. $fechaEntrada.'_a_' . $fechaSalida .'.pdf';
+            return response($pdf->output(), 200, [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'inline; filename="' . $nombreArchivo . '"'
+            ]);
+        } catch (QueryException $e) {
+            return redirect()->back()->withErrors(['Error. Detalles: ' . $e->getMessage()]);
+        }
+
     }
     //INFORME ANUAL ESPECIFICO
     public function informeAnual(Request $request)

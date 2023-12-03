@@ -33,7 +33,7 @@
                                     <div class="col-md-5">
                                         <div class="form-group">
                                             <label for="seleccion"><em>Seleccione un servicio:</em></label>
-                                            <select id="seleccion" name="seleccion" class="form-control custom-select">
+                                            <select id="seleccion" name="seleccion" class="form-control custom-select" required>
                                                 <option value="" disabled selected>Seleccionar</option>
                                                 @can('button-form-reports-iaas')
                                                     <option value="IAAS">IAAS</option>
@@ -48,16 +48,36 @@
                                         <div class="form-group">
                                             <label for="a"><em>Año:</em></label>
                                             <input type="number" id="a" name="a" value="{{ date("Y") }}" class="form-control" required>
+                                            @error('a')
+                                                <script>
+                                                    document.addEventListener("DOMContentLoaded", function() {
+                                                        var errorMessage = @json($message);
+                                                        if (errorMessage) {
+                                                            Swal.fire('Error', errorMessage, 'error');
+                                                        }
+                                                    });
+                                                </script>
+                                            @enderror
                                         </div>
                                     </div>
                                     <div class="col-md-4">
                                         <div class="form-group">
                                             <label for="rango"><em>Semestre:</em></label>
-                                            <select name="rango" id="rango" class="form-control custom-select">
+                                            <select name="rango" id="rango" class="form-control custom-select" required>
                                                 <option value="" disabled selected>Seleccionar</option>
                                                 <option value="primer_semestre"> primer semestre</option>
                                                 <option value="segundo_semestre"> segundo semestre</option>
                                             </select>
+                                            @error('rango')
+                                                <script>
+                                                    document.addEventListener("DOMContentLoaded", function() {
+                                                        var errorMessage = @json($message);
+                                                        if (errorMessage) {
+                                                            Swal.fire('Error', errorMessage, 'error');
+                                                        }
+                                                    });
+                                                </script>
+                                            @enderror
                                         </div>
                                     </div>
                                 </div>
@@ -98,7 +118,7 @@
         }
 
         // Verifica si se ha ingresado un año válido en el campo "a"
-        if (isNaN(year) || year === "") {
+        if (isNaN(year) || year === "" || year <= 1950) {
             Swal.fire({
                 icon: 'error',
                 title: 'Error',

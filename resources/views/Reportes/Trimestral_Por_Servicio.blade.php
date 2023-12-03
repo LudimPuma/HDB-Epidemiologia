@@ -140,7 +140,7 @@
             });
             return;
         }
-        if (isNaN(year) || year === "") {
+        if (isNaN(year) || year === "" || year <= '1950') {
             Swal.fire({
                 icon: 'error',
                 title: 'Error',

@@ -13,7 +13,6 @@
         <h1 class="text-center">Reporte Enfermedades de Notificación Inmediata Anual por Meses</h1>
         <h2 class="text-center">Gestión {{ $fecha_select }}</h2>
         @php
-        // Arreglo para mapear nombres de meses en inglés a español
         $mesesEnIngles = [
             'January' => 'Enero',
             'February' => 'Febrero',
@@ -31,13 +30,12 @@
         @endphp
         @foreach ($informeMensual->unique('mes') as $mesInfo)
             @php
-                $mes = \Carbon\Carbon::create()->month($mesInfo->mes)->format('F'); // Obtener el nombre del mes
+                $mes = \Carbon\Carbon::create()->month($mesInfo->mes)->format('F');
                 $mesData = $informeMensual->where('mes', $mesInfo->mes);
-                $totalCasos = $totalCasosPorMes[$mesInfo->mes]; // Obtener el total de casos por mes
+                $totalCasos = $totalCasosPorMes[$mesInfo->mes - 1];
             @endphp
 
             @if ($mesInfo->mes <= $mesActual)
-                <!-- Mostrar solo si el mes es menor o igual al mes actual -->
                 <h2>{{ $mesesEnIngles[$mes] }}</h2>
                 <table class="table">
                     <thead>
@@ -64,8 +62,6 @@
         <div class="signature-container">
             <h5>{{ Auth::user()->persona->nombres }} {{ Auth::user()->persona->apellidos }}</h5>
         </div>
-
     </div>
-
 </body>
 </html>

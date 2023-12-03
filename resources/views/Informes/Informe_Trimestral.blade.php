@@ -3,16 +3,27 @@
 @section('guide','Informes / Por Trimestre')
 @section('content')
 <style>
-.card-style {
-    background-image: url("img/logohdb.png");
-    background-size: 10%;
-    background-repeat: no-repeat;
-    background-position: calc(100% - 10px) 10px;
-    /* background-position: top right; */
-    padding: 100px;
-}
+    .card-style {
+        background-image: url("img/logohdb.png");
+        background-size: 10%;
+        background-repeat: no-repeat;
+        background-position: calc(100% - 10px) 10px;
+        /* background-position: top right; */
+        padding: 100px;
+    }
 </style>
 <div class="row ">
+    @if(session('error'))
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                var errorMessage = @json(session('error'));
+                if (errorMessage) {
+                    Swal.fire('Error', errorMessage, 'error');
+                }
+            });
+        </script>
+    @endif
+
     <div class="col-12">
         <div class="container bg-white rounded p-4 shadow-lg" >
             <div class="container bg-light rounded p-4 shadow-lg">
@@ -34,12 +45,12 @@
                                     <div class="form-group">
                                         <label for="seleccion"><em>Seleccione un servicio:</em></label>
                                         <select id="seleccion" name="seleccion" class="form-control custom-select">
-                                            <option value="" disabled selected>Seleccionar</option>
+                                            <option value="" disabled {{ old('seleccion') == null ? 'selected' : '' }}>Seleccionar</option>
                                             @can('button-form-informe-iaas')
-                                                <option value="Resistencia_Bacteriana_IAAS">Resistencia Bacteriana IAAS</option>
+                                                <option value="Resistencia_Bacteriana_IAAS" {{ old('seleccion') == 'Resistencia_Bacteriana_IAAS' ? 'selected' : '' }}>Resistencia Bacteriana IAAS</option>
                                             @endcan
                                             @can('button-form-informe-eni')
-                                                <option value="Tuberculosis">Tuberculosis</option>
+                                                <option value="Tuberculosis" {{ old('seleccion') == 'Tuberculosis' ? 'selected' : '' }}>Tuberculosis</option>
                                             @endcan
                                         </select>
                                     </div>
@@ -47,19 +58,39 @@
                                 <div class="col-md-4">
                                     <div class="form-group">
                                         <label for="a"><em>Año:</em></label>
-                                        <input type="number" id="a" name="a" value="{{ date("Y") }}" class="form-control" required>
+                                        <input type="number" id="a" name="a" value="{{ old('a', date('Y')) }}" class="form-control" required>
+                                        @error('a')
+                                            <script>
+                                                document.addEventListener("DOMContentLoaded", function() {
+                                                    var errorMessage = @json($message);
+                                                    if (errorMessage) {
+                                                        Swal.fire('Error', errorMessage, 'error');
+                                                    }
+                                                });
+                                            </script>
+                                        @enderror
                                     </div>
                                 </div>
                                 <div class="col-md-4">
                                     <div class="form-group">
                                         <label for="rango"><em>Trimestre:</em></label>
                                         <select name="rango" id="rango" class="form-control custom-select">
-                                            <option value="" disabled selected>Seleccionar</option>
-                                            <option value="primer_trimestre"> primer trimestre</option>
-                                            <option value="segundo_trimestre"> segundo trimestre</option>
-                                            <option value="tercer_trimestre"> tercer trimestre</option>
-                                            <option value="cuarto_trimestre"> cuarto trimestre</option>
+                                            <option value="" disabled {{ old('rango') == '' ? 'selected' : '' }}>Seleccionar</option>
+                                            <option value="primer_trimestre" {{ old('rango') == 'primer_trimestre' ? 'selected' : '' }}>Primer trimestre</option>
+                                            <option value="segundo_trimestre" {{ old('rango') == 'segundo_trimestre' ? 'selected' : '' }}>Segundo trimestre</option>
+                                            <option value="tercer_trimestre" {{ old('rango') == 'tercer_trimestre' ? 'selected' : '' }}>Tercer trimestre</option>
+                                            <option value="cuarto_trimestre" {{ old('rango') == 'cuarto_trimestre' ? 'selected' : '' }}>Cuarto trimestre</option>
                                         </select>
+                                        @error('rango')
+                                            <script>
+                                                document.addEventListener("DOMContentLoaded", function() {
+                                                    var errorMessage = @json($message);
+                                                    if (errorMessage) {
+                                                        Swal.fire('Error', errorMessage, 'error');
+                                                    }
+                                                });
+                                            </script>
+                                        @enderror
                                     </div>
                                 </div>
                             </div>

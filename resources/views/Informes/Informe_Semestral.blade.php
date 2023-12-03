@@ -3,16 +3,27 @@
 @section('guide','Informes / Por Semestre')
 @section('content')
 <style>
-.card-style {
-    background-image: url("img/logohdb.png");
-    background-size: 10%;
-    background-repeat: no-repeat;
-    background-position: calc(100% - 10px) 10px;
-    /* background-position: top right; */
-    padding: 100px;
-}
+    .card-style {
+        background-image: url("img/logohdb.png");
+        background-size: 10%;
+        background-repeat: no-repeat;
+        background-position: calc(100% - 10px) 10px;
+        /* background-position: top right; */
+        padding: 100px;
+    }
 </style>
 <div class="row ">
+    @if(session('error'))
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                var errorMessage = @json(session('error'));
+                if (errorMessage) {
+                    Swal.fire('Error', errorMessage, 'error');
+                }
+            });
+        </script>
+    @endif
+
     <div class="col-12">
         <div class="container bg-white rounded p-4 shadow-lg" >
             <div class="container bg-light rounded p-4 shadow-lg">

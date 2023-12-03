@@ -4,14 +4,14 @@
 @section('guide','Reportes / Por Gestión')
 @section('content')
 <style>
-.card-style {
-    background-image: url("img/logohdb.png");
-    background-size: 10%;
-    background-repeat: no-repeat;
-    background-position: calc(100% - 10px) 10px;
-    /* background-position: top right; */
-    padding: 100px;
-}
+    .card-style {
+        background-image: url("img/logohdb.png");
+        background-size: 10%;
+        background-repeat: no-repeat;
+        background-position: calc(100% - 10px) 10px;
+        /* background-position: top right; */
+        padding: 100px;
+    }
 </style>
 <div class="row ">
     <div class="col-12">
@@ -72,12 +72,19 @@
     document.getElementById("generar-btn").addEventListener("click", function (event) {
         var seleccion = document.getElementById("seleccion").value;
         var year = document.getElementById("a").value;
-
+        if (isNaN(year) || year === "" || year <= '1950') {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Ingrese un año válido en el campo "Año"',
+            });
+            return;
+        }
         if (seleccion === "IAAS") {
             document.getElementById("miFormulario").action = "{{ route('reporte.anual.por.mes.IAAS') }}";
         }else if (seleccion === "Enf_Not_Inm") {
             document.getElementById("miFormulario").action = "{{ route('reporte.anual.Enf.Not.Inmediata') }}";
-            console.log("prueba");
+            console.log("X");
         } else if (seleccion === "") {
             console.log("vacio");
             Swal.fire({
@@ -87,6 +94,7 @@
             });
             return;
         }
+
         document.getElementById("miFormulario").submit();
     });
 </script>
