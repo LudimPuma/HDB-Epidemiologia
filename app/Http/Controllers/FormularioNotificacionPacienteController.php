@@ -1270,6 +1270,7 @@ class FormularioNotificacionPacienteController extends Controller
                 'fecha_select' => $fechaSeleccionada,
                 'fechaHoraActual' => $fechaHoraActual,
                 'total_casos_resistentes_por_bacteria' => $totalCasosResistentesPorBacteria,
+                'bacteriasDeInteres' => $bacteriasDeInteres,
                 'informeEspecifico' => $informeEspecifico,
                 'bacteriasEspecificas' => $bacteriasEspecificas,
                 'informeEspecifico2' => $informeEspecifico2,
@@ -1374,8 +1375,8 @@ class FormularioNotificacionPacienteController extends Controller
                 ->havingRaw('SUM(CASE WHEN a.nivel = \'Resistente\' THEN 1 ELSE 0 END) > 0')
                 ->orderBy('b.nombre', 'desc')
                 ->get();
-            dd($informeBacterias);
-            return false;
+            // dd($informeBacterias);
+            // return false;
             $totalCasosResistentesPorBacteria = [];
 
             foreach ($informeBacterias as $informe) {

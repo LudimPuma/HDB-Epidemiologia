@@ -80,7 +80,6 @@
                         </tr>
                     @endif
                 @empty
-                    <!-- No hay bacterias de interés -->
                 @endforelse
                 <tr>
                     <td><p></p></td>
