@@ -22,7 +22,7 @@
                     <thead>
                         <tr class="table-header">
                             <th>Bacteria</th>
-                            <th>Medicamentos</th>
+                            <th>Antibioticos</th>
                             <th>Resistentes</th>
                         </tr>
                     </thead>

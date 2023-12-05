@@ -17,7 +17,7 @@
                     <thead>
                         <tr class="table-header">
                             <th>Bacteria</th>
-                            <th>Medicamento</th>
+                            <th>Antibioticos</th>
                             <th>Casos Resistentes</th>
                         </tr>
                     </thead>

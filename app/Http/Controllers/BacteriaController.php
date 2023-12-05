@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Bacteria;
 use App\Medicamento;
 use Illuminate\Http\Request;
-
+use Illuminate\Database\QueryException;
 class BacteriaController extends Controller
 {
     public function __construct()
@@ -22,61 +22,102 @@ class BacteriaController extends Controller
     }
     public function store(Request $request)
     {
-        $request->validate([
-            'nombre' => 'required|letters_spaces',
-        ]);
-        $bacteria = Bacteria::create($request->except('medicamentos'));
-        $bacteria->medicamentos()->sync($request->input('medicamentos'));
+        try{
+            $request->validate([
+                'nombre' => 'required|letters_dash_spaces_dot',
+            ],
+            [
+                'nombre.required' => 'El nombre no puede estar vacio',
+                'nombre.letters_dash_spaces_dot' => 'El nombre no admite esos caracteres'
+            ]
+            );
+            $bacteria = Bacteria::create($request->except('medicamentos'));
+            $bacteria->medicamentos()->sync($request->input('medicamentos'));
 
-        return redirect()->route('bacteria.index')->with('success', 'Bacteria creada exitosamente');
+            return redirect()->route('bacteria.index')->with('success', 'Bacteria creada exitosamente');
+        } catch (QueryException $e) {
+            // return redirect()->back()->withErrors(['Error. Detalles: ' . $e->getMessage()]);
+            return redirect()->back()->withErrors(['El nombre ya existe en la tabla Bacterias.']);
+        }
+
     }
     public function update(Request $request, Bacteria $bacteria)
     {
-        $request->validate([
-            'nombre' => 'required|letters_spaces',
-            'estado' => 'required|only_zero_one',
-        ]);
+        try {
+            if ($bacteria->id != $request->id) {
+                return redirect()->route('bacteria.index')->withErrors(['Error: ID de bacteria no válido.']);
+            }
 
-        $data = [
-            'nombre' => $request->nombre,
-            'estado' => $request->estado,
-        ];
-
-        if (!$request->estado) {
             $request->validate([
-                'motivos_baja' => 'required|letters_dash_spaces_dot',
+                'nombre' => 'required|letters_dash_spaces_dot',
+                'estado' => 'required|only_zero_one',
             ],
             [
-                'motivos_baja.required' => 'Debe proporcionar un motivo de baja',
-            ]);
-            $data['motivos_baja'] = $request->motivos_baja;
-        } else {
-            $data['motivos_baja'] = null;
+                'nombre.required' => 'El nombre no puede guardarse vacio',
+                'nombre.letters_dash_spaces_dot' => 'No se permiten esos caracteres',
+                'estado.required' => 'El estado no puede guardarse vacio',
+                'estado.only_zero_one' => 'El estado solo puede ser habilitado o deshabilitado',
+            ]
+            );
+            $data = [
+                'nombre' => $request->nombre,
+                'estado' => $request->estado,
+            ];
+            if (!$request->estado) {
+                $request->validate([
+                    'motivos_baja' => 'required|letters_dash_spaces_dot',
+                ],
+                [
+                    'motivos_baja.required' => 'Debe proporcionar un motivo de baja',
+                ]);
+                $data['motivos_baja'] = $request->motivos_baja;
+            } else {
+                $data['motivos_baja'] = null;
+            }
+
+            $bacteria->update($data);
+
+            $bacteria->medicamentos()->sync($request->input('medicamentos'));
+
+            return redirect()->route('bacteria.index')->with('success', 'Bacteria actualizada exitosamente');
+        } catch (QueryException $e) {
+            return redirect()->back()->withErrors(['El nombre ya existe en la tabla Bacterias.']);
         }
-
-        // Actualiza la bacteria con los datos proporcionados
-        $bacteria->update($data);
-
-        // Sincroniza los medicamentos
-        $bacteria->medicamentos()->sync($request->input('medicamentos'));
-
-        return redirect()->route('bacteria.index')->with('success', 'Bacteria actualizada exitosamente');
     }
-
-
 
     // public function update(Request $request, Bacteria $bacteria)
     // {
-    //     $request->validate([
-    //         'nombre' => 'required|max:100',
-    //     ]);
+    //     try{
+    //         $request->validate([
+    //             'nombre' => 'required|letters_spaces',
+    //             'estado' => 'required|only_zero_one',
+    //         ]);
 
-    //     $bacteria->update($request->except('medicamentos'));
+    //         $data = [
+    //             'nombre' => $request->nombre,
+    //             'estado' => $request->estado,
+    //         ];
 
-    //     // Actualizar la relación de medicamentos de la bacteria
-    //     $bacteria->medicamentos()->sync($request->input('medicamentos'));
+    //         if (!$request->estado) {
+    //             $request->validate([
+    //                 'motivos_baja' => 'required|letters_dash_spaces_dot',
+    //             ],
+    //             [
+    //                 'motivos_baja.required' => 'Debe proporcionar un motivo de baja',
+    //             ]);
+    //             $data['motivos_baja'] = $request->motivos_baja;
+    //         } else {
+    //             $data['motivos_baja'] = null;
+    //         }
 
-    //     return redirect()->route('bacteria.index')->with('success', 'Bacteria actualizada exitosamente');
+    //         $bacteria->update($data);
+
+    //         $bacteria->medicamentos()->sync($request->input('medicamentos'));
+
+    //         return redirect()->route('bacteria.index')->with('success', 'Bacteria actualizada exitosamente');
+    //     } catch (QueryException $e) {
+    //         return redirect()->back()->withErrors(['Error. Detalles: ' . $e->getMessage()]);
+    //     }
     // }
 
 }

@@ -15,7 +15,7 @@
             <thead>
                 <tr class="table-header">
                     <th >Bacteria</th>
-                    <th >Medicamento</th>
+                    <th >Antibioticos</th>
                     <th >Resistente (%)</th>
                     <th >Intermedio (%)</th>
                     <th >Sensible (%)</th>

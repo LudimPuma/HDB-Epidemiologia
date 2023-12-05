@@ -366,10 +366,17 @@ class FormularioEnfermedadesNotificacionInmediataController extends Controller
             'Content-Disposition' => 'inline; filename="' . $nombreArchivo . '"'
         ]);
     }
-
-    // prueba
+    //mensual
     public function generar(Request $request)
     {
+        $request->validate([
+            'fecha' => ['required','numbers_with_dash'],
+        ],
+        [
+            'fecha.required' =>'La fecha no puede estar vacio',
+            'fecha.numbers_with_dash' => 'No corresponde a una fecha',
+        ]
+        );
         $fechaSeleccionada = $request->fecha;
         $mesSeleccionado = Carbon::parse($fechaSeleccionada)->month;
         $nombreMesSeleccionado = Carbon::parse($fechaSeleccionada)->locale('es')->monthName;
@@ -1116,129 +1123,6 @@ class FormularioEnfermedadesNotificacionInmediataController extends Controller
             return redirect()->back()->withErrors(['Error. Detalles: ' . $e->getMessage()]);
         }
     }
-    //INFORME TRIMESTRAL-SEMESTRAL TUBERCULOSIS
-    // public function informeTrimestralSemestralTuberculosis(Request $request)
-    // {
-    //     $fechaSeleccionada = $request->input('a');
-    //     $rangoSeleccionado = $request->input('rango');
-    //     // dd($rangoSeleccionado);
-    //     // return false;
-    //     $nombre = null;
-    //     $meses = [];
-
-    //     switch ($rangoSeleccionado) {
-    //         case 'primer_trimestre':
-    //             $inicioRango = $fechaSeleccionada . '-01-01';
-    //             $finRango = $fechaSeleccionada . '-03-31';
-    //             $nombre = "Primer Trimestre: Enero - Marzo";
-    //             $meses = ['Enero', 'Febrero', 'Marzo'];
-    //             break;
-    //         case 'segundo_trimestre':
-    //             $inicioRango = $fechaSeleccionada . '-04-01';
-    //             $finRango = $fechaSeleccionada . '-06-30';
-    //             $nombre = "Segundo Trimestre: Abril - Junio";
-    //             $meses = ['Abril', 'Mayo', 'Junio'];
-    //             break;
-    //         case 'tercer_trimestre':
-    //             $inicioRango = $fechaSeleccionada . '-07-01';
-    //             $finRango = $fechaSeleccionada . '-09-30';
-    //             $nombre = "Tercer Trimestre: Julio - Septiembre";
-    //             $meses = ['Julio', 'Agosto', 'Septiembre'];
-    //             break;
-    //         case 'cuarto_trimestre':
-    //             $inicioRango = $fechaSeleccionada . '-10-01';
-    //             $finRango = $fechaSeleccionada . '-12-31';
-    //             $nombre = "Cuarto Trimestre: Octubre - Diciembre";
-    //             $meses = ['Octubre', 'Noviembre', 'Diciembre'];
-    //             break;
-    //         case 'primer_semestre':
-    //             $inicioRango = $fechaSeleccionada . '-01-01';
-    //             $finRango = $fechaSeleccionada . '-06-30';
-    //             $nombre = "Primer Semestre: Enero - Junio";
-    //             $meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio'];
-    //             break;
-    //         case 'segundo_semestre':
-    //             $inicioRango = $fechaSeleccionada . '-07-01';
-    //             $finRango = $fechaSeleccionada . '-12-31';
-    //             $nombre = "Segundo Semestre: Julio - Diciembre";
-    //             $meses = ['Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
-    //             break;
-    //         default:
-    //             return redirect()->back()->with('error', 'Rango no válido');
-    //     }
-
-    //     $informeMensual = [];
-    //     $informeTuberculosis = DB::table('epidemiologia.formulario_enfermedades_notificacion_inmediata as f')
-    //         ->join('epidemiologia.seleccion_patologia as sp', 'f.id_f_notificacion_inmediata', '=', 'sp.cod_form_n_i')
-    //         ->join('epidemiologia.patologia as p', 'sp.cod_pato', '=', 'p.cod_patologia')
-    //         ->join('epidemiologia.datos_paciente as dp', 'f.h_clinico', '=', 'dp.n_h_clinico')
-    //         ->whereBetween('f.fecha', [$inicioRango, $finRango])
-    //         ->where('f.estado', 'alta')
-    //         ->where('p.estado', 'true')
-    //         ->whereIn('p.nombre', ['Tuberculosis (Positivo)', 'Tuberculosis (Negativo)'])
-    //         ->select(
-    //             'dp.sexo',
-    //             DB::raw("to_char(f.fecha, 'TMMonth')"),
-    //             DB::raw('SUM(CASE WHEN p.nombre = \'Tuberculosis (Positivo)\' THEN 1 ELSE 0 END) as positivo'),
-    //             DB::raw('SUM(CASE WHEN p.nombre = \'Tuberculosis (Negativo)\' THEN 1 ELSE 0 END) as negativo')
-    //         )
-    //         ->groupBy('dp.sexo','f.fecha')
-    //         ->get();
-    //     foreach ($meses as $mes) {
-
-    //         $datosMesActual = $informeTuberculosis->where('to_char', $mes);
-    //         $totalMasculinoPositivo = $datosMesActual->where('sexo', 'M')->sum('positivo');
-    //         $totalMasculinoNegativo = $datosMesActual->where('sexo', 'M')->sum('negativo');
-    //         $totalFemeninoPositivo = $datosMesActual->where('sexo', 'F')->sum('positivo');
-    //         $totalFemeninoNegativo = $datosMesActual->where('sexo', 'F')->sum('negativo');
-
-    //         $totalMasculino = $totalMasculinoPositivo + $totalMasculinoNegativo;
-    //         $totalFemenino = $totalFemeninoPositivo + $totalFemeninoNegativo;
-    //         $totalMes = $totalMasculino + $totalFemenino;
-
-    //         $informeMensual[] = [
-    //             'mes' => $mes,
-    //             'totalMasculinoPositivo' => $totalMasculinoPositivo,
-    //             'totalMasculinoNegativo' => $totalMasculinoNegativo,
-    //             'totalFemeninoPositivo' => $totalFemeninoPositivo,
-    //             'totalFemeninoNegativo' => $totalFemeninoNegativo,
-    //             'totalMasculino' => $totalMasculino,
-    //             'totalFemenino' => $totalFemenino,
-    //             'totalMes' => $totalMes,
-    //         ];
-    //     }
-
-    //     dd($informeTuberculosis);
-    //     return false;
-    //     $data = [
-    //         'fechaSeleccionada' => $fechaSeleccionada,
-    //         'nombre' =>$nombre,
-    //         'informeMensual' => $informeMensual,
-    //     ];
-
-    //     // Generar el PDF y configurar la respuesta
-    //     $pdf = PDF::loadView('Form_E_N_I.PDF.informe_tuberculosis', $data);
-    //     $footerPath = base_path('resources/views/pdf/footer.html');
-    //     $headerPath = base_path('resources/views/pdf/header.html');
-
-    //     $pdf->setOptions([
-    //         'orientation' => 'portrait',
-    //         'footer-spacing' => 10,
-    //         'margin-top' => 30,
-    //         'header-spacing' => 10,
-    //         'margin-bottom' => 20,
-    //         'footer-font-size'=> 12,
-    //         'footer-html' => $footerPath,
-    //         'header-html' => $headerPath,
-    //     ]);
-
-    //     $nombreArchivo = 'Informe_Tuberculosis_' . $fechaSeleccionada . '.pdf';
-
-    //     return response($pdf->output(), 200, [
-    //         'Content-Type' => 'application/pdf',
-    //         'Content-Disposition' => 'inline; filename="' . $nombreArchivo . '"'
-    //     ]);
-    // }
     public function informeTrimestralSemestralTuberculosis(Request $request)
     {
         try{

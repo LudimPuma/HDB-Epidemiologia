@@ -131,7 +131,7 @@
                     </tr>
                     <tr>
                         <th rowspan="1" style="text-align: center">Bacterias</th>
-                        <th rowspan="1" style="text-align: center">Medicamento</th>
+                        <th rowspan="1" style="text-align: center">Antibioticos</th>
                         <th rowspan="1" style="text-align: center">Nivel de Resistencia</th>
                     </tr>
                 </thead>

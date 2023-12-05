@@ -118,15 +118,6 @@
                             </div>
                         </div>
                     </div>
-                    {{-- <div class="form-group">
-                        <label>Medicamentos Asociados</label><br>
-                        @foreach($medicamentos as $medicamento)
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="checkbox" name="medicamentos[]" value="{{ $medicamento->cod_medicamento }}">
-                                <label class="form-check-label">{{ $medicamento->nombre }}</label>
-                            </div>
-                        @endforeach
-                    </div> --}}
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
                         <button type="submit" form="form-modificar" class="btn btn-primary">Actualizar</button>
@@ -195,37 +186,43 @@
     $(document).ready(function() {
         // MODIFICAR
         $('.btn-editar').click(function() {
-            var id = $(this).data('id');
-            var actionUrl = $('#form-modificar').attr('action').replace(':id', id);
-            var nombre = $(this).data('nombre');
-            var estado = $(this).data('estado') ? '1' : '0';
+        var id = $(this).data('id');
+        var actionUrl = $('#form-modificar').attr('action').replace(':id', id);
+        var nombre = $(this).data('nombre');
+        var estado = $(this).data('estado') ? '1' : '0';
+        var motivo = $(this).data('motivos');
 
-            var motivo = $(this).data('motivos');
+        $('#modalModificar #nombre').val(nombre);
+        $('#modalModificar #estado').val(estado);
+        $('#modalModificar #motivos_baja').val(motivo);
+        $('#modalModificar #bacteria_id').val(id);
+        $('#form-modificar').attr('action', actionUrl);
 
-            $('#modalModificar #nombre').val(nombre);
-            $('#modalModificar #estado').find('option[value="' + estado + '"]').prop('selected', true);
-            $('#modalModificar #motivos_baja').val(motivo);
-            $('#form-modificar').attr('action', actionUrl);
-            $('#modalModificar').modal('show');
-            // Obtener los medicamentos asociados a la bacteria
-            var medicamentosAsociados = $(this).data('medicamentos');
-            // Marcar los checkboxes de medicamentos según la asociación
-            medicamentosAsociados.forEach(function(medicamentoId) {
-                $('#modalModificar input[name="medicamentos[]"][value="' + medicamentoId + '"]').prop('checked', true);
-            });
+        var medicamentosAsociados = $(this).data('medicamentos');
+
+        medicamentosAsociados.forEach(function(medicamentoId) {
+            $('#modalModificar input[name="medicamentos[]"][value="' + medicamentoId + '"]').prop('checked', true);
         });
-        $('#form-modificar').on('submit', function(event) {
-            var estado = $('#modalModificar #estado').val();
-            var motivos = $('#modalModificar #motivos_baja').val();
 
-            if (estado === '0' && motivos.trim() === '') {
-                event.preventDefault();
-                Swal.fire('Error', 'Debe proporcionar un motivo de baja.', 'error');
-            }
-        });
+        $('#modalModificar').modal('show');
+    });
+
+    $('#form-modificar').on('submit', function(event) {
+        var estado = $('#modalModificar #estado').val();
+        var motivos = $('#modalModificar #motivos_baja').val();
+
+        if (estado === '0' && motivos.trim() === '') {
+            event.preventDefault();
+            Swal.fire('Error', 'Debe proporcionar un motivo de baja.', 'error');
+        }
+    });
         var successMessage = '{{ Session::get('success') }}';
         if (successMessage) {
             Swal.fire('Éxito', successMessage, 'success');
+        }
+        var errors = @json($errors->all());
+        if (errors.length > 0) {
+            Swal.fire('Error', errors[0], 'error');
         }
         ///INSERTAR
         $('.btn-insertar').click(function() {
@@ -234,43 +231,4 @@
     });
 </script>
 
-{{-- <script>
-    $('.btn-editar').on('click', function() {
-        var id = $(this).data('id');
-        var actionUrl = "{{ route('bacteria.update', ['bacteria' => ':id']) }}";
-        actionUrl = actionUrl.replace(':id', id);
-        var nombre = $(this).data('nombre');
-        var estado = $(this).data('estado');
-        $('#modalModificar #nombre').val(nombre);
-        $('#modalModificar #estado').val(estado);
-        if (estado === 1) {
-            $('#modalModificar #estado').val('1');
-        } else {
-            $('#modalModificar #estado').val('0');
-        }
-        // Obtener los medicamentos asociados a la bacteria
-        var medicamentosAsociados = $(this).data('medicamentos');
-        // Marcar los checkboxes de medicamentos según la asociación
-        medicamentosAsociados.forEach(function(medicamentoId) {
-            $('#modalModificar input[name="medicamentos[]"][value="' + medicamentoId + '"]').prop('checked', true);
-        });
-        $('#form-modificar').attr('action', actionUrl);
-        $('#modalModificar').modal('show');
-    });
-    $('.btn-insertar').on('click', function() {
-        $('#modalInsertar input[name="medicamentos[]"]').prop('checked', false);
-        $('#modalInsertar').modal('show');
-    });
-    function actualizarTabla(data) {
-        var tbody = $('#tabla-bacterias');
-        tbody.empty();
-        $.each(data, function(index, bacteria) {
-            var row = $('<tr>');
-            row.append('<td class="text-center">' + bacteria.cod_bacterias + '</td>');
-            row.append('<td>' + bacteria.nombre + '</td>');
-            row.append('<td class="text-center">Acciones</td>');
-            tbody.append(row);
-        });
-    }
-</script> --}}
 @endsection

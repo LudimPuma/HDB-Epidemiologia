@@ -14,7 +14,7 @@
         <h1 class="text-center">Resistencia Bacteriana de IAAS </h1>
         <h2 class="text-center">Hospital Daniel Bracamonte</h2>
         <h2 class="text-center">{{$nombre}} </h2>
-        <table class="table ">
+        {{-- <table class="table ">
             <thead>
                 <tr class="table-header">
                     <th>Bacterias</th>
@@ -48,6 +48,51 @@
                     </tr>
             </tbody>
 
+        </table> --}}
+        <table class="table">
+            <thead>
+                <tr class="table-header">
+                    <th>Bacterias</th>
+                    <th>Número</th>
+                    <th>Resistencia</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($total_casos_resistentes_por_bacteria as $bacteria => $data)
+                    <tr>
+                        <td>{{ $bacteria }}</td>
+                        <td>{{ $data['total_resistentes'] }}</td>
+                        <td>
+                            @forelse ($data['medicamentos'] as $medicamento)
+                                {{ $medicamento }},
+                            @empty
+                                -
+                            @endforelse
+                        </td>
+                    </tr>
+                @endforeach
+                @forelse ($bacteriasDeInteres as $bacteria)
+                    @if (!isset($total_casos_resistentes_por_bacteria[$bacteria]))
+                        <tr>
+                            <td>{{ $bacteria }}</td>
+                            <td>0</td>
+                            <td>-</td>
+                        </tr>
+                    @endif
+                @empty
+                    <!-- No hay bacterias de interés -->
+                @endforelse
+                <tr>
+                    <td><p></p></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td><p></p></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </tbody>
         </table>
 
         <h3 class="text-center">Resistencia a Gram Positivos</h3>

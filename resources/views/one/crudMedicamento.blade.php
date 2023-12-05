@@ -77,6 +77,16 @@
                     <div class="form-group">
                         <label for="nombre">Nombre</label>
                         <input type="text" id="nombre" name="nombre" class="form-control" required>
+                        @error('nombre')
+                            <script>
+                                document.addEventListener("DOMContentLoaded", function() {
+                                var errorMessage = @json($message);
+                                if (errorMessage) {
+                                    Swal.fire('Error', errorMessage, 'error');
+                                }
+                                });
+                            </script>
+                        @enderror
                     </div>
                     <div class="form-group">
                         <label for="estado">Estado</label>
@@ -84,10 +94,30 @@
                             <option value="0">Deshabilitado</option>
                             <option value="1">Habilitado</option>
                         </select>
+                        @error('estado')
+                            <script>
+                                document.addEventListener("DOMContentLoaded", function() {
+                                var errorMessage = @json($message);
+                                if (errorMessage) {
+                                    Swal.fire('Error', errorMessage, 'error');
+                                }
+                                });
+                            </script>
+                        @enderror
                     </div>
                     <div class="form-group">
                         <label>Motivos de baja</label><br>
                         <textarea type="text" class="form-control"  id="motivos_baja" name="motivos_baja"></textarea>
+                        @error('motivos_baja')
+                            <script>
+                                document.addEventListener("DOMContentLoaded", function() {
+                                var errorMessage = @json($message);
+                                if (errorMessage) {
+                                    Swal.fire('Error', errorMessage, 'error');
+                                }
+                                });
+                            </script>
+                        @enderror
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
@@ -112,6 +142,16 @@
                     <div class="form-group">
                         <label for="nombre">Nombre</label>
                         <input type="text" id="nombre" name="nombre" class="form-control" required>
+                        @error('nombre')
+                            <script>
+                                document.addEventListener("DOMContentLoaded", function() {
+                                var errorMessage = @json($message);
+                                if (errorMessage) {
+                                    Swal.fire('Error', errorMessage, 'error');
+                                }
+                                });
+                            </script>
+                        @enderror
                     </div>
                 </form>
             </div>
@@ -131,8 +171,9 @@
             var actionUrl = $('#form-modificar').attr('action').replace(':id', id);
             var nombre = $(this).data('nombre');
             var estado = $(this).data('estado') ? '1' : '0';
-
             var motivo = $(this).data('motivos');
+
+            actionUrl = actionUrl.replace(':id', id);
 
             $('#modalModificar #nombre').val(nombre);
             $('#modalModificar #estado').find('option[value="' + estado + '"]').prop('selected', true);
@@ -152,6 +193,11 @@
         var successMessage = '{{ Session::get('success') }}';
         if (successMessage) {
             Swal.fire('Éxito', successMessage, 'success');
+        }
+        var errors = @json($errors->all());
+
+        if (errors.length > 0) {
+            Swal.fire('Error', errors[0], 'error');
         }
         ///INSERTAR
         $('.btn-insertar').click(function() {

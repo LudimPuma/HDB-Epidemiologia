@@ -229,8 +229,6 @@
                     </ul>
             </li>
         @endcan
-        {{-- <span class="divider"><hr /></span> --}}
-
       </ul>
     </nav>
   </aside>

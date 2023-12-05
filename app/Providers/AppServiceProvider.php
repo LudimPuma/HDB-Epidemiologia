@@ -36,8 +36,11 @@ class AppServiceProvider extends ServiceProvider
             return preg_match('/^[0-9]+$/', $value);
         });
         //SOLO NUMEROS, GUIONES Y LETRAS
+        // Validator::extend('numbers_dash_letters', function ($attribute, $value) {
+        //     return preg_match('/^[0-9A-Za-z\-]+$/', $value);
+        // });
         Validator::extend('numbers_dash_letters', function ($attribute, $value) {
-            return preg_match('/^[0-9A-Za-z\-]+$/', $value);
+            return preg_match('/^[0-9A-Za-z_\-]+$/', $value);
         });
         //SOLO CERO Y UNO
         Validator::extend('only_zero_one', function ($attribute, $value) {
