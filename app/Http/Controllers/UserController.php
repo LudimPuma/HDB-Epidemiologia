@@ -51,7 +51,6 @@ class UserController extends Controller
                 'estado_civil' => 'required|letters_dash_spaces_dot',
 
                 'email' => ['required','unique:users','email_validator'],
-                // 'password' => 'required|min:8',
                 'password' => ['required', 'min:8', 'confirmed'],
                 'profesion' => 'required|letters_dash_spaces_dot',
                 'cargo' => 'required|letters_dash_spaces_dot',
@@ -250,7 +249,6 @@ class UserController extends Controller
 
             return redirect()->route('usuarios.index')->with('success', 'Usuario actualizados exitosamente');
         } catch (QueryException $e) {
-            // dd($e->getMessage());
             return redirect()->back()->withErrors(['Error al actualizar usuario. Detalles: ' . $e->getMessage()]);
         }
     }

@@ -8,7 +8,6 @@
     background-size: 10%;
     background-repeat: no-repeat;
     background-position: calc(100% - 10px) 10px;
-    /* background-position: top right; */
     padding: 100px;
 }
 </style>
@@ -33,7 +32,7 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="seleccion"><em>Seleccionar:</em></label>
-                                        <select id="seleccion" name="seleccion" class="form-control custom-select">
+                                        <select id="seleccion" name="seleccion" class="form-select custom-select">
                                             <option value="" disabled selected>Seleccionar</option>
                                             @can('button-form-informe-iaas')
                                                 <option value="Resistencia_Bacteriana_IAAS">Resistencia Bacteriana IAAS</option>

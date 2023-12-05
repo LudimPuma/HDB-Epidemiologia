@@ -44,7 +44,7 @@
                                 <div class="col-md-4">
                                     <div class="form-group">
                                         <label for="seleccion"><em>Seleccione un servicio:</em></label>
-                                        <select id="seleccion" name="seleccion" class="form-control custom-select">
+                                        <select id="seleccion" name="seleccion" class="form-select custom-select">
                                             <option value="" disabled selected>Seleccionar</option>
                                             @can('button-form-informe-iaas')
                                                 <option value="Resistencia_Bacteriana_IAAS">Resistencia Bacteriana IAAS</option>
@@ -64,7 +64,7 @@
                                 <div class="col-md-4">
                                     <div class="form-group">
                                         <label for="rango"><em>Semestre:</em></label>
-                                        <select name="rango" id="rango" class="form-control custom-select">
+                                        <select name="rango" id="rango" class="form-select custom-select">
                                             <option value="" disabled selected>Seleccionar</option>
                                             <option value="primer_semestre"> primer semestre</option>
                                             <option value="segundo_semestre"> segundo semestre</option>

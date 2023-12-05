@@ -33,7 +33,7 @@
                                     <div class="col-md-5">
                                         <div class="form-group">
                                             <label for="seleccion"><em>Seleccione un servicio:</em></label>
-                                            <select id="seleccion" name="seleccion" class="form-control custom-select">
+                                            <select id="seleccion" name="seleccion" class="form-select custom-select">
                                                 <option value="" disabled selected>Seleccionar</option>
                                                 @can('button-form-reports-iaas')
                                                     <option value="IAAS">IAAS</option>
@@ -53,7 +53,7 @@
                                     <div class="col-md-4">
                                         <div class="form-group">
                                             <label for="rango"><em>Trimestre:</em></label>
-                                            <select name="rango" id="rango" class="form-control custom-select">
+                                            <select name="rango" id="rango" class="form-select custom-select">
                                                 <option value="" disabled selected>Seleccionar</option>
                                                 <option value="primer_trimestre">Primer trimestre</option>
                                                 <option value="segundo_trimestre">Segundo trimestre</option>
@@ -74,50 +74,6 @@
         </div>
     </div>
 </div>
-{{-- <meta name="csrf-token" content="{{ csrf_token() }}">
-
-<script>
-    document.getElementById("generar-btn").addEventListener("click", function (event) {
-        var seleccion = document.getElementById("seleccion").value;
-        var year = document.getElementById("a").value;
-        var trimestre = document.getElementById("rango").value;
-
-        if (seleccion === "") {
-            Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: 'Seleccione una opción en el campo "servicio"',
-            });
-            return;
-        }
-        if (trimestre === "") {
-            Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: 'Seleccione una opción en el campo "trimestre"',
-            });
-            return;
-        }
-        if (isNaN(year) || year === "") {
-            Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: 'Ingrese un año válido en el campo "Año"',
-            });
-            return;
-        }
-        if (seleccion === "IAAS") {
-            var pdfUrl = "{{ route('reporte.trimestral.semestral.por.servicio.IAAS') }}";
-            window.open(pdfUrl, "_blank", "width=800,height=600");
-        } else if (seleccion === "Enf_Not_Inm") {
-            var pdfUrl = "{{ route('reporte.trimestre.semestre.por.servicio.E_N_I') }}";
-            window.open(pdfUrl, "_blank", "width=800,height=600");
-        }
-
-        // Evita el envío del formulario
-        event.preventDefault();
-    });
-</script> --}}
 
 <script>
     document.getElementById("generar-btn").addEventListener("click", function (event) {

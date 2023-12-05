@@ -110,12 +110,10 @@ class FormularioEnfermedadesNotificacionInmediataController extends Controller
     {
         $id = $request->query('patientId');
         $nombre = $request->query('nombreCompleto');
-        // Consulta los datos necesarios de los modelos relacionados
         $datosPacientes = DatoPaciente::all();
         $servicios = Servicio::all();
         $patologias = Patologia::where('estado', true)->orderBy('nombre', 'asc')->get();
         $fechaActual = Carbon::now('America/La_Paz')->format('Y-m-d');
-        // Pasa los datos a la vista del formulario
         return view('Form_E_N_I.Form_Enf_Not_Inm', compact('id','nombre', 'idFormulario', 'servicios', 'patologias','fechaActual'));
     }
 
@@ -126,7 +124,6 @@ class FormularioEnfermedadesNotificacionInmediataController extends Controller
             $request->validate([
                 'h_clinico' => 'required|only_numbers',
                 'fecha' => 'required|numbers_with_dash',
-                // 'patologia' => 'required|only_numbers',
                 'servicio_inicio_sintomas' => 'required|only_numbers',
                 'notificador' => 'required|letters_dash_spaces_dot',
                 'acciones' => 'required|letters_dash_spaces_dot',
@@ -259,7 +256,6 @@ class FormularioEnfermedadesNotificacionInmediataController extends Controller
             ]);
         }
     }
-
     //PDF FORMULARIO
     public function vistaPreviaPDF($id)
     {

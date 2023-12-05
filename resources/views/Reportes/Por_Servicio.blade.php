@@ -33,7 +33,7 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="seleccion"><em>Seleccionar:</em></label>
-                                        <select id="seleccion" name="seleccion" class="form-control">
+                                        <select id="seleccion" name="seleccion" class="form-select">
                                             <option value="" disabled selected>Seleccione una opción</option>
                                             @can('button-form-reports-iaas')
                                                 {{-- <option value="IAAS">IAAS</option> --}}
@@ -71,10 +71,6 @@
                                 </div>
                             </div>
                             <br>
-                            {{-- <br>
-                            <div class="text-center ">
-                                <button type="button" id="generar-btn" class="btn btn-outline-light"><strong>Generar</strong></button>
-                            </div> --}}
                         </div>
                     </form>
                 </div>
@@ -83,71 +79,37 @@
     </div>
 </div>
 <script>
-document.getElementById("generar-btn").addEventListener("click", function (event) {
-    console.log("Botón Generar presionado");
+    document.getElementById("generar-btn").addEventListener("click", function (event) {
+        console.log("Botón Generar presionado");
 
-    var seleccion = document.getElementById("seleccion").value;
-    var year = document.getElementById("a").value;
+        var seleccion = document.getElementById("seleccion").value;
+        var year = document.getElementById("a").value;
 
-    if (seleccion === "IAAS") {
-        console.log("Seleccion IAAS");
-        document.getElementById("miFormulario").action = "{{ route('reporte.anual') }}";
-    } else if (seleccion === "Enf_Not_Inm") {
-        console.log("Seleccion Enf_Not_Inm");
-        document.getElementById("miFormulario").action = "{{ route('rep.anual.Enf.Not.Inmediata') }}";
-    } else if (seleccion === "") {
-        console.log("Selección vacía");
-        Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: 'Seleccione una opción',
-        });
-        return;
-    }
-    if (isNaN(year) || year === "" || year <= '1950') {
+        if (seleccion === "IAAS") {
+            console.log("Seleccion IAAS");
+            document.getElementById("miFormulario").action = "{{ route('reporte.anual') }}";
+        } else if (seleccion === "Enf_Not_Inm") {
+            console.log("Seleccion Enf_Not_Inm");
+            document.getElementById("miFormulario").action = "{{ route('rep.anual.Enf.Not.Inmediata') }}";
+        } else if (seleccion === "") {
+            console.log("Selección vacía");
             Swal.fire({
                 icon: 'error',
                 title: 'Error',
-                text: 'Ingrese un año válido en el campo "Año"',
+                text: 'Seleccione una opción',
             });
             return;
         }
-
-    // Enviar el formulario
-    console.log("Enviando formulario");
-    document.getElementById("miFormulario").submit();
-});
-
-
-    // document.getElementById("generar-btn").addEventListener("click", function (event) {
-    //     var seleccion = document.getElementById("seleccion").value;
-    //     var year = document.getElementById("a").value;
-
-    //     if (seleccion === "IAAS") {
-    //         // Si se selecciona "IAAS", cambiar el action del formulario a la ruta correspondiente
-    //         document.getElementById("miFormulario").action = "{{ route('reporte.anual') }}";
-    //     }else if (seleccion === "Enf_Not_Inm") {
-    //         document.getElementById("miFormulario").action = "{{ route('rep.anual.Enf.Not.Inmediata') }}";
-    //         console.log("prueba");
-    //     } else if (seleccion === "") {
-    //         console.log("vacio");
-    //         Swal.fire({
-    //             icon: 'error',
-    //             title: 'Error',
-    //             text: 'Seleccione una opción',
-    //         });
-    //         return; // Salir de la función sin hacer nada
-    //     } else if (year.trim() === "") { // Agrega una validación para el campo de año
-    //         console.log("año vacio");
-    //         Swal.fire({
-    //             icon: 'error',
-    //             title: 'Error',
-    //             text: 'Ingrese un año válido',
-    //         });
-    //         return; // Salir de la función sin hacer nada
-    //     }
-    //     // Enviar el formulario
-    //     document.getElementById("miFormulario").submit();
-    // });
+        if (isNaN(year) || year === "" || year <= '1950') {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Ingrese un año válido en el campo "Año"',
+                });
+                return;
+            }
+        console.log("Enviando formulario");
+        document.getElementById("miFormulario").submit();
+    });
 </script>
 @endsection

@@ -44,7 +44,7 @@
                                 <div class="col-md-4">
                                     <div class="form-group">
                                         <label for="seleccion"><em>Seleccione un servicio:</em></label>
-                                        <select id="seleccion" name="seleccion" class="form-control custom-select">
+                                        <select id="seleccion" name="seleccion" class="form-select custom-select">
                                             <option value="" disabled {{ old('seleccion') == null ? 'selected' : '' }}>Seleccionar</option>
                                             @can('button-form-informe-iaas')
                                                 <option value="Resistencia_Bacteriana_IAAS" {{ old('seleccion') == 'Resistencia_Bacteriana_IAAS' ? 'selected' : '' }}>Resistencia Bacteriana IAAS</option>
@@ -74,7 +74,7 @@
                                 <div class="col-md-4">
                                     <div class="form-group">
                                         <label for="rango"><em>Trimestre:</em></label>
-                                        <select name="rango" id="rango" class="form-control custom-select">
+                                        <select name="rango" id="rango" class="form-select custom-select">
                                             <option value="" disabled {{ old('rango') == '' ? 'selected' : '' }}>Seleccionar</option>
                                             <option value="primer_trimestre" {{ old('rango') == 'primer_trimestre' ? 'selected' : '' }}>Primer trimestre</option>
                                             <option value="segundo_trimestre" {{ old('rango') == 'segundo_trimestre' ? 'selected' : '' }}>Segundo trimestre</option>
