@@ -697,7 +697,7 @@
 
     function generarTablaMedicamentos(medicamentos) {
     var tablaHTML = '<table class="table table-bordered my-custom-table" style="text-align: center; border-collapse: collapse;">';
-    tablaHTML += '<thead class="table-primary"><tr><th>Medicamento</th><th>Nivel de Resistencia</th></tr></thead>';
+    tablaHTML += '<thead class="table-primary"><tr><th>Antibiotico</th><th>Nivel de Resistencia</th></tr></thead>';
     tablaHTML += '<tbody>';
 
     // Agregar filas para cada medicamento

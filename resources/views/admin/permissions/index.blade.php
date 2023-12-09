@@ -18,8 +18,8 @@
                             <table id="dataTable" class="table  mt-3  table-hover  ">
                                 <thead class="text-white" style="background-color: #198754;">
                                     <tr>
-                                        <th>Name</th>
-                                        <th>Details</th>
+                                        <th>Nombre</th>
+                                        <th>Detalles</th>
                                         {{-- <th>Actions</th> --}}
                                     </tr>
                                 </thead>
