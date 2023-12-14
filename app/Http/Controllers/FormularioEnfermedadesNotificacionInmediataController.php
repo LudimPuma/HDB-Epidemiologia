@@ -872,6 +872,12 @@ class FormularioEnfermedadesNotificacionInmediataController extends Controller
                 'footer-font-size'=> 12,
                 'footer-html' => $footerPath,
                 'header-html' => $headerPath,
+                'enable-javascript' => true,
+                'javascript-delay' => 1000,
+                'no-stop-slow-scripts' => true,
+                'enable-smart-shrinking' => true,
+                'debug-javascript' => true,
+                'no-images' => false,
             ]);
             $nombreArchivo = 'Informe_MENSUAL_' . $fechaSeleccionada . '.pdf';
 

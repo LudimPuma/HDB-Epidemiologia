@@ -7,8 +7,38 @@
     <title>Reporte por Gestión - Enf. Notificación Inmediata</title>
     <link rel="stylesheet" href="{{ asset('pdf/bootstrap.min.css') }}" />
     <link rel="stylesheet" href="{{ asset('pdf/pdf.css') }}" />
+    {{-- <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript">
+    function init(){
+        google.load('visualization','1.1',{
+        packages: 'corechart',
+        callback: 'drawChart',
+        });
+    }
+      function drawChart() {
+
+        var data = google.visualization.arrayToDataTable([
+          ['Task', 'Hours per Day'],
+          ['Work',     11],
+          ['Eat',      2],
+          ['Commute',  2],
+          ['Watch TV', 2],
+          ['Sleep',    7]
+        ]);
+
+        var options = {
+          title: 'My Daily Activities'
+        };
+
+        var chart = new google.visualization.PieChart(document.getElementById('piechart'));
+
+        chart.draw(data, options);
+      }
+    </script> --}}
 </head>
 <body>
+{{-- <body onload="init()"> --}}
+    {{-- <div id="piechart" style="width: 900px; height: 500px;"></div> --}}
     <div class="container">
         <h1 class="text-center">Reporte Enfermedades de Notificación Inmediata Anual por Meses</h1>
         <h2 class="text-center">Gestión {{ $fecha_select }}</h2>

@@ -89,7 +89,7 @@
 
 
         $.ajax({
-            url: '{{ route("buscar-paciente_form_2") }}',
+            url: '{{ route("buscar-paciente_form_1") }}',
             type: 'GET',
             data: { patientId: patientId },
             success: function(response) {

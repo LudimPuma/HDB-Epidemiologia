@@ -14,10 +14,11 @@
     <title>Login</title>
     <style>
         .fondo {
-            background-image: url('img/Fondo/p3.jpg'); /* Ruta relativa a la carpeta del CSS */
+            /* background-image: url('img/Fondo/p3.jpg'); */
+            background-image: url('img/p31.png');
             background-size: cover;
             background-repeat: no-repeat;
-            background-position: center; /* Centra la imagen en la pantalla */
+            /* background-position: center;  */
         }
         /* Cambiar el color del texto "Iniciar Sesión" */
         .text-center {
@@ -35,8 +36,8 @@
     </style>
 </head>
 <body class="bg-dark d-flex justify-content-center align-items-center vh-100 fondo">
-    <img src="./img/logohdb.png" alt="logo_icono" class="logo" style="filter: brightness(95%) contrast(95%); height: 30%;">
-    {{-- <img src="./img/logohdb.png" alt="logo_icono" class="logo" style="filter: saturate(0%) grayscale(100%) brightness(200%) contrast(100%); height: 30%;"> --}}
+    {{-- <img src="./img/logohdb.png" alt="logo_icono" class="logo" style="filter: brightness(95%) contrast(95%); height: 30%;"> --}}
+
 
     <form method='POST' action="{{route('iniciar-sesion')}}">
         <div class="contenedor  p-5 rounded-5 text-secondary shadow">
