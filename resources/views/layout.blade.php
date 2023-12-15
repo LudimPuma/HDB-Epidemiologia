@@ -153,15 +153,15 @@
         <div class="container-fluid ">
             <!-- ========== title-wrapper start ========== -->
             <div class="row">
-                <div class="title-wrapper pt-20 ">
+                <div class="title-wrapper pt-20">
                     <div class="row align-items-center">
                         <div class="col-md-8">
                             <div class="title mb-20">
-                                <h4 class="text-muted d-none d-md-block">@yield('guide', 'Principal/')</h4>
+                                <h4 class="text-muted">@yield('guide', 'Principal/')</h4>
                             </div>
                         </div>
-                        <div class="col-md-4 ">
-                            <div class="breadcrumb-wrapper mb-20 ">
+                        <div class="col-md-4 d-none d-md-block">
+                            <div class="breadcrumb-wrapper mb-20">
                                 <nav aria-label="breadcrumb">
                                     <input type="date" value="{{ date('Y-m-d') }}" class="form-control bg-success ml-3 shadow-lg">
                                 </nav>
@@ -170,6 +170,7 @@
                     </div>
                 </div>
             </div>
+
 
           <!-- ========== title-wrapper end ========== -->
           <div class="row ">

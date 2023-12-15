@@ -47,12 +47,15 @@ class AppServiceProvider extends ServiceProvider
             return in_array($value, ['0', '1']);
         });
         // SOLO LETRAS, GUIONES, ESPACIOS, PUNTO Y PARÉNTESIS.
+        // Validator::extend('letters_dash_spaces_dot', function ($attribute, $value) {
+        //     return preg_match('/^[\pL\s\.\-\(\)0-9#]+$/u', $value);
+        // });
         Validator::extend('letters_dash_spaces_dot', function ($attribute, $value) {
-            return preg_match('/^[\pL\s\.\-\(\)0-9#]+$/u', $value);
+            return preg_match('/^[\pL\s\.\-\(\),0-9#]+$/u', $value);
         });
+
         //EMAIL
         Validator::extend('email_validator', function ($attribute, $value) {
-            // Se permiten letras, números, arroba, guion alto, guion bajo y punto
             return preg_match('/^[\pL0-9@\-_\.]+$/u', $value);
         });
         // Validator::extend('letters_dash_spaces_dot', function ($attribute, $value) {

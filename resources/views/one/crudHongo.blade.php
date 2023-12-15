@@ -20,10 +20,10 @@
                     </div>
                 </div>
             </div>
-            <div class="card-style mb-30  p-4  text-black shadow-lg">
+            <div class="card-style mb-30 p-4 text-black shadow-lg">
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table id="dataTable" class="table  mt-3  table-hover  ">
+                        <table id="dataTable" class="table mt-3 table-hover">
                             <thead class="text-white text-center" style="background-color: #198754;">
                                 <tr>
                                     <th>Nombre</th>
@@ -33,9 +33,9 @@
                             </thead>
                             <tbody class="text-muted">
                                 @foreach($hongos as $hongo)
-                                    <tr>
+                                <tr>
                                     <td>{{ $hongo->nombre }}</td>
-                                    <td class="d-none d-md-table-cell text-center">
+                                    <td class="text-center">
                                         @if ($hongo->estado)
                                             <div class="badge bg-success bg-opacity-25 text-wrap text-success" style="width: 6rem;"><strong><em>Habilitado</em></strong></div>
                                         @else
@@ -52,13 +52,14 @@
                                             </button>
                                         @endcan
                                     </td>
-                                    </tr>
+                                </tr>
                                 @endforeach
                             </tbody>
                         </table>
                     </div>
                 </div>
             </div>
+
         </div>
     </div>
 </div>

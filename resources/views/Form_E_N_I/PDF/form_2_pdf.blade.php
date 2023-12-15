@@ -40,8 +40,13 @@
             <h5>DATOS PACIENTE</h5>
             <table class="table">
                 <tr>
-                    <th>Nro. Formulario</th>
-                    <td>{{ $formulario->id_f_notificacion_inmediata }}</td>
+                    <th>H. Clinico</th>
+                    <td>
+                        @foreach ($paciente as $pacienteInfo)
+                            {{ $pacienteInfo['hcl_codigo'] }} <br>
+                        @endforeach
+                    </td>
+                    {{-- <td>{{ $formulario->id_f_notificacion_inmediata }}</td> --}}
                     <th>Fecha llenado</th>
                     <td>{{ $formulario->fecha }}</td>
                 </tr>

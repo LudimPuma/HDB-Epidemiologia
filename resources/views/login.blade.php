@@ -18,7 +18,7 @@
             background-image: url('img/p31.png');
             background-size: cover;
             background-repeat: no-repeat;
-            /* background-position: center;  */
+            /* background-position: center; */
         }
         /* Cambiar el color del texto "Iniciar Sesión" */
         .text-center {

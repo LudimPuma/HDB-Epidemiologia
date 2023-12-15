@@ -47,10 +47,10 @@
                                 <div class="row">
                                     <div class="col-lg-4">
                                         <!-- fecha-->
-                                        {{-- <div class="form-group input-style-1">
-                                            <label for="fecha">Fecha</label> --}}
-                                            <input type="hidden" name="fecha" id="fecha" class="form-control" value="{{ $fechaActual }}" pattern="[0-9\-]+" title="Solo fechas." required>
-                                        {{-- </div> --}}
+                                        <div class="form-group input-style-1">
+                                            <label for="fecha">Fecha</label>
+                                            <input type="date" name="fecha" id="fecha" class="form-control" value="{{ $fechaActual }}" pattern="[0-9\-]+" title="Solo fechas." required>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

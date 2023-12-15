@@ -21,10 +21,10 @@
                     </div>
                 </div>
             </div>
-            <div class="card-style mb-30  p-4  text-black shadow-lg">
+            <div class="card-style mb-30 p-4 text-black shadow-lg">
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table id="dataTable" class="table  mt-3  table-hover  ">
+                        <table id="dataTable" class="table mt-3 table-hover">
                             <thead class="text-white text-center" style="background-color: #198754;">
                                 <tr>
                                     <th>Nombre</th>
@@ -36,14 +36,14 @@
                                 @foreach($tInfecciones as $tInfeccion)
                                 <tr>
                                     <td>{{ $tInfeccion->nombre }}</td>
-                                    <td class="d-none d-md-table-cell text-center">
+                                    <td class="text-center">
                                         @if ($tInfeccion->estado)
                                             <div class="badge bg-success bg-opacity-25 text-wrap text-success" style="width: 6rem;"><strong><em>Habilitado</em></strong></div>
                                         @else
                                             <div class="badge bg-danger bg-opacity-25 text-wrap text-danger" style="width: 7rem;"><strong><em>Deshabilitado</em></strong></div>
                                         @endif
                                     </td>
-                                    <td class="d-none d-md-table-cell text-center">
+                                    <td class="text-center">
                                         @can('crud-edit-tipoInfeccion')
                                             <button class="btn-editar text-muted" style="background: none; border: none; text-decoration: none;" data-id="{{ $tInfeccion->cod_tipo_infeccion }}" data-nombre="{{ $tInfeccion->nombre }}" data-estado="{{ $tInfeccion->estado ? true : false }}" data-motivos="{{ $tInfeccion->motivos_baja }}">
                                                 <svg width="17" height="17" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16" onmouseover="this.style.fill='#000';" onmouseout="this.style.fill='currentColor';" style="stroke-width: 1; font-weight: lighter;">
@@ -52,7 +52,6 @@
                                                 </svg>
                                             </button>
                                         @endcan
-
                                     </td>
                                 </tr>
                                 @endforeach
@@ -61,6 +60,7 @@
                     </div>
                 </div>
             </div>
+
         </div>
     </div>
 </div>
