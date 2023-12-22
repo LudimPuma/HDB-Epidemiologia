@@ -24,6 +24,12 @@ Route::middleware('auth')->group(function () {
     ]);
     //CRUD MEDICAMENTOS
     Route::resource('medicamento', 'MedicamentoController');
+    //CRUD SERVICIOS
+    Route::resource('servicio', 'ServicioController');
+    //CRUD PROCEDIMIENTO INVASIVO
+    Route::resource('procedimiento', 'ProcedimientoController');
+    //CRUD TIPO DE MUESTRA
+    Route::resource('tipoMuestra', 'TipoMuestraController');
 
     Route::resource('hongo', 'HongoController');
     Route::resource('patologia', 'PatologiaController')->parameters([

@@ -545,6 +545,9 @@ class FormularioEnfermedadesNotificacionInmediataController extends Controller
     {
         try {
             $hClinicos = FormularioEnfermedadesNotificacionInmediata::pluck('h_clinico')->toArray();
+            if (empty($hClinicos)) {
+                return view('Form_E_N_I.VistaTabla', ['patients' => []]);
+            }
             $conn = $this->Servidor();
 
             $hClinicosCondition = implode(',', $hClinicos);

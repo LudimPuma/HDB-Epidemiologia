@@ -70,10 +70,10 @@
                     </td>
                 </tr>
                 <tr>
-                    <th>Fecha de Llenado:</th>
-                    <td>{{ $fecha_llenado }}</td>
                     <th>Fecha de Ingreso:</th>
                     <td>{{ $fecha_ingreso }}</td>
+                    <th>Fecha de Egreso:</th>
+                    <td>{{ $fecha_egreso }}</td>
                     <th>Dias de Internacion:</th>
                     <td>{{$dias_internacion}}</td>
                 </tr>
@@ -81,9 +81,8 @@
                     <th>Servicio de Inicio de sistomas: </th>
                     <td>{{ $servicio_inicio_sintomas->nombre }}</td>
                     <th>Servicio Notificador: </th>
-                    <td >{{ $servicio_notificador->nombre }}</td>
-                    <th>Defunción:</th>
-                    <td>{{$muerte}}</td>
+                    <td colspan="3">{{ $servicio_notificador->nombre }}</td>
+
                 </tr>
                 <tr>
                     <th>Diagnóstico de ingreso</th>
@@ -92,6 +91,10 @@
                 <tr>
                     <th>Diagnóstico de sala</th>
                     <td colspan="5">{{ $diagnostico_sala }}</td>
+                </tr>
+                <tr>
+                    <th>Diagnóstico de egreso</th>
+                    <td colspan="5">{{ $diagnostico_egreso }}</td>
                 </tr>
             </table>
         </div>

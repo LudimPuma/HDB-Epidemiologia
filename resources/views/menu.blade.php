@@ -108,19 +108,14 @@
                 <span class="text"> Tablas </span>
                 </a>
                 <ul id="ddmenu_3" class="collapse dropdown-nav">
-                    @can('crud-index-tipoInfeccion')
+                    @can('crud-index-medicamento')
                         <li>
-                            <a href="{{ route('tipoInfeccion.index') }}"> Tipos de infeccion</a>
+                            <a href="{{ route('medicamento.index') }}"> Antibioticos</a>
                         </li>
                     @endcan
                     @can('crud-index-bacteria')
                         <li>
                             <a href="{{ route('bacteria.index') }}"> Bacterias</a>
-                        </li>
-                    @endcan
-                    @can('crud-index-medicamento')
-                        <li>
-                            <a href="{{ route('medicamento.index') }}"> Antibioticos</a>
                         </li>
                     @endcan
                     @can('crud-index-hongo')
@@ -131,6 +126,26 @@
                     @can('crud-index-patologia')
                         <li>
                             <a href="{{ route('patologia.index') }}"> Patologías</a>
+                        </li>
+                    @endcan
+                    @can('crud-index-procedimiento')
+                        <li>
+                            <a href="{{ route('procedimiento.index') }}"> Procedimientos Invasivos</a>
+                        </li>
+                    @endcan
+                    @can('crud-index-servicio')
+                        <li>
+                            <a href="{{ route('servicio.index') }}"> Servicios</a>
+                        </li>
+                    @endcan
+                    @can('crud-index-tipoInfeccion')
+                        <li>
+                            <a href="{{ route('tipoInfeccion.index') }}"> Tipos de infeccion</a>
+                        </li>
+                    @endcan
+                    @can('crud-index-tipoMuestra')
+                        <li>
+                            <a href="{{ route('tipoMuestra.index') }}"> Tipos de Muestra Cultivo</a>
                         </li>
                     @endcan
                     @can('button-form-iaas-table')

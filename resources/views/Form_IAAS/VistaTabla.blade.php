@@ -46,7 +46,7 @@
                                                 </a>
                                             @endcan
                                             @can('edit-form-iaas')
-                                                <button class="btn-editar text-muted" style="background: none; border: none; text-decoration: none;" data-id="{{ $patient['cod_form_notificacion_p']}}" data-h="{{$patient['h_clinico']}}" data-fecha_llenado="{{$patient['fecha'] }}" data-nombre="{{ $patient['nombre'] }} {{ $patient['ap_paterno'] }} {{ $patient['ap_materno'] }}" data-estado="{{ $patient['estado'] }}" data-motivos="{{ $patient['motivos_baja'] }}">
+                                                <button class="btn-editar text-muted" style="background: none; border: none; text-decoration: none;" data-id="{{ $patient['cod_form_notificacion_p']}}" data-h="{{$patient['h_clinico']}}" data-fecha_llenado="{{$patient['fecha'] }}" data-nombre="{{ $patient['nombre'] }} {{ $patient['ap_paterno'] }} {{ $patient['ap_materno'] }}" data-estado="{{ $patient['estado'] }}" data-motivos="{{ $patient['motivos_baja'] }}" data-observacion="{{ $patient['observacion'] }}">
                                                     <svg width="17" height="17" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16" onmouseover="this.style.fill='#000';" onmouseout="this.style.fill='currentColor';" style="stroke-width: 1; font-weight: lighter;">
                                                         <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
                                                         <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/>
@@ -87,22 +87,35 @@
                             <input type="text" class="form-control"  id="nombre" name="nombre" disabled>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label for="estado">Estado</label>
-                        <select id="estado" name="estado" class="form-control" required>
-                            <option value="baja">Deshabilitado</option>
-                            <option value="alta">Habilitado</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Motivos de baja</label><br>
-                        <textarea type="text" class="form-control @error('motivos_baja') is-invalid @enderror" id="motivos_baja" name="motivos_baja"></textarea>
-                        @error('motivos_baja')
-                            <span class="invalid-feedback">
-                                <strong>{{$message}}</strong>
-                            </span>
-                        @enderror
-                    </div>
+                    @can('edit-form-iaas-estado')
+                        <div class="form-group">
+                            <label for="estado">Estado</label>
+                            <select id="estado" name="estado" class="form-control" required>
+                                <option value="baja">Deshabilitado</option>
+                                <option value="alta">Habilitado</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Motivos de baja</label><br>
+                            <textarea type="text" class="form-control @error('motivos_baja') is-invalid @enderror" id="motivos_baja" name="motivos_baja"></textarea>
+                            @error('motivos_baja')
+                                <span class="invalid-feedback">
+                                    <strong>{{$message}}</strong>
+                                </span>
+                            @enderror
+                        </div>
+                    @endcan
+                    @can('edit-form-iaas-observaciones')
+                        <div class="form-group">
+                            <label>Observaciones</label><br>
+                            <textarea type="text" class="form-control @error('observacion') is-invalid @enderror" id="observacion" name="observacion"></textarea>
+                            @error('observacion')
+                                <span class="invalid-feedback">
+                                    <strong>{{$message}}</strong>
+                                </span>
+                            @enderror
+                        </div>
+                    @endcan
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
                         <button type="submit" form="form-modificar" class="btn btn-primary">Actualizar</button>
@@ -127,6 +140,8 @@
         $('#modalModificar #nombre').val(nombre);
         $('#modalModificar #estado').val(estado);
         $('#modalModificar #motivos_baja').val(motivo);
+        $('#modalModificar #observacion').val($(this).data('observacion'));
+
 
         $('#form-modificar').attr('action', actionUrl);
         if (estado === 'baja' && motivo === '') {

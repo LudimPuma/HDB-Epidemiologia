@@ -8,7 +8,8 @@ class ProcedimientoInmasivo extends Model
 {
     protected $table='epidemiologia.procedimiento_invasivo';
     protected $primaryKey = 'cod_procedimiento_invasivo';
-    protected $fillable=['nombre'];
+    protected $fillable=['nombre','estado','motivos_baja'];
+    public $timestamps = false;
 
     public function formulariosNotificacionesPacientes()
     {

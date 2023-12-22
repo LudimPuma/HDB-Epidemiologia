@@ -2,39 +2,38 @@
 
 namespace App\Http\Controllers;
 
-use App\Medicamento;
+use App\TipoMuestra;
 use Illuminate\Http\Request;
 use Illuminate\Database\QueryException;
-class MedicamentoController extends Controller
+class TipoMuestraController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('can:crud-index-medicamento')->only('index');
-        $this->middleware('can:crud-create-medicamento')->only('store');
-        $this->middleware('can:crud-edit-medicamento')->only('update');
+        $this->middleware('can:crud-index-tipoMuestra')->only('index');
+        $this->middleware('can:crud-create-tipoMuestra')->only('store');
+        $this->middleware('can:crud-edit-tipoMuestra')->only('update');
     }
     public function index()
     {
-        $medicamentos = Medicamento::orderBy('cod_medicamento')->get();
-        return view('one.crudMedicamento', compact('medicamentos'));
+        $tipoMuestras = TipoMuestra::orderBy('cod_tipo_muestra')->get();
+        return view('one.crudTipoMuestra', compact('tipoMuestras'));
     }
     public function store(Request $request)
     {
         try{
             $request->validate([
-                'nombre' => 'required|numbers_dash_letters',
+                'nombre' => 'required|letters_dash_spaces_dot',
             ],
             [
                 'nombre.required' => 'El nombre obigatorio',
-                'nombre.numbers_dash_letters' => 'Caracteres incorrectos',
+                'nombre.letters_dash_spaces_dot' => 'Caracteres incorrectos',
             ]
             );
-            Medicamento::create($request->all());
-            return redirect()->route('medicamento.index')->with('success', 'Medicamento creado exitosamente');
+            TipoMuestra::create($request->all());
+            return redirect()->route('tipoMuestra.index')->with('success', 'Tipo de Muestra creado exitosamente');
         }catch (QueryException $e) {
-            return redirect()->back()->withErrors(['El nombre ya existe en la tabla Antibioticos.']);
+            return redirect()->back()->withErrors(['El nombre ya existe en la tabla tipo de muestras invasivos.']);
         }
-
     }
     public function update(Request $request, $id)
     {
@@ -50,7 +49,7 @@ class MedicamentoController extends Controller
                 'estado.only_zero_one' => 'El estado debe ser habilitado o deshabilitado',
             ]
             );
-            $medicamento = Medicamento::findOrFail($id);
+            $tipoMuestra = TipoMuestra::findOrFail($id);
             $data = [
                 'nombre' => $request->nombre,
                 'estado' => $request->estado,
@@ -67,12 +66,11 @@ class MedicamentoController extends Controller
             } else {
                 $data['motivos_baja'] = null;
             }
-            $medicamento->update($data);
-            return redirect()->route('medicamento.index')->with('success', 'Antibiotico actualizado exitosamente');
+            $tipoMuestra->update($data);
+            return redirect()->route('tipoMuestra.index')->with('success', 'Tipo de Muestra actualizado exitosamente');
         } catch (QueryException $e) {
-            return redirect()->back()->withErrors(['El nombre ya existe en la tabla Antibioticos.']);
+            return redirect()->back()->withErrors(['El nombre ya existe en la tabla Tipo Muestra.']);
         }
 
     }
-
 }

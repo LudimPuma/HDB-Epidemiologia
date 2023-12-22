@@ -143,6 +143,26 @@
                                         </div>
                                         <div class="row">
                                             <div class="col-lg-4">
+                                                <!-- Campo para fecha egreso -->
+                                                <div class="form-group select-style-1">
+                                                    <label for="fecha_egreso">Fecha de Egreso:</label>
+                                                    <div class="form-group input-style-1">
+                                                        <input type="date" class="form-control" id="fecha_egreso" name="fecha_egreso" value="{{old('fecha_egreso')}}" required>
+                                                        @error('fecha_egreso')
+                                                            <script>
+                                                                document.addEventListener("DOMContentLoaded", function() {
+                                                                    var errorMessage = @json($message);
+                                                                    if (errorMessage) {
+                                                                        Swal.fire('Error', errorMessage, 'error');
+                                                                    }
+                                                                });
+                                                            </script>
+                                                        @enderror
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                            <div class="col-lg-4">
                                                 <!-- Campo para dias internacion -->
                                                 <div class="form-group input-style-1">
                                                     <label for="dias_internacion">Días de Internacion:</label>
@@ -158,30 +178,6 @@
                                                         </script>
                                                     @enderror
                                                 </div>
-                                            </div>
-                                            <div class="col-lg-4">
-                                                <!-- Campo para muerte -->
-                                                <div class="form-group select-style-1">
-                                                    <label for="muerte">Defunción:</label>
-                                                    <div class="select-position">
-                                                        <select class="form-control" id="muerte" name="muerte" required>
-                                                            <option value="">Seleccionar</option>
-                                                            <option value="si" @if(old('muerte') == 'si') selected @endif>Sí</option>
-                                                            <option value="no" @if(old('muerte') == 'no') selected @endif>No</option>
-                                                        </select>
-                                                        @error('muerte')
-                                                            <script>
-                                                                document.addEventListener("DOMContentLoaded", function() {
-                                                                    var errorMessage = @json($message);
-                                                                    if (errorMessage) {
-                                                                        Swal.fire('Error', errorMessage, 'error');
-                                                                    }
-                                                                });
-                                                            </script>
-                                                        @enderror
-                                                    </div>
-                                                </div>
-
                                             </div>
                                             <div class="col-lg-4">
                                                 <!-- Campo para servicio_inicio_sintomas -->
@@ -254,6 +250,24 @@
                                                     <label for="diagnostico_sala">Diagnóstico de sala:</label>
                                                     <textarea class="form-control" id="diagnostico_sala" name="diagnostico_sala" required>{{old('diagnostico_sala')}}</textarea>
                                                     @error('diagnostico_sala')
+                                                        <script>
+                                                            document.addEventListener("DOMContentLoaded", function() {
+                                                                var errorMessage = @json($message);
+                                                                if (errorMessage) {
+                                                                    Swal.fire('Error', errorMessage, 'error');
+                                                                }
+                                                            });
+                                                        </script>
+                                                    @enderror
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-lg-4">
+                                                <div class="form-group input-style-1">
+                                                    <label for="diagnostico_egreso">Diagnóstico de egreso:</label>
+                                                    <textarea class="form-control" id="diagnostico_egreso" name="diagnostico_egreso" required>{{old('diagnostico_egreso')}}</textarea>
+                                                    @error('diagnostico_egreso')
                                                         <script>
                                                             document.addEventListener("DOMContentLoaded", function() {
                                                                 var errorMessage = @json($message);
@@ -473,7 +487,7 @@
                                             </div>
                                         </div>
                                         <div class="row">
-                                            <div class="col-lg-4">
+                                            {{-- <div class="col-lg-4">
                                                 <!-- Campo para observacion -->
                                                 <div class="form-group input-style-1">
                                                     <label for="observacion">Observación:</label>
@@ -489,7 +503,7 @@
                                                         </script>
                                                     @enderror
                                                 </div>
-                                            </div>
+                                            </div> --}}
                                         </div>
                                     </div>
                                 </div>
@@ -518,16 +532,6 @@
         }
     });
 </script>
-{{-- @if (session('success'))
-    <script src="{{asset('assets/js/jquery-3.6.0.min.js')}}"></script>
-    <script src="{{asset('assets/js/sweetalert2/dist/sweetalert2.min.js')}}"></script>
-    <div class="alert alert-success">
-        {{ session('success') }}
-    </div>
-    <script>
-        Swal.fire('Éxito', '{{ session('success') }}', 'success');
-    </script>
-@endif --}}
 
 
 <!-- Modal para mostrar el nombre de la bacteria y la tabla de medicamentos -->
@@ -574,32 +578,6 @@
     });
 
 </script>
-
-{{-- SWEETALERT --}}
-{{-- <script>
-    $(document).ready(function () {
-        $('form').submit(function (event) {
-            console.log("Submit event fired.");
-            if ($('#informacion_bacterias_input').val() === '' && $('#infecciones_seleccionadas').val() === '' && $('#hongos_seleccionados').val() === '' &&
-                    $('#h_clinico').val() === '' && $('#dato_paciente').val() === '' && $('#fecha_ingreso').val() === '' && $('#dias_internacion').val() === '' &&
-                    $('#muerte').val() === '' && $('#servicio_inicio_sintomas').val() === '' && $('#servicio_notificador').val() === '' && $('#diagnostico_ingreso').val() === '' &&
-                    $('#diagnostico_sala').val() === '' && $('#uso_antimicrobanos').val() === '' && $('#tipo_muestra_cultivo').val() === '' && $('#procedimiento_invasivo').val() === '' &&
-                    $('#medidas_tomar').val() === '' && $('#aislamiento').val() === '' && $('#seguimiento').val() === '' && $('#observacion').val() === ''
-            ) {
-                event.preventDefault();
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Campos vacíos',
-                    text: 'No deben existir espacios en blanco',
-                });
-            }
-            else{
-                console.log("Success branch executed.");
-                Swal.fire('Éxito', successMessage, 'success');
-            }
-        });
-    });
-</script> --}}
 
 
 {{-- SCRIPT MODAL --}}
@@ -956,6 +934,39 @@
         }
     }
 </script>
+
+{{-- DIAS DE INTERNACION --}}
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var fechaIngreso = document.getElementById("fecha_ingreso");
+        var fechaEgreso = document.getElementById("fecha_egreso");
+        var diasInternacion = document.getElementById("dias_internacion");
+
+        function calcularDiasInternacion() {
+            var fechaIngresoValue = new Date(fechaIngreso.value);
+            var fechaEgresoValue = new Date(fechaEgreso.value);
+
+            // Validación: Si la fecha de ingreso es posterior a la fecha de egreso, establece días en 0
+            if (fechaIngresoValue > fechaEgresoValue) {
+                diasInternacion.value = 0;
+            } else {
+                // Calcula la diferencia en milisegundos
+                var diferencia = fechaEgresoValue - fechaIngresoValue;
+
+                // Convierte la diferencia a días
+                var dias = Math.max(Math.ceil(diferencia / (1000 * 60 * 60 * 24)), 1);
+
+                // Actualiza el valor del campo días de internación
+                diasInternacion.value = dias;
+            }
+        }
+
+        // Asocia la función al evento change de las fechas
+        fechaIngreso.addEventListener("change", calcularDiasInternacion);
+        fechaEgreso.addEventListener("change", calcularDiasInternacion);
+    });
+</script>
+
 
 @endsection
 

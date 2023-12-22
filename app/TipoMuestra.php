@@ -8,7 +8,8 @@ class TipoMuestra extends Model
 {
     protected $table='epidemiologia.tipo_muestra';
     protected $primaryKey = 'cod_tipo_muestra';
-    protected $fillable=['nombre'];
+    protected $fillable=['nombre','estado','motivos_baja'];
+    public $timestamps = false;
 
     public function formulariosNotificacionesPacientes()
     {

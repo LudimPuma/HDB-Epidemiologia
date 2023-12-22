@@ -119,11 +119,11 @@ class FormularioNotificacionPacienteController extends Controller
         $id = $request->query('patientId');
         $nombre = $request->query('nombreCompleto');
         $datosPacientes = DatoPaciente::all();
-        $servicios = Servicio::all();
+        $servicios = Servicio::where('estado', true)->orderBy('nombre', 'asc')->get();
         $tiposInfeccion = TipoInfeccion::where('estado', true)->orderBy('nombre', 'asc')->get();
         $hongos = Hongo::where('estado', true)->orderBy('nombre', 'asc')->get();
-        $procedimientosInmasivos = ProcedimientoInmasivo::all();
-        $tiposMuestra = TipoMuestra::all();
+        $procedimientosInmasivos = ProcedimientoInmasivo::where('estado', true)->orderBy('nombre', 'asc')->get();
+        $tiposMuestra = TipoMuestra::where('estado', true)->orderBy('nombre', 'asc')->get();
         $bacterias = Bacteria::where('estado',true)->orderBy('nombre', 'asc')->get();
         $fechaActual = Carbon::now('America/La_Paz')->format('Y-m-d');
         return view('Form_IAAS.formulario_IAAS', compact('id','nombre', 'datosPacientes', 'bacterias','servicios', 'tiposInfeccion', 'hongos','procedimientosInmasivos', 'tiposMuestra','fechaActual'));
@@ -155,8 +155,9 @@ class FormularioNotificacionPacienteController extends Controller
                 'h_clinico' => 'required|only_numbers',
                 'fecha_llenado' => 'required|numbers_with_dash',
                 'fecha_ingreso' => 'required|numbers_with_dash',
+                'fecha_egreso' => 'required|numbers_with_dash',
                 'dias_internacion' => ['required','only_numbers','min:1'],
-                'muerte' => 'required|in:si,no',
+                'diagnostico_egreso' => 'required|letters_dash_spaces_dot',
                 'servicio_inicio_sintomas' => 'required|only_numbers',
                 'servicio_notificador' => 'required|only_numbers',
                 'diagnostico_ingreso' => 'required|letters_dash_spaces_dot',
@@ -167,7 +168,7 @@ class FormularioNotificacionPacienteController extends Controller
                 'medidas_tomar' => 'required|letters_dash_spaces_dot',
                 'aislamiento' => 'required|in:si,no',
                 'seguimiento' => 'required|letters_dash_spaces_dot',
-                'observacion' => 'required|letters_dash_spaces_dot',
+                // 'observacion' => 'required|letters_dash_spaces_dot',
                 'informacion_bacterias_input' => 'required',
                 'infecciones_seleccionadas'=> 'required',
             ],
@@ -178,11 +179,13 @@ class FormularioNotificacionPacienteController extends Controller
                 'fecha_llenado.numbers_with_dash'=> 'No es un formato de fecha',
                 'fecha_ingreso.required'=> 'La fecha de ingreso del paciente no puede estar vacio',
                 'fecha_ingreso.numbers_with_dash'=> 'No es un formato de fecha',
+                'fecha_egreso.required'=> 'La fecha de egreso del paciente no puede estar vacio',
+                'fecha_egreso.numbers_with_dash'=> 'No es un formato de fecha',
                 'dias_internacion.required' => 'El campo es obligatorio',
                 'dias_internacion.only_numbers' => 'Solo es permitido números.',
                 'dias_internacion.min' => 'El valor mínimo permitido es 1.',
-                'muerte.required' => 'El campo es obligatorio',
-                'muerte.in' => 'El valor debe ser "si" o "no".',
+                'diagnostico_egreso.required' => 'El campo es obligatorio',
+                'diagnostico_egreso.letters_dash_spaces_dot' => 'El diagnostico de egreso solo puede incluir letras, números, espacios, - y .',
                 'servicio_inicio_sintomas.required'=> 'El servicio de inicio de sintomas no puede estar vacio',
                 'servicio_inicio_sintomas.only_numbers'=> 'No se permiten esos caracteres',
                 'servicio_notificador.required'=> 'El servicio notificador no puede estar vacio',
@@ -203,8 +206,8 @@ class FormularioNotificacionPacienteController extends Controller
                 'aislamiento.in' => 'El valor debe ser "si" o "no".',
                 'seguimiento.required' => 'No puede estar vacio',
                 'seguimiento.letters_dash_spaces_dot' => 'El seguimineto solo puede incluir letras, números, espacios, - y .',
-                'observacion.required'=> 'La observacion no puede estar vacio',
-                'observacion.letters_dash_spaces_dot'=> 'La observacion solo puede incluir letras, números, espacios, - y .',
+                // 'observacion.required'=> 'La observacion no puede estar vacio',
+                // 'observacion.letters_dash_spaces_dot'=> 'La observacion solo puede incluir letras, números, espacios, - y .',
             ]
             );
             // Crear una nueva instancia del modelo FormularioNotificacionPaciente
@@ -213,19 +216,21 @@ class FormularioNotificacionPacienteController extends Controller
             $formulario->h_clinico = $request->input('h_clinico');
             $formulario->fecha_llenado = $request->input('fecha_llenado');
             $formulario->fecha_ingreso = $request->input('fecha_ingreso');
+            $formulario->fecha_egreso = $request->input('fecha_egreso');
             $formulario->dias_internacion = $request->input('dias_internacion');
             $formulario->muerte = $request->input('muerte');
             $formulario->servicio_inicio_sintomas = $request->input('servicio_inicio_sintomas');
             $formulario->servicio_notificador = $request->input('servicio_notificador');
             $formulario->diagnostico_ingreso = $request->input('diagnostico_ingreso');
             $formulario->diagnostico_sala = $request->input('diagnostico_sala');
+            $formulario->diagnostico_egreso = $request->input('diagnostico_egreso');
             $formulario->uso_antimicrobanos = $request->input('uso_antimicrobanos');
             $formulario->tipo_muestra_cultivo = $request->input('tipo_muestra_cultivo');
             $formulario->procedimiento_invasivo = $request->input('procedimiento_invasivo');
             $formulario->medidas_tomar = $request->input('medidas_tomar');
             $formulario->aislamiento = $request->input('aislamiento');
             $formulario->seguimiento = $request->input('seguimiento');
-            $formulario->observacion = $request->input('observacion');
+            // $formulario->observacion = $request->input('observacion');
             $formulario->estado = 'alta';
             $formulario->pk_usuario = Auth::id();
 
@@ -328,30 +333,132 @@ class FormularioNotificacionPacienteController extends Controller
 
     }
      //MODIFICAR ESTADO
+    // public function update(Request $request, FormularioNotificacionPaciente $formulario)
+    // {
+    //     $request->validate([
+    //         'estado' => 'in:alta,baja',
+    //         'observacion' => 'letters_dash_spaces_dot',
+    //     ]);
+
+    //     $data = [
+    //         'estado' => $request->estado,
+    //         'observacion' => $request->observacion
+    //     ];
+
+    //     if ($request->estado === 'baja') {
+    //         $request->validate([
+    //             'motivos_baja' => 'required|letters_dash_spaces_dot',
+    //         ],
+    //         [
+    //             'motivos_baja.required'=> 'Debe dar un motivo de baja',
+    //         ]);
+    //         $data['motivos_baja'] = $request->motivos_baja;
+    //     } else {
+    //         $data['motivos_baja'] = null;
+    //     }
+    //     $formulario->update($data);
+    //     if ($formulario->update($data)) {
+    //         $request->session()->flash('success', 'Estado actualizado exitosamente');
+    //     }
+    //     try {
+    //         $hClinicos = FormularioNotificacionPaciente::pluck('h_clinico')->toArray();
+    //         $conn = $this->Servidor();
+
+    //         $hClinicosCondition = implode(',', $hClinicos);
+    //         $sql = "SELECT
+    //             HCL_CODIGO,
+    //             HCL_NOMBRE,
+    //             HCL_APPAT,
+    //             HCL_APMAT
+    //         FROM
+    //             SE_HC
+    //         WHERE
+    //             HCL_CODIGO IN ($hClinicosCondition)";
+
+    //         $res = sqlsrv_query($conn, $sql);
+
+    //         if ($res === false) {
+    //             throw new \Exception("Error de consulta: " . print_r(sqlsrv_errors(), true));
+    //         }
+    //         $patients = [];
+
+    //         while ($row = sqlsrv_fetch_array($res, SQLSRV_FETCH_ASSOC)) {
+    //             $formularios = FormularioNotificacionPaciente::where('h_clinico', $row['HCL_CODIGO'])
+    //                 ->orderBy('cod_form_notificacion_p', 'desc')
+    //                 ->get();
+    //             foreach ($formularios as $formulario) {
+    //                 $patient = [
+    //                     'h_clinico' => $row['HCL_CODIGO'],
+    //                     'nombre' => $row['HCL_NOMBRE'],
+    //                     'ap_paterno' => $row['HCL_APPAT'],
+    //                     'ap_materno' => $row['HCL_APMAT'],
+    //                     'cod_form_notificacion_p' => null,
+    //                     'fecha' => null,
+    //                     'estado' => null,
+    //                     'motivos_baja' => null,
+    //                     'observacion' => null,
+    //                 ];
+
+    //                 $patient['cod_form_notificacion_p'] = $formulario->cod_form_notificacion_p;
+    //                 $patient['fecha'] = $formulario->fecha_llenado;
+    //                 $patient['estado'] = $formulario->estado;
+    //                 $patient['motivos_baja'] = $formulario->motivos_baja;
+    //                 $patient['observacion'] = $formulario->observacion;
+    //                 $patients[] = $patient;
+    //             }
+
+    //         }
+    //         array_multisort(array_column($patients, 'cod_form_notificacion_p'), SORT_DESC, $patients);
+    //         sqlsrv_close($conn);
+
+    //         return view('Form_IAAS.VistaTabla', compact('patients'));
+    //     } catch (\Exception $e) {
+    //         return response()->json([
+    //             'error' => true,
+    //             'message' => $e->getMessage(),
+    //         ]);
+    //     }
+    // }
     public function update(Request $request, FormularioNotificacionPaciente $formulario)
     {
-        $request->validate([
-            'estado' => 'required|in:alta,baja',
-        ]);
-
         $data = [
-            'estado' => $request->estado,
+            'observacion' => $formulario->observacion,
+            'estado' => $formulario->estado,
+            'motivos_baja' => $formulario->motivos_baja,
         ];
 
-        if ($request->estado === 'baja') {
+        if (auth()->user()->can('edit-form-iaas-observaciones')) {
             $request->validate([
-                'motivos_baja' => 'required|letters_dash_spaces_dot',
-            ],
-            [
-                'motivos_baja.required'=> 'Debe dar un motivo de baja',
+                'observacion' => 'letters_dash_spaces_dot',
             ]);
-            $data['motivos_baja'] = $request->motivos_baja;
-        } else {
-            $data['motivos_baja'] = null;
+
+            $data['observacion'] = $request->observacion;
         }
+
+        if (auth()->user()->can('edit-form-iaas-estado')) {
+            $request->validate([
+                'estado' => 'in:alta,baja',
+            ]);
+
+            if ($request->estado === 'baja') {
+                $request->validate([
+                    'motivos_baja' => 'required|letters_dash_spaces_dot',
+                ],
+                [
+                    'motivos_baja.required' => 'Debe dar un motivo de baja',
+                ]);
+
+                $data['estado'] = $request->estado;
+                $data['motivos_baja'] = $request->motivos_baja;
+            } elseif ($request->estado === 'alta') {
+                $data['estado'] = $request->estado;
+                $data['motivos_baja'] = null; // o $data['motivos_baja'] = '';
+            }
+        }
+
         $formulario->update($data);
         if ($formulario->update($data)) {
-            $request->session()->flash('success', 'Estado actualizado exitosamente');
+            $request->session()->flash('success', 'Actualizado exitosamente');
         }
         try {
             $hClinicos = FormularioNotificacionPaciente::pluck('h_clinico')->toArray();
@@ -379,7 +486,7 @@ class FormularioNotificacionPacienteController extends Controller
                 $formularios = FormularioNotificacionPaciente::where('h_clinico', $row['HCL_CODIGO'])
                     ->orderBy('cod_form_notificacion_p', 'desc')
                     ->get();
-                foreach ($formularios as $formulario) {
+                foreach ($formularios as $otherFormulario) { // Cambiado el nombre de la variable
                     $patient = [
                         'h_clinico' => $row['HCL_CODIGO'],
                         'nombre' => $row['HCL_NOMBRE'],
@@ -389,16 +496,16 @@ class FormularioNotificacionPacienteController extends Controller
                         'fecha' => null,
                         'estado' => null,
                         'motivos_baja' => null,
+                        'observacion' => null,
                     ];
 
-                    $patient['cod_form_notificacion_p'] = $formulario->cod_form_notificacion_p;
-                    $patient['fecha'] = $formulario->fecha_llenado;
-                    $patient['estado'] = $formulario->estado;
-                    $patient['motivos_baja'] = $formulario->motivos_baja;
-
+                    $patient['cod_form_notificacion_p'] = $otherFormulario->cod_form_notificacion_p;
+                    $patient['fecha'] = $otherFormulario->fecha_llenado;
+                    $patient['estado'] = $otherFormulario->estado;
+                    $patient['motivos_baja'] = $otherFormulario->motivos_baja;
+                    $patient['observacion'] = $otherFormulario->observacion;
                     $patients[] = $patient;
                 }
-
             }
             array_multisort(array_column($patients, 'cod_form_notificacion_p'), SORT_DESC, $patients);
             sqlsrv_close($conn);
@@ -411,10 +518,15 @@ class FormularioNotificacionPacienteController extends Controller
             ]);
         }
     }
+
+
     public function tabla()
     {
         try {
             $hClinicos = FormularioNotificacionPaciente::pluck('h_clinico')->toArray();
+            if (empty($hClinicos)) {
+                return view('Form_IAAS.VistaTabla', ['patients' => []]);
+            }
             $conn = $this->Servidor();
 
             $hClinicosCondition = implode(',', $hClinicos);
@@ -431,7 +543,13 @@ class FormularioNotificacionPacienteController extends Controller
             $res = sqlsrv_query($conn, $sql);
 
             if ($res === false) {
-                throw new \Exception("Error de consulta: " . print_r(sqlsrv_errors(), true));
+                // throw new \Exception("Error de consulta: " . print_r(sqlsrv_errors(), true));
+                $errors = sqlsrv_errors();
+                $errorMessage = "Error de consulta: ";
+                foreach ($errors as $error) {
+                    $errorMessage .= "SQLSTATE: " . $error['SQLSTATE'] . ", Código: " . $error['code'] . ", Mensaje: " . $error['message'] . "\n";
+                }
+                throw new \Exception($errorMessage);
             }
             $patients = [];
 
@@ -449,12 +567,14 @@ class FormularioNotificacionPacienteController extends Controller
                         'fecha' => null,
                         'estado' => null,
                         'motivos_baja' => null,
+                        'observacion' => null,
                     ];
 
                     $patient['cod_form_notificacion_p'] = $formulario->cod_form_notificacion_p;
                     $patient['fecha'] = $formulario->fecha_llenado;
                     $patient['estado'] = $formulario->estado;
                     $patient['motivos_baja'] = $formulario->motivos_baja;
+                    $patient['observacion'] = $formulario->observacion;
 
                     $patients[] = $patient;
                 }
@@ -576,12 +696,14 @@ class FormularioNotificacionPacienteController extends Controller
         $h_clinico = $formulario->h_clinico;
         $fecha_llenado = $formulario->fecha_llenado;
         $fecha_ingreso = $formulario->fecha_ingreso;
+        $fecha_egreso = $formulario->fecha_egreso;
         $dias_internacion = $formulario->dias_internacion;
         $muerte = $formulario->muerte;
         $servicio_inicio_sintomas = $formulario->servicio_inicio_sintomas;
         $servicio_notificador = $formulario->servicio_notificador;
         $diagnostico_ingreso = $formulario->diagnostico_ingreso;
         $diagnostico_sala = $formulario->diagnostico_sala;
+        $diagnostico_egreso = $formulario->diagnostico_egreso;
         $uso_antimicrobanos = $formulario->uso_antimicrobanos;
         $tipo_muestra_cultivo = $formulario->tipo_muestra_cultivo;
         $procedimiento_invasivo = $formulario->procedimiento_invasivo;
@@ -599,12 +721,14 @@ class FormularioNotificacionPacienteController extends Controller
             'nombreP' => $nombreP,
             'fecha_llenado' => $fecha_llenado,
             'fecha_ingreso' => $fecha_ingreso,
+            'fecha_egreso' => $fecha_egreso,
             'dias_internacion' => $dias_internacion,
             'muerte' => $muerte,
             'servicio_inicio_sintomas' => Servicio::where('cod_servicio',$servicio_inicio_sintomas)->first(),
             'servicio_notificador' => Servicio::where('cod_servicio',$servicio_notificador)->first(),
             'diagnostico_ingreso' => $diagnostico_ingreso,
             'diagnostico_sala' => $diagnostico_sala,
+            'diagnostico_egreso' => $diagnostico_egreso,
             'nombresTiposInfeccion' => $nombresTiposInfeccion,
             'uso_antimicrobanos' => $uso_antimicrobanos,
             'tipo_muestra_cultivo' => TipoMuestra::where('cod_tipo_muestra',$tipo_muestra_cultivo)->first(),

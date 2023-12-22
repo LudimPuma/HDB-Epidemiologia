@@ -2,39 +2,38 @@
 
 namespace App\Http\Controllers;
 
-use App\Medicamento;
+use App\Servicio;
 use Illuminate\Http\Request;
 use Illuminate\Database\QueryException;
-class MedicamentoController extends Controller
+class ServicioController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('can:crud-index-medicamento')->only('index');
-        $this->middleware('can:crud-create-medicamento')->only('store');
-        $this->middleware('can:crud-edit-medicamento')->only('update');
+        $this->middleware('can:crud-index-servicio')->only('index');
+        $this->middleware('can:crud-create-servicio')->only('store');
+        $this->middleware('can:crud-edit-servicio')->only('update');
     }
     public function index()
     {
-        $medicamentos = Medicamento::orderBy('cod_medicamento')->get();
-        return view('one.crudMedicamento', compact('medicamentos'));
+        $servicios = Servicio::orderBy('cod_servicio')->get();
+        return view('one.crudServicio', compact('servicios'));
     }
     public function store(Request $request)
     {
         try{
             $request->validate([
-                'nombre' => 'required|numbers_dash_letters',
+                'nombre' => 'required|letters_dash_spaces_dot',
             ],
             [
                 'nombre.required' => 'El nombre obigatorio',
-                'nombre.numbers_dash_letters' => 'Caracteres incorrectos',
+                'nombre.letters_dash_spaces_dot' => 'Caracteres incorrectos',
             ]
             );
-            Medicamento::create($request->all());
-            return redirect()->route('medicamento.index')->with('success', 'Medicamento creado exitosamente');
+            Servicio::create($request->all());
+            return redirect()->route('servicio.index')->with('success', 'Servicio creado exitosamente');
         }catch (QueryException $e) {
-            return redirect()->back()->withErrors(['El nombre ya existe en la tabla Antibioticos.']);
+            return redirect()->back()->withErrors(['El nombre ya existe en la tabla servicios.']);
         }
-
     }
     public function update(Request $request, $id)
     {
@@ -50,7 +49,7 @@ class MedicamentoController extends Controller
                 'estado.only_zero_one' => 'El estado debe ser habilitado o deshabilitado',
             ]
             );
-            $medicamento = Medicamento::findOrFail($id);
+            $servicio = Servicio::findOrFail($id);
             $data = [
                 'nombre' => $request->nombre,
                 'estado' => $request->estado,
@@ -67,12 +66,11 @@ class MedicamentoController extends Controller
             } else {
                 $data['motivos_baja'] = null;
             }
-            $medicamento->update($data);
-            return redirect()->route('medicamento.index')->with('success', 'Antibiotico actualizado exitosamente');
+            $servicio->update($data);
+            return redirect()->route('servicio.index')->with('success', 'Antibiotico actualizado exitosamente');
         } catch (QueryException $e) {
             return redirect()->back()->withErrors(['El nombre ya existe en la tabla Antibioticos.']);
         }
 
     }
-
 }
