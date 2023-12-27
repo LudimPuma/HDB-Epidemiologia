@@ -230,6 +230,7 @@
                                         <option value="Logopeda" {{ old('profesion', $user->profesion) == 'Logopeda' ? 'selected' : '' }}>Logopeda</option>
                                         <option value="Técnico en Imagenología" {{ old('profesion', $user->profesion) == 'Técnico en Imagenología' ? 'selected' : '' }}>Técnico en Imagenología</option>
                                         <option value="Paramédico(a)" {{ old('profesion', $user->profesion) == 'Paramédico(a)' ? 'selected' : '' }}>Paramédico(a)</option>
+                                        <option value="Bacteriólogo(a)" {{ old('profesion', $user->profesion) == 'Bacteriólogo(a)' ? 'selected' : '' }}>Bacteriólogo(a)</option>
                                     </select>
                                     @error('profesion')
                                         <script>
@@ -356,7 +357,9 @@
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="cargo"><strong><small><em>Cargo:</em></small></strong></label>
-                                    <select class="form-select" id="cargo" name="cargo" required>
+                                    <input type="text" name="cargo" class="form-control" value="{{ old('cargo', $user->cargo) }}" required>
+
+                                    {{-- <select class="form-select" id="cargo" name="cargo" required>
                                         <option value="Responsable" {{ old('cargo', $user->cargo) == 'Responsable' ? 'selected' : '' }}>Responsable</option>
                                         <option value="Medico" {{ old('cargo', $user->cargo) == 'Medico' ? 'selected' : '' }}>Medico</option>
                                         <option value="Asesor(a) Legal" {{ old('cargo', $user->cargo) == 'Asesor(a) Legal' ? 'selected' : '' }}>Asesor(a) Legal</option>
@@ -364,7 +367,7 @@
                                         <option value="Asesor(a) Adjunto" {{ old('cargo', $user->cargo) == 'Asesor(a) Adjunto' ? 'selected' : '' }}>Asesor(a) Adjunto</option>
                                         <option value="Auxiliar Administrativo" {{ old('cargo', $user->cargo) == 'Auxiliar Administrativo' ? 'selected' : '' }}>Auxiliar Administrativo</option>
                                         <option value="Personal" {{ old('cargo', $user->cargo) == 'Personal' ? 'selected' : '' }}>Personal</option>
-                                    </select>
+                                    </select> --}}
                                     @error('cargo')
                                         <script>
                                             document.addEventListener("DOMContentLoaded", function() {
@@ -397,6 +400,7 @@
                                 <div class="form-group">
                                     <label for="roles"><strong><small><em>Roles:</em></small></strong></label>
                                     <select name="roles[]" class="form-control" id="roles" required data-placeholder="Seleccione uno o más roles">
+                                        <option value=""></option>
                                         @foreach ($roles as $role)
                                             <option value="{{ $role->name }}" {{ in_array($role->name, old('roles', $user->getRoleNames()->toArray())) ? 'selected' : '' }}>{{ $role->name }}</option>
                                         @endforeach

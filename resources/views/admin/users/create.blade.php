@@ -208,12 +208,12 @@
                     <div class="col-md-4">
                         <div class="form-group">
                             <label for="profesion"><strong><small>Profesion:</small></strong></label>
-                                <select class="form-select " id="profesion" name="profesion"  data-placeholder="Seleccione un una Profesion" required>
+                                <select class="form-select" id="profesion" name="profesion" data-placeholder="Seleccione una Profesion" required>
                                     <option></option>
                                     <option value="Bachiller" {{ old('profesion') == 'Bachiller' ? 'selected' : '' }}>Bachiller</option>
                                     <option value="Licenciado(a)" {{ old('profesion') == 'Licenciado(a)' ? 'selected' : '' }}>Licenciado(a)</option>
-                                    <option value="Ingeniero(a)" {{ old('profesion') == '' ? 'selected' : 'Ingeniero(a)' }}>Ingeniero(a)</option>
-                                    <option value="Técnico Medio en Enfermería" {{ old('profesion') == 'Ingeniero(a)' ? 'selected' : '' }}>Técnico Medio en Enfermería</option>
+                                    <option value="Ingeniero(a)" {{ old('profesion') == 'Ingeniero(a)' ? 'selected' : '' }}>Ingeniero(a)</option>
+                                    <option value="Técnico Medio en Enfermería" {{ old('profesion') == 'Técnico Medio en Enfermería' ? 'selected' : '' }}>Técnico Medio en Enfermería</option>
                                     <option value="Doctor(a)" {{ old('profesion') == 'Doctor(a)' ? 'selected' : '' }}>Doctor(a)</option>
                                     <option value="Enfermero(a)" {{ old('profesion') == 'Enfermero(a)' ? 'selected' : '' }}>Enfermero(a)</option>
                                     <option value="Terapeuta" {{ old('profesion') == 'Terapeuta' ? 'selected' : '' }}>Terapeuta</option>
@@ -232,6 +232,7 @@
                                     <option value="Logopeda" {{ old('profesion') == 'Logopeda' ? 'selected' : '' }}>Logopeda</option>
                                     <option value="Técnico en Imagenología" {{ old('profesion') == 'Técnico en Imagenología' ? 'selected' : '' }}>Técnico en Imagenología</option>
                                     <option value="Paramédico(a)" {{ old('profesion') == 'Paramédico(a)' ? 'selected' : '' }}>Paramédico(a)</option>
+                                    <option value="Bacteriólogo(a)" {{ old('profesion') == 'Bacteriólogo(a)' ? 'selected' : '' }}>Bacteriólogo(a)</option>
                                 </select>
                                 @error('profesion')
                                     <script>
@@ -370,7 +371,8 @@
                     <div class="col-md-4">
                         <div class="form-group">
                             <label for="cargo"><strong><small><em>Cargo:</em></small></strong></label>
-                            <select class="form-select " id="cargo" name="cargo"  data-placeholder="Seleccione un Cargo" required>
+                            <input type="text" name="cargo" class="form-control" value="{{old('cargo')}}" required>
+                            {{-- <select class="form-select " id="cargo" name="cargo"  data-placeholder="Seleccione un Cargo" required>
                                 <option></option>
                                 <option value="Responsable" {{ old('cargo') == 'Responsable' ? 'selected' : '' }}>Responsable</option>
                                 <option value="Medico" {{ old('cargo') == 'Medico' ? 'selected' : '' }}>Medico</option>
@@ -379,7 +381,7 @@
                                 <option value="Asesor(a) Adjunto" {{ old('cargo') == 'Asesor(a) Adjunto' ? 'selected' : '' }}>Asesor(a) Adjunto</option>
                                 <option value="Auxiliar Administrativo" {{ old('cargo') == 'Auxiliar Administrativo' ? 'selected' : '' }}>Auxiliar Administrativo</option>
                                 <option value="Personal" {{ old('cargo') == 'Personal' ? 'selected' : '' }}>Personal</option>
-                            </select>
+                            </select> --}}
                             @error('cargo')
                                 <script>
                                     document.addEventListener("DOMContentLoaded", function() {
@@ -412,6 +414,7 @@
                         <div class="form-group">
                             <label for="roles"><strong><small><em>Roles:</em></small></strong></label>
                             <select name="roles[]" class="form-control" id="roles" data-placeholder="Seleccionar Rol de Usuario" required>
+                                <option value=""></option>
                                 @foreach ($roles as $role)
                                     <option value="{{ $role->name }}" {{ in_array($role->name, old('roles', [])) ? 'selected' : '' }}>
                                         {{ $role->name }}
