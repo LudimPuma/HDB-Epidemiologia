@@ -13,6 +13,39 @@
         padding: 100px;
     }
 </style>
+<?php
+$serverName = "DESKTOP-NP5BU8U";
+$database = "BDEstadistica";
+$username = "sa";
+$password = "S1af";
+
+try {
+    $conn = new PDO("sqlsrv:Server=$serverName;Database=$database", $username, $password);
+
+    // Filtro para HCL_CODIGO = 6
+    $hClinicosCondition = "6";
+
+    $sql = "SELECT
+                HCL_CODIGO,
+                HCL_NOMBRE,
+                HCL_APPAT,
+                HCL_APMAT
+            FROM
+                SE_HC
+            WHERE
+                HCL_CODIGO IN ($hClinicosCondition)";
+
+    $stmt = $conn->query($sql);
+    $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // Imprimir resultados
+    print_r($result);
+
+} catch (PDOException $e) {
+    echo "Error de conexión: " . $e->getMessage();
+}
+?>
+
 <div class="row ">
     <div class="col-12">
         <div class="container bg-white rounded p-4 shadow-lg" >

@@ -114,7 +114,7 @@ class FormularioEnfermedadesNotificacionInmediataController extends Controller
         $servicios = Servicio::all();
         $patologias = Patologia::where('estado', true)->orderBy('nombre', 'asc')->get();
         $fechaActual = Carbon::now('America/La_Paz')->format('Y-m-d');
-        return view('Form_E_N_I.Form_Enf_Not_Inm', compact('id','nombre', 'idFormulario', 'servicios', 'patologias','fechaActual'));
+        return view('Form_E_N_I.Form_Enf_Not_Inm', compact('id','nombre', 'servicios', 'patologias','fechaActual'));
     }
 
     //GUARDAR_ENFER_NOTI
@@ -456,6 +456,20 @@ class FormularioEnfermedadesNotificacionInmediataController extends Controller
             ->groupBy('b.nombre')
             ->orderByDesc('total_casos')
             ->get();
+        // $bacterias = DB::table('epidemiologia.formulario_notificacion_paciente as f')
+        //     ->join('epidemiologia.antibiograma as a', 'f.cod_form_notificacion_p', '=', 'a.cod_formulario')
+        //     ->join('epidemiologia.bacterias_medicamentos as bm', function ($join) {
+        //         $join->on('a.cod_bacte', '=', 'bm.cod_bacte');
+        //         $join->on('a.cod_medi', '=', 'bm.cod_medi');
+        //     })
+        //     ->join('epidemiologia.bacterias as b', 'bm.cod_bacte', '=', 'b.cod_bacterias')
+        //     ->join('epidemiologia.medicamentos as m', 'bm.cod_medi', '=', 'm.cod_medicamento')
+        //     ->select('b.nombre as bacteria', DB::raw('COUNT(DISTINCT f.cod_form_notificacion_p) as total_casos'))
+        //     ->whereYear('f.fecha_llenado', $year)
+        //     ->where('f.estado', 'alta')
+        //     ->groupBy('b.nombre')
+        //     ->orderByDesc('total_casos')
+        //     ->get();
 
         $datosBacteria = [];
 
@@ -470,6 +484,7 @@ class FormularioEnfermedadesNotificacionInmediataController extends Controller
                 ->select(DB::raw('extract(month from f.fecha_llenado) as mes'), DB::raw('COUNT(DISTINCT f.cod_form_notificacion_p) as total_casos'))
                 ->where('f.estado', 'alta')
                 ->where('b.nombre', $bacteria->bacteria)
+                ->whereYear('f.fecha_llenado', $year)
                 ->groupBy(DB::raw('extract(month from f.fecha_llenado)'))
                 ->pluck('total_casos', 'mes');
 
@@ -486,6 +501,33 @@ class FormularioEnfermedadesNotificacionInmediataController extends Controller
                 'data' => array_values($mesesConCasos), // Reindexar el array
             ];
         }
+        // foreach ($bacterias as $bacteria) {
+        //     $casosPorMes = DB::table('epidemiologia.formulario_notificacion_paciente as f')
+        //         ->join('epidemiologia.antibiograma as a', 'f.cod_form_notificacion_p', '=', 'a.cod_formulario')
+        //         ->join('epidemiologia.bacterias_medicamentos as bm', function ($join) {
+        //             $join->on('a.cod_bacte', '=', 'bm.cod_bacte');
+        //             $join->on('a.cod_medi', '=', 'bm.cod_medi');
+        //         })
+        //         ->join('epidemiologia.bacterias as b', 'bm.cod_bacte', '=', 'b.cod_bacterias')
+        //         ->select(DB::raw('extract(month from f.fecha_llenado) as mes'), DB::raw('COUNT(DISTINCT f.cod_form_notificacion_p) as total_casos'))
+        //         ->where('f.estado', 'alta')
+        //         ->where('b.nombre', $bacteria->bacteria)
+        //         ->groupBy(DB::raw('extract(month from f.fecha_llenado)'))
+        //         ->pluck('total_casos', 'mes');
+
+        //     // Inicializar el array de meses con 0 para cada mes
+        //     $mesesConCasos = array_fill(1, 12, 0);
+
+        //     // Llenar los valores reales de los meses
+        //     foreach ($casosPorMes as $mes => $totalCasos) {
+        //         $mesesConCasos[$mes] = $totalCasos;
+        //     }
+
+        //     $datosBacteria[$bacteria->bacteria] = [
+        //         'label' => $bacteria->bacteria,
+        //         'data' => array_values($mesesConCasos), // Reindexar el array
+        //     ];
+        // }
         // dd($datosBacteria);
         // return false;
 

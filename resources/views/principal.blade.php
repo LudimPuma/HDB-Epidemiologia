@@ -165,6 +165,7 @@ const labels = @json($labels);
 const datasets = @json($datasets);
 const datosBacteria = @json($datosBacteria);
 // =========== chart three start
+    //ENF NOT INMEDATA
     const ctx3 = document.getElementById("Chart3").getContext("2d");
     const chart3 = new Chart(ctx3, {
         type: "line",
@@ -176,9 +177,9 @@ const datosBacteria = @json($datosBacteria);
                 return {
                     ...dataset,
                     backgroundColor: "transparent",
-                    borderColor: dataset.borderColor, // Usar el color definido en el controlador
+                    borderColor: dataset.borderColor,
                     pointBackgroundColor: "transparent",
-                    pointHoverBackgroundColor: dataset.borderColor, // Usar el color definido en el controlador
+                    pointHoverBackgroundColor: dataset.borderColor,
                     pointBorderColor: "transparent",
                     pointHoverBorderColor: "#fff",
                     pointHoverBorderWidth: 3,
@@ -186,7 +187,7 @@ const datosBacteria = @json($datosBacteria);
                     pointRadius: 5,
                     pointHoverRadius: 8,
                     line: {
-                        pointRadius: 0, // Establecer el radio de los puntos a 0 para que no sean visibles
+                        pointRadius: 0,
                     },
                 };
             }),
@@ -251,15 +252,18 @@ const datosBacteria = @json($datosBacteria);
         },
     });
 
+    //IAAS
     document.addEventListener("DOMContentLoaded", function () {
         const ctx2 = document.getElementById("Chart2").getContext("2d");
         const selectBacteria = document.getElementById("selectBacteria");
 
-        // Declarar bacteriaSeleccionada antes de utilizarla
+
         let bacteriaSeleccionada;
 
         selectBacteria.addEventListener("change", function () {
             bacteriaSeleccionada = this.value;
+            console.log("Bacteria seleccionada:", bacteriaSeleccionada);
+            console.log("Datos de la bacteria:", datosBacteria[bacteriaSeleccionada]);
             actualizarGrafico(ctx2, bacteriaSeleccionada, datosBacteria[bacteriaSeleccionada]);
         });
 
@@ -279,7 +283,8 @@ const datosBacteria = @json($datosBacteria);
                         backgroundColor: "#00796B",
                         barThickness: 6,
                         maxBarThickness: 8,
-                        data: datosBacteria['data'],
+                        data: datosBacteria.data,
+                        // data: datosBacteria['data'],
                     },
                 ],
             },
