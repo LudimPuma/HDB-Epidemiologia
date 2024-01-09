@@ -17,9 +17,11 @@
 </head>
 <body>
     <div class="header">
-        <!-- Contenido de tu encabezado -->
         <img src="http://localhost/HDB-Epi/public/img/encabezado.png" alt="Logo" class="encabezado" >
-        <!-- Otros elementos de tu encabezado -->
+        {{-- <img src="{{ public_path('img/encabezado.png') }}" alt="Logo" class="encabezado"> --}}
+        {{-- <img src="public/img/encabezado.png" alt="Logo" class="encabezado"> --}}
+
+
     </div>
 </body>
 </html>

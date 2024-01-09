@@ -36,11 +36,18 @@
                                         </div>
 
                                     </div>
-                                    <div class="col-lg-6">
+                                    <div class="col-lg-5">
                                         <!-- Datos paciente -->
                                         <div class="form-group input-style-1">
                                             <label for="dato_paciente">Nombre completo:</label>
                                             <input type="text" class="form-control" id="dato_paciente" name="dato_paciente" value="{{ $nombre }}" disabled>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4">
+                                        <!-- fecha-->
+                                        <div class="form-group input-style-1">
+                                            <label for="fecha">Fecha de reporte:</label>
+                                            <input type="date" name="fecha" id="fecha" class="form-control" value="{{ $fechaActual }}" pattern="[0-9\-]+" title="Solo fechas." required>
                                         </div>
                                     </div>
                                 </div>
@@ -48,8 +55,8 @@
                                     <div class="col-lg-4">
                                         <!-- fecha-->
                                         <div class="form-group input-style-1">
-                                            <label for="fecha">Fecha</label>
-                                            <input type="date" name="fecha" id="fecha" class="form-control" value="{{ $fechaActual }}" pattern="[0-9\-]+" title="Solo fechas." required>
+                                            <label for="fecha_admision">Fecha de adminisión:</label>
+                                            <input type="date" name="fecha_admision" id="fecha_admision" class="form-control" pattern="[0-9\-]+" title="Solo fechas." required>
                                         </div>
                                     </div>
                                 </div>

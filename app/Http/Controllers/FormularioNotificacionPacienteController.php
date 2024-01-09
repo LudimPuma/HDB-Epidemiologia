@@ -9,6 +9,7 @@ use PDF;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\View;
 use App\Antibiograma;
 use App\SeleccionTipoInfeccion;
 use App\DatoPaciente;
@@ -43,8 +44,8 @@ class FormularioNotificacionPacienteController extends Controller
     }
     private function Servidor()
     {
-        $serverName = "DESKTOP-NP5BU8U";
-        // $serverName = "193.168.0.7\\SIAF";
+        // $serverName = "DESKTOP-NP5BU8U";
+        $serverName = "193.168.0.7\\SIAF";
         $connectionInfo = array("Database" => "BDEstadistica", "UID" => "sa", "PWD" => "S1af");
 
         $conn = sqlsrv_connect($serverName, $connectionInfo);
@@ -519,7 +520,6 @@ class FormularioNotificacionPacienteController extends Controller
         }
     }
 
-
     public function tabla()
     {
         try {
@@ -569,7 +569,6 @@ class FormularioNotificacionPacienteController extends Controller
                         'motivos_baja' => null,
                         'observacion' => null,
                     ];
-
                     $patient['cod_form_notificacion_p'] = $formulario->cod_form_notificacion_p;
                     $patient['fecha'] = $formulario->fecha_llenado;
                     $patient['estado'] = $formulario->estado;
@@ -836,8 +835,8 @@ class FormularioNotificacionPacienteController extends Controller
 
             $data = compact('estadisticas', 'nombreMesSeleccionado', 'anioSeleccionado','fechaHoraActual');
             $pdf = SnappyPDF::loadView('Form_IAAS.PDF.reporte', $data);
-            $footerPath = base_path('resources/views/pdf/footer.html');
-            $headerPath = base_path('resources/views/pdf/header.html');
+            $footerHtml = View::make('pdf.footer')->render();
+            $headerHtml = View::make('pdf.header')->render();
 
             $pdf->setOptions([
                 'orientation' => 'portrait',
@@ -846,8 +845,8 @@ class FormularioNotificacionPacienteController extends Controller
                 'header-spacing' => 10,
                 'margin-bottom' => 20,
                 'footer-font-size'=> 12,
-                'footer-html' => $footerPath,
-                'header-html' => $headerPath,
+                'footer-html' => $footerHtml,
+                'header-html' => $headerHtml,
             ]);
 
             $nombreArchivo = 'Reporte_Mensual_IAAS_' . $nombreMesSeleccionado . '_' . $anioSeleccionado . '.pdf';
@@ -934,8 +933,8 @@ class FormularioNotificacionPacienteController extends Controller
             ];
             $pdf = PDF::loadView('Form_IAAS.PDF.reporte_anual', $data);
 
-            $footerPath = base_path('resources/views/pdf/footer.html');
-            $headerPath = base_path('resources/views/pdf/header.html');
+            $footerHtml = View::make('pdf.footer')->render();
+            $headerHtml = View::make('pdf.header')->render();
 
             $pdf->setOptions([
                 'orientation' => 'portrait',
@@ -944,8 +943,8 @@ class FormularioNotificacionPacienteController extends Controller
                 'header-spacing' => 10,
                 'margin-bottom' => 20,
                 'footer-font-size'=> 12,
-                'footer-html' => $footerPath,
-                'header-html' => $headerPath,
+                'footer-html' => $footerHtml,
+                'header-html' => $headerHtml,
             ]);
             $nombreArchivo = 'Reporte_Anual_PorServicios__IAAS_' . $fechaSeleccionada . '.pdf';
             return response($pdf->output(), 200, [
@@ -1061,8 +1060,8 @@ class FormularioNotificacionPacienteController extends Controller
 
             $pdf = PDF::loadView('Form_IAAS.PDF.reporte_anual', $data);
 
-            $footerPath = base_path('resources/views/pdf/footer.html');
-            $headerPath = base_path('resources/views/pdf/header.html');
+            $footerHtml = View::make('pdf.footer')->render();
+            $headerHtml = View::make('pdf.header')->render();
 
             $pdf->setOptions([
                 'orientation' => 'portrait',
@@ -1071,8 +1070,8 @@ class FormularioNotificacionPacienteController extends Controller
                 'header-spacing' => 10,
                 'margin-bottom' => 20,
                 'footer-font-size' => 12,
-                'footer-html' => $footerPath,
-                'header-html' => $headerPath,
+                'footer-html' => $footerHtml,
+                'header-html' => $headerHtml,
             ]);
 
             $nombreArchivo = 'Reporte_PorServicios_'. $rangoSeleccionado .'_IAAS_' . $fechaSeleccionada .'.pdf';
@@ -1157,8 +1156,8 @@ class FormularioNotificacionPacienteController extends Controller
             ];
 
             $pdf = PDF::loadView('Form_IAAS.PDF.reporte_anual_por_mes', $data);
-            $footerPath = base_path('resources/views/pdf/footer.html');
-            $headerPath = base_path('resources/views/pdf/header.html');
+            $footerHtml = View::make('pdf.footer')->render();
+            $headerHtml = View::make('pdf.header')->render();
             $pdf->setOptions([
                 'orientation' => 'portrait',
                 'footer-spacing' => 10,
@@ -1166,8 +1165,8 @@ class FormularioNotificacionPacienteController extends Controller
                 'header-spacing' => 10,
                 'margin-bottom' => 20,
                 'footer-font-size'=> 12,
-                'footer-html' => $footerPath,
-                'header-html' => $headerPath,
+                'footer-html' => $footerHtml,
+                'header-html' => $headerHtml,
                 'enable-javascript' => true,
                 'javascript-delay' => 1000,
                 'no-stop-slow-scripts' => true,
@@ -1256,8 +1255,8 @@ class FormularioNotificacionPacienteController extends Controller
             ];
 
             $pdf = PDF::loadView('Form_IAAS.PDF.reporte_rango_IAAS', $data);
-            $footerPath = base_path('resources/views/pdf/footer.html');
-            $headerPath = base_path('resources/views/pdf/header.html');
+            $footerHtml = View::make('pdf.footer')->render();
+            $headerHtml = View::make('pdf.header')->render();
 
             $pdf->setOptions([
                 'orientation' => 'portrait',
@@ -1266,8 +1265,8 @@ class FormularioNotificacionPacienteController extends Controller
                 'header-spacing' => 10,
                 'margin-bottom' => 20,
                 'footer-font-size'=> 12,
-                'footer-html' => $footerPath,
-                'header-html' => $headerPath,
+                'footer-html' => $footerHtml,
+                'header-html' => $headerHtml,
             ]);
             $nombreArchivo = 'Reporte_Rango:'. $fechaEntrada.'_a_' . $fechaSalida .'.pdf';
             return response($pdf->output(), 200, [
@@ -1405,8 +1404,8 @@ class FormularioNotificacionPacienteController extends Controller
 
             $pdf = PDF::loadView('Form_IAAS.PDF.informeAnual', $data);
 
-            $footerPath = base_path('resources/views/pdf/footer.html');
-            $headerPath = base_path('resources/views/pdf/header.html');
+            $footerHtml = View::make('pdf.footer')->render();
+            $headerHtml = View::make('pdf.header')->render();
 
             $pdf->setOptions([
                 'orientation' => 'portrait',
@@ -1415,8 +1414,8 @@ class FormularioNotificacionPacienteController extends Controller
                 'header-spacing' => 10,
                 'margin-bottom' => 20,
                 'footer-font-size'=> 12,
-                'footer-html' => $footerPath,
-                'header-html' => $headerPath,
+                'footer-html' => $footerHtml,
+                'header-html' => $headerHtml,
             ]);
             $nombreArchivo = 'Resistencia_Bacteriana_IAAS_' . $fechaSeleccionada . '.pdf';
 
@@ -1590,8 +1589,8 @@ class FormularioNotificacionPacienteController extends Controller
 
             $pdf = PDF::loadView('Form_IAAS.PDF.informeAnual', $data);
 
-            $footerPath = base_path('resources/views/pdf/footer.html');
-            $headerPath = base_path('resources/views/pdf/header.html');
+            $footerHtml = View::make('pdf.footer')->render();
+            $headerHtml = View::make('pdf.header')->render();
 
             $pdf->setOptions([
                 'orientation' => 'portrait',
@@ -1600,8 +1599,8 @@ class FormularioNotificacionPacienteController extends Controller
                 'header-spacing' => 10,
                 'margin-bottom' => 20,
                 'footer-font-size'=> 12,
-                'footer-html' => $footerPath,
-                'header-html' => $headerPath,
+                'footer-html' => $footerHtml,
+                'header-html' => $headerHtml,
             ]);
             $nombreArchivo = 'Resistencia_Bacteriana_' . $fechaSeleccionada . '_'. $rangoSeleccionado .'.pdf';
 

@@ -74,7 +74,7 @@
             </div>
         </div>
     </div>
- </div>
+</div>
 <script>
     document.getElementById("generar-btn").addEventListener("click", function (event) {
         var seleccion = document.getElementById("seleccion").value;

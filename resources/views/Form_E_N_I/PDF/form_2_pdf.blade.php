@@ -46,17 +46,18 @@
                             {{ $pacienteInfo['hcl_codigo'] }} <br>
                         @endforeach
                     </td>
-                    {{-- <td>{{ $formulario->id_f_notificacion_inmediata }}</td> --}}
-                    <th>Fecha llenado</th>
-                    <td>{{ $formulario->fecha }}</td>
-                </tr>
-                <tr>
                     <th>Paciente</th>
-                    <td colspan="3">
+                    <td>
                         @foreach ($paciente as $pacienteInfo)
                             {{ $pacienteInfo['nombre'] }} {{ $pacienteInfo['ap_paterno'] }} {{ $pacienteInfo['ap_materno'] }}<br>
                         @endforeach
                     </td>
+                </tr>
+                <tr>
+                    <th>Fecha de reporte</th>
+                    <td>{{ $formulario->fecha }}</td>
+                    <th>Fecha de admisión</th>
+                    <td>{{ $formulario->fecha_admision }}</td>
                 </tr>
                 <tr>
                     <th>Edad</th>
@@ -118,6 +119,8 @@
         </div>
         <div class="signature-container">
             <h5>{{ Auth::user()->persona->nombres }} {{ Auth::user()->persona->apellidos }}</h5>
+            <h5>{{ Auth::user()->cargo}}</h5>
+            <h5>{{ Auth::user()->matricula_profesion}}</h5>
         </div>
     </div>
 </body>
